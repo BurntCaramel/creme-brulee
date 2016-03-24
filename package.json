@@ -1,0 +1,37 @@
+{
+  "name": "creme-brulee",
+  "version": "0.1.0",
+  "description": "Server for Icing content",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BurntIcing/creme-brulee.git"
+  },
+  "keywords": [
+    "Icing",
+    "content",
+    "serve"
+  ],
+  "author": "Patrick Smith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BurntIcing/creme-brulee/issues"
+  },
+  "homepage": "https://github.com/BurntIcing/creme-brulee#readme",
+  "dependencies": {
+    "dotenv": "^2.0.0",
+    "express": "^4.13.4",
+    "icing-display": "0.1.0-a8",
+    "icing-spec-burnt": "^0.1.1-a1",
+    "imgix-core-js": "^1.0.3",
+    "immutable": "^3.7.6",
+    "node-fetch": "^1.3.3",
+    "ramda": "^0.19.1",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7",
+    "remarkable": "^1.6.2"
+  }
+}
