@@ -97,6 +97,7 @@ const renderProfileMarkdown = R.converge(
 		),
 		R.pipe(
 			R.prop('repos'),
+			R.filter(R.whereEq({ fork: false })),
 			renderRepos
 		),
 	]
