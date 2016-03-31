@@ -14,6 +14,9 @@ function renderResponse(promise, res) {
 		)
 }
 
-const routeRendering = (renderRequest) => (req, res) => renderResponse(renderRequest(req), res)
+const routeRendering = (renderRequest) => (req, res) => renderResponse(
+	Promise.resolve(renderRequest(req)),
+	res
+)
 
 module.exports = routeRendering
