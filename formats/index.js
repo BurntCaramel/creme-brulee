@@ -3,6 +3,7 @@ const R = require('ramda')
 const formatToRenderers = {
 	md: require('./md'),
 	icing: require('./icing'),
+	json: require('./json'),
 	plain: require('./plain'),
 };
 
