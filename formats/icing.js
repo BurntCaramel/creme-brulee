@@ -24,6 +24,7 @@ const adjustBlock_options = (options) => (block) => {
 }
 
 function attributesForResponsiveImage(options, imagePath, width) {
+	width = R.defaultTo(700, width)
 	const url1x = options.imgixURLForImagePath(imagePath, { w: width, q: 80, auto: 'format,compress' })
 	const url2x = options.imgixURLForImagePath(imagePath, { w: width, fit: 'max', dpr: 2, q: 50, auto: 'format,compress' }) 
 	 
@@ -33,7 +34,14 @@ function attributesForResponsiveImage(options, imagePath, width) {
 			`${ url2x } 2x`,
 		].join(','),
 		src: url1x,
+		width
 	}
+}
+
+function renderResponsiveImage(options, imageURL, width) {
+	return createElement('img',
+		attributesForResponsiveImage(options, imageURL, width)
+	)
 }
 
 const renderBlock_options = (options) => (block) => {
@@ -47,9 +55,7 @@ const renderBlock_options = (options) => (block) => {
 		
 		if (!isAbsolute) {
 			return createElement('figure', null,
-				createElement('img',
-					attributesForResponsiveImage(options, imageURL, value.get('width'))
-				)
+				renderResponsiveImage(options, imageURL, value.get('width'))
 			)
 		}
 	}
