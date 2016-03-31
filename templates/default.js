@@ -14,6 +14,11 @@ function renderStyles(darkMode) {
 	const linkColor = '#eb1a4e'
 	//const baselineGridRule = 'background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 1.29rem, red 1.29em, red 1.333333333rem);' 
 	const baselineGridRule = ''
+	
+	const selectors = {
+		bodyButton: 'p > a:only-child',
+		navButton: 'nav > a'
+	}
 
 	function typeBaselineGrid(fontSize, lineHeightFactor) {
 		const lineHeight = baseLineHeight * lineHeightFactor;
@@ -47,7 +52,8 @@ function renderStyles(darkMode) {
 		color: ${linkColor};
 		text-decoration: none;
 	}
-	a:only-child {
+	${selectors.bodyButton},
+	${selectors.navButton} {
 		display: inline-block;
 		padding: ${baseLineHeight * 0.5}rem 0.875em;
 		background-color: ${linkColor};

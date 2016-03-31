@@ -1,5 +1,5 @@
-const _ = require('lodash')
+const escape = require('lodash/escape')
 
 module.exports = options => input => ({
-    innerHTML: _.escape(input)
+    innerHTML: escape(input)
 })

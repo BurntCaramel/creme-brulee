@@ -25,26 +25,32 @@ const memberfulScript =
 const title = 'Royal Icing'
 
 //const tagLine = `# Boldly simple webpages for your content`
-const tagLine = `# Fast, simple webpages for your content`
-const secondary = `## Royal Icing handles `
+const tagLine = `# Fast, simple web pages for your content`
+const secondary = `## Royal Icing lets you handle text and images with aplomb`
 
 const pitch = `
 
-- Simple webpages
+- Simple web pages
+- Photo galleries
 - Editable press releases
 - FAQs
 
-Royal Icing takes care of web development best practices for you
+Royal Icing takes care of web best practices for you
 and your audience:
 - Fast to load, even over a cellular connection.
-- Resizes and compresses images automatically.
+- Resizes and optimizes images automatically.
 - Responsive design from phone to desktop.
 `
 
 const signIn = `[Sign In](https://burntcaramel.memberful.com/account)`
 
 const plans = `
-## Starter
+## Starter plan
+
+1 custom domain · optimized images · Markdown
+
+### 30 day free trial, then $8 / month
+ 
 [Purchase the Starter plan](https://burntcaramel.memberful.com/checkout?plan=11870)
 `
 
@@ -52,8 +58,8 @@ const renderHomePageMarkdown = () => [
 		tagLine,
 		secondary,
 		pitch,
-		signIn,
-		plans
+		plans,
+		signIn
 	].join('\n')
 
 const renderHomePage = R.pipe(

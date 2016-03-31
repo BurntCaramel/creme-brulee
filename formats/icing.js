@@ -1,8 +1,10 @@
 const Immutable = require('immutable')
-const _ = require('lodash')
+const R = require('ramda')
 const previewHTMLWithContent = require('icing-display/lib/presentation').previewHTMLWithContent
 const spec = Immutable.fromJS(require('icing-spec-burnt/default/1.0'))
 const createElement = require('react').createElement
+
+const urlIsAbsolute = R.test(/:\/\//)
 
 const adjustBlock_options = (options) => (block) => {
 	const typeGroup = block.get('typeGroup')
@@ -11,7 +13,7 @@ const adjustBlock_options = (options) => (block) => {
 	if (typeGroup === 'media' && type === 'externalImage') {
 		const imageURL = block.getIn(['value', 'url'])
 		console.log('imageURL', imageURL, block, block.toJSON())
-		const isAbsolute = _.includes(imageURL, '://') 
+		const isAbsolute = urlIsAbsolute(imageURL) 
 		if (!isAbsolute) {
 			const imgixImageURL = options.imgixURLForImagePath(imageURL)
 			block = block.setIn(['value', 'url'], imgixImageURL)
@@ -41,7 +43,7 @@ const renderBlock_options = (options) => (block) => {
 	
 	if (typeGroup === 'media' && type === 'externalImage') {
 		const imageURL = value.get('url')
-		const isAbsolute = _.includes(imageURL, '://')
+		const isAbsolute = urlIsAbsolute(imageURL)
 		
 		if (!isAbsolute) {
 			return createElement('figure', null,
