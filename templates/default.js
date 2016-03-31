@@ -58,7 +58,7 @@ function renderStyles(darkMode) {
 		color: white;
 	}
 
-	h1, h2, h3, p, ul, ol, pre {
+	h1, h2, h3, p, ul, ol, dl, pre {
 		${ typeBaselineGrid(1, 1) }
 		width: ${measure}rem;
 		margin: 0 auto;
@@ -76,7 +76,7 @@ function renderStyles(darkMode) {
 		font-weight: bold;
 	}
 
-	h3 {
+	h3, dt {
 		font-weight: bold;
 	}
 
