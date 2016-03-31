@@ -6,29 +6,23 @@ const renderToStaticMarkup = require('react-dom/server').renderToStaticMarkup
 
 const li = R.partial(createElement, ['li', null])
 const dl = R.partial(createElement, ['dl', null])
-const dt = R.partial(createElement, ['dt'])
-const dd = R.partial(createElement, ['dd'])
-const ol = R.partial(createElement, ['ol'])
+const dtAttrs = R.partial(createElement, ['dt'])
+const ddAttrs = R.partial(createElement, ['dd'])
+const ol = R.partial(createElement, ['ol', null])
 const code = R.partial(createElement, ['code', null])
+const p = R.partial(createElement, ['p', null])
 
-/*const renderObjectItem = (key, value) => [
-	dt({ key: `key-${key}` }, key),
-	dd({ key: `value-${key}`}, renderJSON(value))
-]*/
+const renderObjectItem = (key, value) => [
+	dtAttrs({ key: `key-${key}` }, key),
+	ddAttrs({ key: `value-${key}`}, renderJSON(value))
+]
 
 const renderObjectKey = (key, value) => (
-	dt({ key: `key-${key}` }, key)
+	dtAttrs({ key: `key-${key}` }, key)
 )
 
 const renderObjectValue = (key, value) => (
-	dd({ key: `value-${key}`}, renderJSON(value))
-)
-
-const renderObjectItem = R.converge(
-	(key, value) => [key, value], [
-		renderObjectKey,
-		renderObjectValue
-	]
+	ddAttrs({ key: `value-${key}`}, renderJSON(value))
 )
 
 const renderArrayItem = (value) => li(
@@ -45,17 +39,17 @@ const renderObject = R.pipe(
 )
 
 const renderArray = R.pipe(
-	R.mapObjIndexed(renderArrayItem),
+	R.map(renderArrayItem),
 	ol
 )
 
 const renderNumber = code
 
-const renderString = R.identity
+const renderString = p
 
 const renderJSON = R.cond([
-	[isObject, renderObject],
 	[Array.isArray, renderArray],
+	[isObject, renderObject],
 	[isNumber, renderNumber],
 	[R.T, renderString]
 ])
@@ -71,6 +65,11 @@ const renderRawJSON = R.tryCatch(
 	renderJSONError
 )
 
+const JSONFormatter = R.pipe(
+	R.prop('json'),
+	renderRawJSON
+)
+
 module.exports = options => input => ({
-    innerHTML: renderToStaticMarkup(renderRawJSON(input))
+    innerHTML: renderToStaticMarkup(createElement(JSONFormatter, { json: input }))
 })
