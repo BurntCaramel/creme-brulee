@@ -27,7 +27,11 @@ const pickPageOptions = R.pipe(
 				R.path(['params', 0]),
 				R.objOf('path')
 			),
-			R.prop('query')
+			R.prop('query'),
+			R.pipe(
+				R.pathSatisfies(Boolean, ['query', 'darkMode']),
+				R.objOf('darkMode')
+			),
 		]
 	),
 	R.mergeWith(
@@ -35,6 +39,18 @@ const pickPageOptions = R.pipe(
 		{ path: 'README', format: 'md', darkMode: false }
 	),
 	R.pick(['path', 'format', 'darkMode'])
+)
+
+const pickImgixOptions = R.pipe( 
+	R.converge(
+		R.unapply(R.mergeAll), [
+			R.pipe(
+				R.path(['query', 'primaryColor']),
+				R.objOf('mono')
+			),
+		]
+	),
+	R.pick(['blend', 'mono'])
 )
 
 const titleFromPath = R.pipe(
@@ -46,25 +62,22 @@ const getGitHubFileURL = (projectOptions, pageOptions) => (
 	`https://raw.githubusercontent.com/${projectOptions.username}/${projectOptions.project}/${projectOptions.branch}/${pageOptions.path}.${pageOptions.format}`
 )
 
-const cleanOptions = R.pipe(
-	R.defaultTo({}),
-	R.reject(R.isNil)
-)
+const cleanOptions = R.reject(R.isNil)
 
-const imgixURLBuilder = (projectOptions, pageOptions) => (path, options) => (
+const imgixURLBuilder = (projectOptions, pageOptions, imgixOptions) => (path, options) => (
 	imgix.buildURL(
 		`/${projectOptions.username}/${projectOptions.project}/${projectOptions.branch}/${pageOptions.path}/${path}`,
-		cleanOptions(options)
+		cleanOptions(R.mergeAll([{}, imgixOptions, options]))
 	)
 )
 
-function renderPage(projectOptions, pageOptions) {
+function renderPage(projectOptions, pageOptions, imgixOptions) {
 	console.log('projectOptions', projectOptions, 'pageOptions', pageOptions)
 	
 	const title = (pageOptions.path === 'README') ? projectOptions.project : titleFromPath(pageOptions.path)
 	
 	const renderContent = rendererForFormat(pageOptions.format, {
-		imgixURLForImagePath: imgixURLBuilder(projectOptions, pageOptions)
+		imgixURLForImagePath: imgixURLBuilder(projectOptions, pageOptions, imgixOptions)
 	})
 	
 	const url = getGitHubFileURL(projectOptions, pageOptions)
@@ -82,7 +95,8 @@ function renderPage(projectOptions, pageOptions) {
 const renderPageRequest = R.converge(
 	renderPage, [
 		pickProjectOptions,
-		pickPageOptions
+		pickPageOptions,
+		pickImgixOptions
 	]
 )
 
