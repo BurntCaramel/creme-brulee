@@ -1,4 +1,5 @@
 const R = require('ramda')
+const escape = require('lodash/escape')
 
 function renderStyles(darkMode) { 
 	const lightColor = '#fcfcfc'
@@ -15,6 +16,7 @@ function renderStyles(darkMode) {
 	//const baselineGridRule = 'background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 1.29rem, red 1.29em, red 1.333333333rem);' 
 	const baselineGridRule = ''
 	
+	const base = 'article'
 	const selectors = {
 		bodyButton: 'p > a:only-child',
 		navButton: 'nav > a'
@@ -30,93 +32,129 @@ function renderStyles(darkMode) {
 		`
 	}
 
-	return `html {
-		font-size: ${baseFontSize}px;
-		font-size: calc(112.5% + 2 * (100vw - 600px) / 400);
-		background-color: ${backgroundColor};
-		color: ${color};
-	}
+	return `
+html {
+	font-size: ${baseFontSize}px;
+	font-size: calc(112.5% + 2 * (100vw - 600px) / 400);
+	background-color: ${backgroundColor};
+	color: ${color};
+}
 
-	body {
-		box-sizing: border-box;
-		max-width: 100vw;
-		margin: auto;
-		padding: ${baseLineHeight}rem 1.7em;
-		line-height: ${baseLineHeight}rem;
-		font-family: ${fontFamilyStack};
-		${baselineGridRule}
-	}
+body {
+	box-sizing: border-box;
+	max-width: 100vw;
+	margin: auto;
+	padding: ${baseLineHeight}rem 1.7em;
+	line-height: ${baseLineHeight}rem;
+	font-family: ${fontFamilyStack};
+	${baselineGridRule}
+}
 
-	a {
-		color: ${linkColor};
-		text-decoration: none;
-	}
-	${selectors.navButton} {
-		display: inline-block;
-		padding: ${baseLineHeight * 0.5}rem 0.875em;
-		background-color: ${linkColor};
-		color: white;
-	}
+a {
+	color: ${linkColor};
+	text-decoration: none;
+}
+${selectors.navButton} {
+	display: inline-block;
+	padding: ${baseLineHeight * 0.5}rem 0.875em;
+	background-color: ${linkColor};
+	color: white;
+}
 
-	h1, h2, h3, p, ul, ol, dl, pre {
-		${ typeBaselineGrid(1, 1) }
-		width: ${measure}rem;
-		margin: 0 auto;
-		margin-bottom: ${baseLineHeight}rem;
-	}
+p, ul, ol, dl, pre {
+	margin: 0;
+	padding: 0;
+}
 
-	h1 {
-		${ typeBaselineGrid(2, 2) }
-		text-align: center;
-		font-weight: bold;
-	}
+${base} > * {
+	${ typeBaselineGrid(1, 1) }
+}
 
-	h2 {
-		${ typeBaselineGrid(1.2, 1) }
-		font-weight: bold;
-	}
+${base} > *,
+${base} dt,
+${base} dd > * {
+	width: ${measure}rem;
+	margin: 0 auto;
+}
 
-	h3, dt {
-		font-weight: bold;
-	}
+${base} h1,
+${base} h2,
+${base} h3,
+${base} > p,
+${base} ul,
+${base} ol,
+${base} dt,
+${base} pre,
+${base} hr {
+	margin-bottom: ${baseLineHeight}rem;
+}
 
-	p, ul, ol, pre {
-		margin-top: ${baseLineHeight}rem;
-		padding: 0;
-	}
+${base} dl,
+${base} dd > ${base},
+${base} figure {
+	width: auto;
+}
 
-	figure {
-		margin: 0;
-		margin-left: -${baseLineHeight}rem;
-		margin-right: -${baseLineHeight}rem;
-		text-align: center;
-	}
-	figure + figure {
-		margin-top: ${baseLineHeight}rem;
-	}
+${base} h1 {
+	${ typeBaselineGrid(2, 2) }
+	text-align: center;
+	font-weight: bold;
+}
 
-	img {
-		width: auto;
-		max-width: 100%;
-		max-height: 100vh;
-	}
+${base} h2 {
+	${ typeBaselineGrid(1.2, 1) }
+	font-weight: bold;
+}
 
-	pre, code {
-		font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-		font-size: 0.75rem;
-	}
+${base} h3 {
+	font-weight: bold;
+}
 
-	pre {
-		overflow: auto;
-		width: calc(50% + (${measure}rem / 2));
-		margin-left: calc((100% - ${measure}rem) / 2);
-		background-color: #fafafa;
-	}
-	`
+${base} pre {
+	overflow: auto;
+	width: calc(50% + (${measure}rem / 2));
+	margin-left: calc((100% - ${measure}rem) / 2);
+	background-color: #fafafa;
+}
+
+${base} dt {
+	margin-bottom: 0;
+	font-weight: bold;
+}
+${base} dd {
+	margin-left: 1em;
+}
+
+figure {
+	margin: 0;
+	margin-left: -${baseLineHeight}rem;
+	margin-right: -${baseLineHeight}rem;
+	text-align: center;
+}
+figure + figure {
+	margin-top: ${baseLineHeight}rem;
+}
+
+img {
+	width: auto;
+	max-width: 100%;
+	max-height: 100vh;
+}
+
+pre, code {
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	font-size: 0.75rem;
+}
+
+hr {
+	border: none;
+	border-top: 1px solid ${color}
+}
+`
 }
 
 const renderMeta = (name, content) => !!content ? (
-	`<meta name="${ name }" content="${ content }">`
+	`<meta name="${ name }" content="${ escape(content) }">`
 ) : ''
 
 const renderMetas = R.pipe(
@@ -135,7 +173,7 @@ module.exports = props => (`<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>${ props.title }</title>
+<title>${ escape(props.title) }</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${ renderMetas({
 	'original-source': props.originalSourceURL
@@ -144,7 +182,9 @@ ${ renderMetas({
 ${ renderElements(props.headElements) }
 </head>
 <body>
+<article>
 ${ props.innerHTML }
+</article>
 ${ renderElements(props.bodyLastElements) }
 </body>
 </html>
