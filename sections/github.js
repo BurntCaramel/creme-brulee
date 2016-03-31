@@ -71,6 +71,16 @@ const imgixURLBuilder = (projectOptions, pageOptions, imgixOptions) => (path, op
 	)
 )
 
+bodyLastElements = [
+`<script>
+document.addEventListener('click', function(event) {
+	if (event.target.tagName === 'IMG') {
+		event.target.scrollIntoView({ behavior: 'smooth' });
+	}
+})
+</script>`
+]
+
 function renderPage(projectOptions, pageOptions, imgixOptions) {
 	console.log('projectOptions', projectOptions, 'pageOptions', pageOptions)
 	
@@ -87,7 +97,8 @@ function renderPage(projectOptions, pageOptions, imgixOptions) {
 		R.merge({
 			title,
 			originSourceURL: url,
-			darkMode: pageOptions.darkMode
+			darkMode: pageOptions.darkMode,
+			bodyLastElements,
 		})
 	))
 }
