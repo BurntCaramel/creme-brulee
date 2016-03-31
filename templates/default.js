@@ -105,9 +105,8 @@ function renderStyles(darkMode) {
 
 	pre {
 		overflow: auto;
-		padding: 0.5rem;
-		margin-left: -0.5rem;
-		margin-right: -0.5rem;
+		width: calc(50% + (${measure}rem / 2));
+		margin-left: calc((100% - ${measure}rem) / 2);
 		background-color: #fafafa;
 	}
 	`
