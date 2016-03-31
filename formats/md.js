@@ -1,7 +1,5 @@
-const Remarkable = require('remarkable')
-
-const md = new Remarkable()
+const renderMarkdown = require('../utils/renderMarkdown')
 
 module.exports = options => input => ({
-    innerHTML: md.render(input)
+    innerHTML: renderMarkdown(input)
 })
