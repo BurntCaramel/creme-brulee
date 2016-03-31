@@ -43,7 +43,10 @@ const renderArray = R.pipe(
 	ol
 )
 
-const renderNumber = code
+const renderNumber = R.pipe(
+	code,
+	p
+)
 
 const renderString = p
 
