@@ -40,7 +40,6 @@ function renderStyles(darkMode) {
 	body {
 		box-sizing: border-box;
 		max-width: 100vw;
-		width: ${measure}rem;
 		margin: auto;
 		padding: ${baseLineHeight}rem;
 		line-height: ${baseLineHeight}rem;
@@ -62,7 +61,8 @@ function renderStyles(darkMode) {
 
 	h1, h2, h3, p, ul, ol, pre {
 		${ typeBaselineGrid(1, 1) }
-		margin: 0;
+		width: ${measure}rem;
+		margin: 0 auto;
 		margin-bottom: ${baseLineHeight}rem;
 	}
 
