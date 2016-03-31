@@ -41,7 +41,7 @@ function renderStyles(darkMode) {
 		box-sizing: border-box;
 		max-width: 100vw;
 		margin: auto;
-		padding: ${baseLineHeight}rem;
+		padding: ${baseLineHeight}rem 1.7em;
 		line-height: ${baseLineHeight}rem;
 		font-family: ${fontFamilyStack};
 		${baselineGridRule}
