@@ -123,7 +123,7 @@ const renderMetas = R.pipe(
 	R.join('\n')
 )
 
-const renderHeadElements = R.pipe(
+const renderElements = R.pipe(
     R.defaultTo([]),
     R.join('\n')
 )
@@ -138,10 +138,11 @@ ${ renderMetas({
 	'original-source': props.originalSourceURL
 }) }
 <style>${ renderStyles(props.darkMode) }</style>
-${ renderHeadElements(props.headElements) }
+${ renderElements(props.headElements) }
 </head>
 <body>
 ${ props.innerHTML }
+${ renderElements(props.bodyLastElements) }
 </body>
 </html>
 `)
