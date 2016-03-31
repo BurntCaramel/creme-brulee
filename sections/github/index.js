@@ -2,12 +2,11 @@ const R = require('ramda')
 const fetch = require('node-fetch')
 const Imgix = require('imgix-core-js')
 
-const rendererForFormat = require('../formats').rendererForFormat
-const defaultTemplate = require('../templates/default')
-const fetchUtils = require('../utils/fetch')
+const rendererForFormat = require('../../formats').rendererForFormat
+const fetchUtils = require('../../utils/fetch')
 const fetchValidJSON = fetchUtils.fetchValidJSON
 const fetchValidText = fetchUtils.fetchValidText
-const routeRendering = require('../utils/routeRendering')
+const routeRendering = require('../../utils/routeRendering')
 
 const imgix = new Imgix({
   host: 'github-burntcaramel.imgix.net',
@@ -15,8 +14,12 @@ const imgix = new Imgix({
 })
 
 const pickProjectOptions = R.pipe(
-	R.prop('params'),
-	R.merge({ branch: 'master' }),
+	R.props(['query', 'params']),
+	R.mergeAll,
+	R.mergeWith(
+		R.defaultTo, // Don’t allow undefined values, e.g. for 'path'
+		{ branch: 'master' }
+	),
 	R.pick(['username', 'project', 'branch'])
 )
 
@@ -130,7 +133,7 @@ const renderProfileMarkdown = R.converge(
 		),
 		R.pipe(
 			R.prop('repos'),
-			R.filter(R.whereEq({ fork: false })),
+			R.filter(R.propEq('fork', false)),
 			renderRepos
 		),
 	]
@@ -164,7 +167,11 @@ const renderUserReposRequest = R.converge(
 
 
 
+const renderReleasesRequest = require('./releases').renderReleasesRequest
+
+
 module.exports = {
 	renderPageRequest,
 	renderUserReposRequest,
+	renderReleasesRequest,
 }

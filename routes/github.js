@@ -5,7 +5,7 @@ const routeRendering = require('../utils/routeRendering')
 
 const route = Express.Router()
 
-route.get('/@:username/:project', routeRendering(github.renderPageRequest))
+route.get('/@:username/:project', routeRendering(github.renderReleasesRequest))
 route.get('/@:username/:project/*', routeRendering(github.renderPageRequest))
 
 route.get('/@:username', routeRendering(github.renderUserReposRequest))
