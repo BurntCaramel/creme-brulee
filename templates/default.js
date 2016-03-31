@@ -51,7 +51,6 @@ function renderStyles(darkMode) {
 		color: ${linkColor};
 		text-decoration: none;
 	}
-	${selectors.bodyButton},
 	${selectors.navButton} {
 		display: inline-block;
 		padding: ${baseLineHeight * 0.5}rem 0.875em;
