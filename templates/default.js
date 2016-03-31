@@ -92,10 +92,14 @@ function renderStyles(darkMode) {
 		margin-right: -${baseLineHeight}rem;
 		text-align: center;
 	}
+	figure + figure {
+		margin-top: ${baseLineHeight}rem;
+	}
 
 	img {
-		text-align: center;
+		width: auto;
 		max-width: 100%;
+		max-height: 100vh;
 	}
 
 	pre, code {
