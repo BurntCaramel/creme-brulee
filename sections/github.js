@@ -114,12 +114,15 @@ const renderPageRequest = R.converge(
 
 const renderUsername = username => `# ${ username }`
 
-const renderRepos = R.map(repo => `## [${ repo.name }](@${ repo.full_name })`)
+const renderRepos = R.map(repo => 
+`[${ repo.name }](@${ repo.full_name })
+·
+${ repo.description }`)
 
 const renderProfileMarkdown = R.converge(
 	R.unapply(R.pipe(
 		R.flatten,
-		R.join('\n')
+		R.join('\n\n')
 	)), [
 		R.pipe(
 			R.prop('username'),
