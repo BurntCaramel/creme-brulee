@@ -8,9 +8,10 @@ function renderStyles(darkMode) {
 	const baseFontSize = 18
 	const baseLineHeight = 1.333333333
 	const fontFamilyStack = 'system, "-apple-system", "-webkit-system-font", BlinkMacSystemFont, "Helvetica Neue", "Helvetica", "Segoe UI", "Roboto", "Arial", "freesans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
-	const backgroundColor = darkMode ? '#1b1b1b' : '#fcfcfc'
+	const backgroundColor = darkMode ? '#1b1b1b' : '#fbfbfb'
 	const color = darkMode ? '#fafafa' : '#0a0a0a'
-	const linkColor = '#119af4'
+	//const linkColor = '#3999e7'
+	const linkColor = '#eb1a4e'
 	//const baselineGridRule = 'background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 1.29rem, red 1.29em, red 1.333333333rem);' 
 	const baselineGridRule = ''
 
@@ -44,6 +45,13 @@ function renderStyles(darkMode) {
 
 	a {
 		color: ${linkColor};
+		text-decoration: none;
+	}
+	a:only-child {
+		display: inline-block;
+		padding: ${baseLineHeight * 0.5}rem 0.875em;
+		background-color: ${linkColor};
+		color: white;
 	}
 
 	h1, h2, h3, p, ul, ol, pre {
