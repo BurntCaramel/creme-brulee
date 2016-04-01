@@ -17,14 +17,6 @@ const renderObjectItem = (key, value) => [
 	ddAttrs({ key: `value-${key}`}, renderJSON(value))
 ]
 
-const renderObjectKey = (key, value) => (
-	dtAttrs({ key: `key-${key}` }, key)
-)
-
-const renderObjectValue = (key, value) => (
-	ddAttrs({ key: `value-${key}`}, renderJSON(value))
-)
-
 const renderArrayItem = (value) => li(
 	renderJSON(value)
 )
@@ -62,8 +54,7 @@ const renderJSONError = (error) => createElement('h2', null, 'JSON is invalid ' 
 const renderRawJSON = R.tryCatch(
 	R.pipe(
 		JSON.parse,
-		renderJSON,
-		R.tap(output => console.log(output))
+		renderJSON
 	),
 	renderJSONError
 )
