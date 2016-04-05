@@ -8,8 +8,8 @@ const themes = {
 		backgroundColor: '#fbfbfb'
 	},
 	crimson: {
-		color: '#fff',
-		backgroundColor: '#b50425'
+		color: '#f8fff7',
+		backgroundColor: '#730948'
 	},
 	bluePrint: {
 		color: '#fff',
@@ -31,6 +31,39 @@ const themes = {
 	dark: {
 		color: '#f6f6f6',
 		backgroundColor: '#090909',
+	},
+	navyWhite: {
+		color: '#3c5988',
+		backgroundColor: '#eee'
+	},
+	ocean: {
+		color: '#f8fff7',
+		backgroundColor: '#286873',
+		linkColor: '#ebd91c'
+	},
+	mandarin: {
+		color: '#e97e09',
+		backgroundColor: '#eee8ce'
+	},
+	electricLime: {
+		color: '#286873',
+		backgroundColor: '#b9ee05'
+	},
+	purple: {
+		color: '#f8fff7',
+		backgroundColor: '#3a0273'
+	},
+	purpleWhite: {
+		color: '#f7f0f8',
+		backgroundColor: '#3a0273'
+	},
+	gardenWhite: {
+		color: '#027362',
+		backgroundColor: '#eef8f8'
+	},
+	redWhite: {
+		color: '#a51303',
+		backgroundColor: '#fefafb'
 	}
 }
 
