@@ -1,6 +1,7 @@
 const R = require('ramda')
 const isObject = require('lodash/isObject')
 const isNumber = require('lodash/isNumber')
+const isBoolean = require('lodash/isBoolean')
 const createElement = require('react').createElement
 const renderToStaticMarkup = require('react-dom/server').renderToStaticMarkup
 
@@ -10,6 +11,7 @@ const dtAttrs = R.partial(createElement, ['dt'])
 const ddAttrs = R.partial(createElement, ['dd'])
 const ol = R.partial(createElement, ['ol', null])
 const code = R.partial(createElement, ['code', null])
+const em = R.partial(createElement, ['em', null])
 const p = R.partial(createElement, ['p', null])
 
 const renderObjectItem = (key, value) => [
@@ -40,12 +42,19 @@ const renderNumber = R.pipe(
 	p
 )
 
+const renderBoolean = R.pipe(
+	(boolean) => boolean ? 'yes' : 'no',
+	em,
+	p
+)
+
 const renderString = p
 
 const renderJSON = R.cond([
 	[Array.isArray, renderArray],
 	[isObject, renderObject],
 	[isNumber, renderNumber],
+	[isBoolean, renderBoolean],
 	[R.T, renderString]
 ])
 
