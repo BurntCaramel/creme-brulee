@@ -53,7 +53,7 @@ body {
 }
 
 ${base} * {
-	width: ${measure}rem;
+	max-width: ${measure}rem;
 	margin: auto;
 	padding: 0;
 }
