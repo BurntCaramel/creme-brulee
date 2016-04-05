@@ -21,7 +21,7 @@ function renderStyles(themeID) {
 	const base = 'article'
 	
 	const cssProp = (key, value) => `${key}: ${value};`
-	const withPrefixes = (key, value, prefixes) => prefixes.map(prefix => cssProp(`${prefix}${key}`, value)).join(' ')
+	const withPrefixes = (key, value, prefixes) => prefixes.concat('').map(prefix => cssProp(`${prefix}${key}`, value)).join(' ')
 
 	function typeBaselineGrid(fontSize, lineHeightFactor) {
 		const lineHeight = baseLineHeight * lineHeightFactor;
