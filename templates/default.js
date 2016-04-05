@@ -1,26 +1,27 @@
 const R = require('ramda')
 const escape = require('lodash/escape')
 
-function renderStyles(darkMode) { 
-	const lightColor = '#fcfcfc'
-	const darkColor = '#0a0a0a'
+const themes = require('./themes')
 
+function renderStyles(themeID) {
+	const theme = themes[R.defaultTo('light', themeID)]
+	 
 	const measure = 30
 	const baseFontSize = 18
 	const baseLineHeight = 1.333333333
 	const fontFamilyStack = 'system, "-apple-system", "-webkit-system-font", BlinkMacSystemFont, "Helvetica Neue", "Helvetica", "Segoe UI", "Roboto", "Arial", "freesans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
-	const backgroundColor = darkMode ? '#1b1b1b' : '#fbfbfb'
-	const color = darkMode ? '#fafafa' : '#0a0a0a'
+	const backgroundColor = theme.backgroundColor
+	const color = theme.color
 	//const linkColor = '#3999e7'
 	const linkColor = '#eb1a4e'
+	const preBackgroundColor = theme.backgroundColor
 	//const baselineGridRule = 'background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 1.29rem, red 1.29em, red 1.333333333rem);' 
 	const baselineGridRule = ''
 	
 	const base = 'article'
-	const selectors = {
-		bodyButton: 'p > a:only-child',
-		navButton: 'nav > a'
-	}
+	
+	const cssProp = (key, value) => `${key}: ${value};`
+	const withPrefixes = (key, value, prefixes) => prefixes.map(prefix => cssProp(`${prefix}${key}`, value)).join(' ')
 
 	function typeBaselineGrid(fontSize, lineHeightFactor) {
 		const lineHeight = baseLineHeight * lineHeightFactor;
@@ -47,22 +48,13 @@ body {
 	padding: ${baseLineHeight}rem 1.7em;
 	line-height: ${baseLineHeight}rem;
 	font-family: ${fontFamilyStack};
+	${ withPrefixes('hypens', 'auto', ['-webkit-', '-ms-']) }
 	${baselineGridRule}
 }
 
-a {
-	color: ${linkColor};
-	text-decoration: none;
-}
-${selectors.navButton} {
-	display: inline-block;
-	padding: ${baseLineHeight * 0.5}rem 0.875em;
-	background-color: ${linkColor};
-	color: white;
-}
-
-p, ul, ol, dl, pre {
-	margin: 0;
+${base} * {
+	width: ${measure}rem;
+	margin: auto;
 	padding: 0;
 }
 
@@ -70,11 +62,16 @@ ${base} > * {
 	${ typeBaselineGrid(1, 1) }
 }
 
-${base} > *,
-${base} dt,
-${base} dd > * {
-	width: ${measure}rem;
-	margin: 0 auto;
+${base} a {
+	color: ${linkColor};
+	text-decoration: none;
+}
+${base} nav a {
+	display: inline-block;
+	width: auto;
+	padding: ${baseLineHeight * 0.5}rem 0.875em;
+	background-color: ${linkColor};
+	color: white;
 }
 
 ${base} h1,
@@ -89,15 +86,8 @@ ${base} hr {
 	margin-bottom: ${baseLineHeight}rem;
 }
 
-${base} dl,
-${base} dd > ${base},
-${base} figure {
-	width: auto;
-}
-
 ${base} h1 {
 	${ typeBaselineGrid(2, 2) }
-	text-align: center;
 	font-weight: bold;
 }
 
@@ -106,7 +96,9 @@ ${base} h2 {
 	font-weight: bold;
 }
 
-${base} h3 {
+${base} h3,
+${base} nav dt {
+	text-transform: uppercase;
 	font-weight: bold;
 }
 
@@ -114,7 +106,15 @@ ${base} pre {
 	overflow: auto;
 	width: calc(50% + (${measure}rem / 2));
 	margin-left: calc((100% - ${measure}rem) / 2);
-	background-color: #fafafa;
+	background-color: ${preBackgroundColor};
+}
+
+${base} ${base},
+${base} dl,
+${base} dd,
+${base} figure {
+	margin: auto;
+	width: auto;
 }
 
 ${base} dt {
@@ -123,6 +123,12 @@ ${base} dt {
 }
 ${base} dd {
 	margin-left: 1em;
+	margin-right: 0;
+}
+
+h1,
+h1 + h2 {
+	text-align: center;
 }
 
 figure {
@@ -178,7 +184,7 @@ module.exports = props => (`<!doctype html>
 ${ renderMetas({
 	'original-source': props.originalSourceURL
 }) }
-<style>${ renderStyles(props.darkMode) }</style>
+<style>${ renderStyles(props.theme) }</style>
 ${ renderElements(props.headElements) }
 </head>
 <body>
