@@ -31,17 +31,13 @@ const pickPageOptions = R.pipe(
 				R.objOf('path')
 			),
 			R.prop('query'),
-			R.pipe(
-				R.pathSatisfies(Boolean, ['query', 'darkMode']),
-				R.objOf('darkMode')
-			),
 		]
 	),
 	R.mergeWith(
 		R.defaultTo, // Don’t allow undefined values, e.g. for 'path'
-		{ path: 'README', format: 'md', darkMode: false }
+		{ path: 'README', format: 'md', theme: 'light' }
 	),
-	R.pick(['path', 'format', 'darkMode'])
+	R.pick(['path', 'format', 'theme'])
 )
 
 const pickImgixOptions = R.pipe( 
@@ -100,7 +96,7 @@ function renderPage(projectOptions, pageOptions, imgixOptions) {
 		R.merge({
 			title,
 			originSourceURL: url,
-			darkMode: pageOptions.darkMode,
+			theme: pageOptions.theme,
 			bodyLastElements,
 		})
 	))
