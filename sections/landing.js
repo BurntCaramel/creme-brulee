@@ -1,7 +1,7 @@
 const R = require('ramda')
+const escape = require('lodash/escape')
 
-const rendererForFormat = require('../formats').rendererForFormat
-const renderMarkdownToHTML = rendererForFormat('md', {})
+const renderMarkdown = require('../utils/renderMarkdown')
 
 const memberfulScript =
 `<script type="text/javascript">
@@ -25,58 +25,90 @@ const memberfulScript =
 const title = 'Royal Icing'
 
 //const tagLine = `# Boldly simple webpages for your content`
-const tagLine = `# Fast, simple web pages for your content`
-const secondary = `## Royal Icing lets you handle text and images with aplomb`
+//const tagLine = `# Boldy simple web pages that let you communicate`
+//const tagLine = `# For boldy simple communication`
+//const tagLine = `# Fearlessly simple web pages`
+const tagLine = `# For communicators who just want something simple`
+const secondary = `## Create speedy and elegant websites`
 
 const pitch = `
+Royal Icing is great for:
 
-- Simple web pages
+- Boldy simple web pages
 - Photo galleries
 - Editable press releases
 - FAQs
 
-Royal Icing takes care of web best practices for you
-and your audience:
+Royal Icing takes care of web best practices for you:
+
 - Fast to load, even over a cellular connection.
-- Resizes and optimizes images automatically.
-- Responsive design from phone to desktop.
+- Resizes and optimizes images for your users’ devices automatically.
+- Responsive design with legible typography from phone to desktop.
+
+## See what’s possible:
+
+- [Product website](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Lantern?format=icing&darkMode=1)
+- [Photo gallery](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Photography?format=icing&darkMode=1)
 `
 
 const signIn = `[Sign In](https://burntcaramel.memberful.com/account)`
 
-const plans = `
-## Starter plan
+const plans = [
+	{
+		title: 'Get Started',
+		body: `
+1 custom domain, automatically optimized images, Markdown
 
-1 custom domain · optimized images · Markdown
+30 day free trial, then $6 / month
 
-### 30 day free trial, then $8 / month
- 
-[Purchase the Starter plan](https://burntcaramel.memberful.com/checkout?plan=11870)
+[Start using Royal Icing now](https://burntcaramel.memberful.com/checkout?plan=11870)
+`
+	},
+	{
+		title: 'Existing Customers',
+		body: `
+
+${ signIn }
+`
+	},
+]
+
+const renderPlan = (plan) => `
+<dt>
+${ escape(plan.title) }
+</dt>
+<dd>
+<article>
+${ renderMarkdown(plan.body) }
+</article>
+</dd>
 `
 
-const renderHomePageMarkdown = () => [
-		tagLine,
-		secondary,
-		pitch,
-		plans,
-		signIn
-	].join('\n')
+const renderMapping = (render, values) => R.into('', R.map(render), values)
 
-const renderHomePage = R.pipe(
-	renderHomePageMarkdown,
-	renderMarkdownToHTML,
-	R.merge({
-		title,
-		headElements: [
-			memberfulScript
-		],
-		//darkMode: true,
-	})
-)
+const homePageHTML = `
+${ renderMapping(renderMarkdown, [
+	tagLine,
+	secondary,
+	pitch,
+]) }
+<nav>
+<dl>
+${ renderMapping(renderPlan, plans) }
+</dl>
+</nav>
+`
 
 
 function renderHomePageRequest(req) {
-	return renderHomePage()
+	return {
+		title,
+		innerHTML: homePageHTML,
+		headElements: [
+			memberfulScript
+		],
+		theme: 'bluePrint',
+	}
 }
 
 
