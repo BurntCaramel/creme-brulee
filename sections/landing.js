@@ -29,7 +29,7 @@ const title = 'Royal Icing'
 //const tagLine = `# For boldy simple communication`
 //const tagLine = `# Fearlessly simple web pages`
 const tagLine = `# For communicators who just want something simple`
-const secondary = `## Create speedy and elegant websites`
+const secondary = `## Create fast, elegant websites`
 
 const pitch = `
 Royal Icing is great for:
@@ -47,8 +47,8 @@ Royal Icing takes care of web best practices for you:
 
 ## See what’s possible:
 
-- [Product website](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Lantern?format=icing&darkMode=1)
-- [Photo gallery](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Photography?format=icing&darkMode=1)
+- [Product website](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Lantern?format=icing&theme=dark)
+- [Photo gallery](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Photography?format=icing&theme=dark)
 `
 
 const signIn = `[Sign In](https://burntcaramel.memberful.com/account)`
