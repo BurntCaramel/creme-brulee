@@ -13,6 +13,17 @@ const imgix = new Imgix({
   secureURLToken: process.env.IMGIX_TOKEN
 })
 
+const optionsPicker = (fns, defaults, picks) => R.pipe( 
+	R.converge(
+		R.unapply(R.mergeAll), fns
+	),
+	R.mergeWith(
+		R.defaultTo, // Don’t allow undefined values
+		defaults
+	),
+	R.pick(picks)
+)
+
 const pickProjectOptions = R.pipe(
 	R.props(['query', 'params']),
 	R.mergeAll,
@@ -39,6 +50,14 @@ const pickPageOptions = R.pipe(
 	),
 	R.pick(['path', 'format', 'theme'])
 )
+
+const pickDisplayOptions = optionsPicker([
+	R.prop('query'),
+], {
+	theme: 'light'
+}, [
+	'theme'
+])
 
 const pickImgixOptions = R.pipe( 
 	R.converge(
@@ -80,7 +99,7 @@ document.addEventListener('click', function(event) {
 </script>`
 ]
 
-function renderPage(projectOptions, pageOptions, imgixOptions) {
+function renderPage(projectOptions, pageOptions, displayOptions, imgixOptions) {
 	console.log('projectOptions', projectOptions, 'pageOptions', pageOptions)
 	
 	const title = (pageOptions.path === 'README') ? projectOptions.project : titleFromPath(pageOptions.path)
@@ -96,9 +115,9 @@ function renderPage(projectOptions, pageOptions, imgixOptions) {
 		R.merge({
 			title,
 			originSourceURL: url,
-			theme: pageOptions.theme,
 			bodyLastElements,
-		})
+		}),
+		R.merge(displayOptions)
 	))
 }
 
@@ -106,7 +125,8 @@ const renderPageRequest = R.converge(
 	renderPage, [
 		pickProjectOptions,
 		pickPageOptions,
-		pickImgixOptions
+		pickDisplayOptions,
+		pickImgixOptions,
 	]
 )
 
@@ -137,7 +157,7 @@ const renderProfileMarkdown = R.converge(
 
 const renderMarkdownToHTML = rendererForFormat('md', {})
 
-function renderUserRepos(userOptions) {
+function renderUserRepos(userOptions, displayOptions) {
 	const username = userOptions.username;
 	
 	return fetchValidJSON(`https://api.github.com/users/${username}/repos`)
@@ -146,7 +166,8 @@ function renderUserRepos(userOptions) {
 			renderMarkdownToHTML,
 			R.merge({
 				title: username,
-			})
+			}),
+			R.merge(displayOptions)
 		))
 }
 
@@ -157,7 +178,8 @@ const pickUserOptions = R.pipe(
 
 const renderUserReposRequest = R.converge(
 	renderUserRepos, [
-		pickUserOptions
+		pickUserOptions,
+		pickDisplayOptions,
 	]
 )
 

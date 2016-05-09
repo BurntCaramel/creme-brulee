@@ -28,15 +28,18 @@ const title = 'Royal Icing'
 //const tagLine = `# Boldy simple web pages that let you communicate`
 //const tagLine = `# For boldy simple communication`
 //const tagLine = `# Fearlessly simple web pages`
-const tagLine = `# For communicators who just want something simple`
-const secondary = `## Create fast, elegant websites`
+//const tagLine = `# For communicators who just want something simple`
+//const secondary = `## Create fast, elegant websites`
+
+const tagLine = `# A catalog of your content`
+const secondary = `## Reuse and share text & data.`
 
 const pitch = `
 Royal Icing is great for:
 
-- Boldy simple web pages
+- Simple web pages
 - Photo galleries
-- Editable press releases
+- Hosted press releases
 - FAQs
 
 Royal Icing takes care of web best practices for you:
@@ -92,12 +95,15 @@ ${ renderMapping(renderMarkdown, [
 	secondary,
 	pitch,
 ]) }
+`
+/*
 <nav>
 <dl>
 ${ renderMapping(renderPlan, plans) }
 </dl>
 </nav>
 `
+*/
 
 
 function renderHomePageRequest(req) {
@@ -107,7 +113,7 @@ function renderHomePageRequest(req) {
 		headElements: [
 			memberfulScript
 		],
-		theme: 'bluePrint',
+		theme: 'gardenWhite',
 	}
 }
 
