@@ -6,6 +6,14 @@ const itemPath = '/1/@{account}/{sha256}'
 
 module.exports = [
 	{
+		// Whether version 1 of the API is available
+		method: 'GET',
+		path: '/1',
+		handler(request, reply) {
+			reply({ available: true })
+		}
+	},
+	{
 		method: 'GET',
 		path: itemPath,
 		config: {
