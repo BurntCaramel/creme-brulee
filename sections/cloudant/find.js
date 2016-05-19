@@ -4,7 +4,6 @@ const { PassThrough } = require('stream')
 const { databases } = require('./init')
 const { idForAccountAndHash } = require('./id')
 const nodePromise = require('../../utils/nodePromise')
-const notFoundIfEmpty = require('../../utils/notFoundIfEmpty') 
 
 const findItem = R.pipeP(
 	({ account, sha256 }) => {
@@ -49,14 +48,20 @@ const findItemContent = R.pipeP(
 			R.has('contentIsAttached'),
 			R.pipe(
 				R.prop('_id'),
-				(id) => {
-					const stream = new PassThrough()
-					// Must pipe, as this is a http.ClientRequest,
-					// not the readable http.IncomingMessage stream
-					databases.items.attachment.get(id, 'content').pipe(stream)
-					
-					return stream
-				}
+				(id) => R.ifElse(
+					R.propEq('stream', true),
+					() => {
+						const stream = new PassThrough()
+						// Must pipe, as this is a http.ClientRequest,
+						// not the readable http.IncomingMessage stream
+						databases.items.attachment.get(id, 'content').pipe(stream)
+						
+						return stream
+					},
+					() => nodePromise((callback) => {
+						databases.items.attachment.get(id, 'content', callback)
+					})
+				)
 			)
 		],
 		[
@@ -66,7 +71,18 @@ const findItemContent = R.pipeP(
 	])
 )
 
+const promiseStreamOfItemContent = R.pipeP(
+	findItemContent,
+	(load) => load({ stream: true })
+)
+
+const promiseItemContent = R.pipeP(
+	findItemContent,
+	(load) => load({ stream: false })
+)
+
 module.exports = {
 	findItemInfo,
-	findItemContent
+	promiseStreamOfItemContent,
+	promiseItemContent
 }

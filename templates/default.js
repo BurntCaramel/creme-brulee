@@ -175,7 +175,7 @@ const renderElements = R.pipe(
     R.join('\n')
 )
 
-module.exports = props => (`<!doctype html>
+module.exports = (props) => (`<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">

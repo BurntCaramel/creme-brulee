@@ -1,4 +1,4 @@
-const { findItemInfo, findItemContent } = require('../sections/cloudant/find')
+const { findItemInfo, promiseStreamOfItemContent } = require('../sections/cloudant/find')
 const { publishItem } = require('../sections/cloudant/publish')
 const { deleteItem } = require('../sections/cloudant/delete')
 
@@ -9,6 +9,7 @@ module.exports = [
 		// Whether version 1 of the API is available
 		method: 'GET',
 		path: '/1',
+		//config: { auth: 'token' },
 		handler(request, reply) {
 			reply({ available: true })
 		}
@@ -19,17 +20,17 @@ module.exports = [
 		config: {
 			cache: {
 				privacy: 'public',
-				expiresIn: 30 * 24 * 60 * 60 * 1000, 
+				expiresIn: /* 30 days */ 30 * 24 * 60 * 60 * 1000, 
 			}
 		},
 		handler(request, reply) {
-			// Can promise a stream, so unwrap promise
-			findItemContent(request.params).then(
-				(result) => (
+			// Unwrap promise to the underlying stream
+			promiseStreamOfItemContent(request.params).then(
+				(stream) => {
 					reply(result)
 						.type(request.headers['accept'])
 						//.etag(request.params.sha256)
-				),
+				},
 				(error) => reply(error)
 			)
 		}

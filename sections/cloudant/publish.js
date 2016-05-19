@@ -5,7 +5,6 @@ const Boom = require('boom')
 const { databases } = require('./init')
 const { idForAccountAndHash } = require('./id')
 const nodePromise = require('../../utils/nodePromise')
-const notFoundIfEmpty = require('../../utils/notFoundIfEmpty')
 
 
 function uploadAttachment({ account, sha256, contentStream, rev }) {

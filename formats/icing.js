@@ -51,6 +51,7 @@ const renderBlock_options = (options) => (block) => {
 	
 	if (typeGroup === 'media' && type === 'externalImage') {
 		const imageURL = value.get('url')
+		console.log('Icing image URL', imageURL)
 		const isAbsolute = urlIsAbsolute(imageURL)
 		
 		if (!isAbsolute) {

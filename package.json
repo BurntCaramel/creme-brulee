@@ -29,6 +29,7 @@
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "hapi": "^13.3.0",
+    "hapi-auth-jwt": "^4.0.0",
     "icing-display": "0.1.0-a8",
     "icing-spec-burnt": "^0.1.1-a1",
     "imgix-core-js": "^1.0.3",

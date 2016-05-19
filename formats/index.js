@@ -1,10 +1,11 @@
 const R = require('ramda')
 
 const formatToRenderers = {
+	plain: require('./plain'),
 	md: require('./md'),
 	icing: require('./icing'),
 	json: require('./json'),
-	plain: require('./plain'),
+	svg: require('./svg'),
 };
 
 const rendererForFormat = (format, rendererOptions) => (
