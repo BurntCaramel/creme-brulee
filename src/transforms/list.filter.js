@@ -1,5 +1,5 @@
 const R = require('ramda')
 
-const filter = ({ where, applyTransforms }) => R.filter(applyTransforms([].concat(where)))
+const filter = ({ where, applyTransforms }) => R.filter(applyTransforms(where))
 
 module.exports = filter

@@ -40,7 +40,7 @@ const transformWithID = R.converge(throwWhenNil, [
 
 const baseOptions = {}
 
-const performTransform = R.converge(R.call, [
+const performRawTransform = R.converge(R.call, [
 	R.pipe(
 		R.prop('type'),
 		transformWithID
@@ -48,18 +48,17 @@ const performTransform = R.converge(R.call, [
 	(options) => R.merge(baseOptions, options)
 ])
 
-const applyTransforms = R.flip(R.reduce(
+const applyTransforms = R.curry((transforms, input) => R.reduce(
 	(acc, transform) => {
 		const actualType = typeOf(acc)
 		const expectedType = transform.type.split('.')[0]
-		console.log('actualType', actualType, 'expectedType', expectedType)
 		const caller = typeHandler(actualType, expectedType)
-		//return caller(transformWithID(transform.type)(transform), acc)
-		return caller(performTransform(transform), acc)
-	}
+		return caller(performRawTransform(transform), acc)
+	},
+	input,
+	[].concat(transforms)
 ))
 
-baseOptions.performTransform = performTransform
 baseOptions.applyTransforms = applyTransforms
 
 transforms.applyTransforms = applyTransforms
