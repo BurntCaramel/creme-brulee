@@ -24,12 +24,15 @@ const typeHandler = (actual, expected) => (
 
 const transforms = {
 	'object.mapKeys': require('./object.mapKeys'),
-	'object.mapValues': require('./object.mapValues'),
+	'object.mapValues': require('./mapValues'),
 	'object.propertySatisfies': require('./object.propertySatisfies'),
 	'list.first': require('./list.first'),
 	'list.filter': require('./list.filter'),
+	'list.map': require('./mapValues'),
+	'list.reverse': () => R.reverse,
 	'text.uppercase': () => R.toUpper,
 	'text.lowercase': () => R.toLower,
+	'text.reverse': () => R.reverse,
 	'text.beginsWith': require('./text.beginsWith')
 }
 
