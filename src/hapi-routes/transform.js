@@ -60,7 +60,7 @@ module.exports = [
 							)*/
 						),
 						title: request.params.sha256,
-						//theme: 'gardenWhite',
+						theme: 'gardenWhite',
 					})
 				)
 				.then(defaultTemplate)

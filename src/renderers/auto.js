@@ -30,9 +30,9 @@ const convertObjectToReact = R.converge((type, props, children) => (
 	)
 ])
 
-const autoFormat = R.ifElse(
+const autoFormat = (options) => R.ifElse(
 	R.is(String),
-	plainRenderer({}),
+	plainRenderer(options),
 	R.ifElse(
 		R.anyPass([R.is(Array), R.is(Object)]),
 		R.cond([
@@ -44,13 +44,14 @@ const autoFormat = R.ifElse(
 					convertObjectToReact,
 					R.tap(output => console.log('react element', output)),
 					renderToStaticMarkup,
-					R.objOf('innerHTML')
+					R.objOf('innerHTML'),
+					R.merge(options)
 				)
 			],
-			[ R.T, jsonRenderer({ isDeserialized: true }) ]
+			[ R.T, jsonRenderer(R.merge(options, { isDeserialized: true })) ]
 		]),
-		plainRenderer({}) 
+		plainRenderer(options) 
 	)
 ) 
 
-module.exports = (options) => autoFormat
+module.exports = autoFormat
