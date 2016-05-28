@@ -2,7 +2,7 @@ const R = require('ramda')
 const URL = require('url')
 const { promiseItemContent, promiseStreamOfItemContent } = require('../sections/cloudant/find')
 const { findInIndexNamed } = require('../sections/cloudant/findInIndex')
-const rendererForFormat = require('../formats').rendererForFormat
+const { rendererForFormat } = require('../renderers')
 const defaultTemplate = require('../templates/default')
 const imgix = require('../sections/imgix')
 

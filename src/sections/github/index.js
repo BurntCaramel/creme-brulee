@@ -1,10 +1,8 @@
 const R = require('ramda')
 const Imgix = require('imgix-core-js')
 
-const rendererForFormat = require('../../formats').rendererForFormat
-const fetchUtils = require('../../utils/fetch')
-const fetchValidJSON = fetchUtils.fetchValidJSON
-const fetchValidText = fetchUtils.fetchValidText
+const { rendererForFormat } = require('../../renderers')
+const { fetchValidJSON, fetchValidText } = require('../../utils/fetch')
 const routeRendering = require('../../utils/routeRendering')
 
 const imgix = new Imgix({

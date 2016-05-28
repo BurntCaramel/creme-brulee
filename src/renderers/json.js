@@ -2,8 +2,8 @@ const R = require('ramda')
 const isObject = require('lodash/isObject')
 const isNumber = require('lodash/isNumber')
 const isBoolean = require('lodash/isBoolean')
-const createElement = require('react').createElement
-const renderToStaticMarkup = require('react-dom/server').renderToStaticMarkup
+const { createElement } = require('react')
+const { renderToStaticMarkup } = require('react-dom/server')
 
 const li = R.partial(createElement, ['li', null])
 const dl = R.partial(createElement, ['dl', null])
@@ -60,7 +60,7 @@ const renderJSON = R.cond([
 
 const renderJSONError = (error) => createElement('h2', null, 'JSON is invalid ' + error)
 
-const renderRawJSON = R.tryCatch(
+const renderSerializedJSON = R.tryCatch(
 	R.pipe(
 		JSON.parse,
 		renderJSON
@@ -68,11 +68,20 @@ const renderRawJSON = R.tryCatch(
 	renderJSONError
 )
 
-const JSONFormatter = R.pipe(
-	R.prop('json'),
-	renderRawJSON
-)
+const JSONComponent = R.converge(R.call, [
+	R.ifElse(
+		R.prop('isDeserialized'),
+		R.always(renderJSON),
+		R.always(renderSerializedJSON)
+	),
+	R.prop('json')
+])
 
-module.exports = options => input => ({
-    innerHTML: renderToStaticMarkup(createElement(JSONFormatter, { json: input }))
+module.exports = ({ isDeserialized = false }) => (input) => ({
+    innerHTML: renderToStaticMarkup(
+			createElement(
+				JSONComponent,
+				{ json: input, isDeserialized }
+			)
+		)
 })

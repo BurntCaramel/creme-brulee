@@ -1,1 +1,2 @@
-- Santise account names (only azAZ-_)
+- Rename account to organization
+- Refactor 'formats' into 'renderers' and 'conformers'

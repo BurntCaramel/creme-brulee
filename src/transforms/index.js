@@ -11,7 +11,7 @@ const typeOf = R.cond([
 const typeHandlerTable = {
 	list: {
 		object: R.map,
-		string: R.map
+		text: R.map
 	},
 	object: {
 		list: (object) => R.call(R.__, [object])
@@ -25,15 +25,20 @@ const typeHandler = (actual, expected) => (
 const transforms = {
 	'object.mapKeys': require('./object.mapKeys'),
 	'object.mapValues': require('./mapValues'),
+	'object.listValues': require('./object.listValues'),
+	//'object.pick': require('./object.pick'),
 	'object.propertySatisfies': require('./object.propertySatisfies'),
 	'list.first': require('./list.first'),
 	'list.filter': require('./list.filter'),
 	'list.map': require('./mapValues'),
+	'list.join': require('./list.join'),
 	'list.reverse': () => R.reverse,
 	'text.uppercase': () => R.toUpper,
 	'text.lowercase': () => R.toLower,
 	'text.reverse': () => R.reverse,
-	'text.beginsWith': require('./text.beginsWith')
+	'text.beginsWith': require('./text.beginsWith'),
+	
+	'list.toTable.web': require('./list.toTable.web')
 }
 
 const transformWithID = R.converge(throwWhenNil, [
@@ -55,7 +60,18 @@ const applyTransforms = R.curry((transforms, input) => R.reduce(
 	(acc, transform) => {
 		const actualType = typeOf(acc)
 		const expectedType = transform.type.split('.')[0]
-		const caller = typeHandler(actualType, expectedType)
+		let caller = typeHandler(actualType, expectedType)
+		
+		if (actualType === 'list' && expectedType === 'list') {
+			const level = R.propOr(0, 'list.atLevel', transform)
+			if (level > 0) {
+				// Drill down into nested lists, to apply the transform there
+				caller = caller(
+					R.apply(R.pipe, R.repeat(R.map, level))
+				)
+			}
+		}
+		
 		return caller(performRawTransform(transform), acc)
 	},
 	input,

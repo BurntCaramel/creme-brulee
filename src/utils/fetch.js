@@ -1,13 +1,12 @@
 const fetch = require('node-fetch')
 const R = require('ramda')
-
-const createError = require('./createError')
+const Boom = require('boom')
 
 const ensureValidStatus = R.tap((apiRes) => {
 	const status = apiRes.status 
 		
 	if (status !== 200) {
-		throw createError(apiRes.statusText, { status })
+		throw Boom.create(status)
 	}
 })
 

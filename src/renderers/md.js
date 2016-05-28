@@ -9,6 +9,6 @@ module.exports = (options) => R.tryCatch(
 	}),
 	(error) => {
 		console.log('caught', error)
-		throw Boom.methodNotAllowed('Item is not valid Markdown')
+		throw Boom.notAcceptable('Item is not valid Markdown')
 	}
 )
