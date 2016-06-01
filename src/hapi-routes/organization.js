@@ -13,12 +13,12 @@ module.exports = [
 		config: {
 			auth: 'token',
 			validate: {
-				params: Joi.object(pickValidations([
+				params: pickValidations([
 					'organizationName'
-				])),
-				payload: Joi.object(pickValidations([
+				]),
+				payload: pickValidations([
 					'ownerEmail'
-				]))
+				])
 			}
 		},
 		handler(request, reply) {

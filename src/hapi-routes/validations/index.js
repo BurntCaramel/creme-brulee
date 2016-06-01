@@ -1,9 +1,14 @@
 const Joi = require('joi')
 
-const email = Joi.string().email().required()
+const stringRequired = Joi.string().required() 
+const emailRequired = Joi.string().email().required()
 
 module.exports = {
 	organizationName: Joi.string().token().required(),
-	email,
-	ownerEmail: email
+	email: emailRequired,
+	ownerEmail: emailRequired,
+	transforms: Joi.array().items(Joi.object({
+		type: emailRequired
+	}).unknown()).single(),
+	code: stringRequired
 }
