@@ -1,11 +1,19 @@
 const R = require('ramda')
 const Boom = require('boom')
 const { passwordlessStart, passwordlessVerify } = require('../sections/auth0/signIn')
+const pickValidations = require('./validations/pick')
 
 module.exports = [
 	{
 		method: 'POST',
 		path: '/1/auth/start',
+		config: {
+			validate: {
+				payload: pickValidations([
+					'email'
+				])
+			}
+		},
 		handler(request, reply) {
 			reply(
 				passwordlessStart(
@@ -17,6 +25,14 @@ module.exports = [
 	{
 		method: 'POST',
 		path: '/1/auth/verify',
+		config: {
+			validate: {
+				payload: pickValidations([
+					'email',
+					'code'
+				])
+			}
+		},
 		handler(request, reply) {
 			reply(
 				passwordlessVerify(
