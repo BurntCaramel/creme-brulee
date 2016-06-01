@@ -56,7 +56,7 @@ function uploadAttachment({ organization, sha256, contentStream, rev }) {
 				})
 			}
 		),
-		R.always({ success: true, wasNew: true })
+		R.always({ success: true, wasNew: true, sha256 })
 	))
 }
 
@@ -87,7 +87,7 @@ const publishItem = ({ organization, sha256, contentStream, force = false }) => 
 					))
 				}
 				else {
-					return Promise.resolve({ success: true, wasNew: false })
+					return Promise.resolve({ success: true, wasNew: false, sha256 })
 				}
 			}
 			else {
