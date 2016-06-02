@@ -1,6 +1,6 @@
 const R = require('ramda')
 
-const { promiseItemContent } = require('../../sections/cloudant/find')
+const { promiseItemContent } = require('../../services/cloudant/find')
 
 module.exports = (organizationID = 'account', sha256ID = 'sha256') => R.pipe(
 	R.prop('params'),

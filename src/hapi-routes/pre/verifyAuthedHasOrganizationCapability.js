@@ -1,6 +1,6 @@
 const R = require('ramda')
 const Boom = require('boom')
-const { findOrganizationNamed } = require('../../sections/cloudant/organization')
+const { findOrganizationNamed } = require('../../services/cloudant/organization')
 
 const verifyAuthedHasOrganizationCapability = (capability) => (request, reply) => {
 	const { organizationName } = request.params

@@ -1,6 +1,6 @@
 const R = require('ramda')
 const Boom = require('boom')
-const { passwordlessStart, passwordlessVerify } = require('../sections/auth0/signIn')
+const { passwordlessStart, passwordlessVerify } = require('../services/auth0/signIn')
 const pickValidations = require('./validations/pick')
 
 module.exports = [

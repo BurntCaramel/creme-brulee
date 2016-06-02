@@ -1,4 +1,4 @@
-const { findUserWithName } = require('../../sections/auth0/users')
+const { findUserWithName } = require('../../services/auth0/users')
 
 const defaultCreateError = (error) => Boom.notFound(`User with email ${email} not found`)
 

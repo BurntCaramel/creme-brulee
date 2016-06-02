@@ -1,5 +1,5 @@
-const { publishItem } = require('../sections/cloudant/publish')
-const { deleteItem } = require('../sections/cloudant/delete')
+const { publishItem } = require('../services/cloudant/publish')
+const { deleteItem } = require('../services/cloudant/delete')
 
 const itemPath = '/1/@{organization}/{sha256}'
 

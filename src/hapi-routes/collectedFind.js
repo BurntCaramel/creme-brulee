@@ -1,5 +1,5 @@
 const R = require('ramda')
-const { findInIndexNamed } = require('../sections/cloudant/findInIndex')
+const { findInIndexNamed } = require('../services/cloudant/findInIndex')
 
 const version = '1'
 

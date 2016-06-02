@@ -1,6 +1,6 @@
 const Express = require('express')
 
-const landing = require('../sections/landing')
+const landing = require('../services/landing')
 const routeRendering = require('../utils/routeRendering')
 
 const route = Express.Router()

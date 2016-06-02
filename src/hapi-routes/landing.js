@@ -1,4 +1,4 @@
-const landing = require('../sections/landing')
+const landing = require('../services/landing')
 const hapiTemplateHandler = require('../utils/hapiTemplateHandler')
 
 module.exports = [

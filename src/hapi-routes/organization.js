@@ -1,7 +1,7 @@
 const R = require('ramda')
 const Boom = require('boom')
 const Joi = require('joi')
-const { createOrganization, addUserToOrganization } = require('../sections/cloudant/organization')
+const { createOrganization, addUserToOrganization } = require('../services/cloudant/organization')
 const verifyAuthedHasOrganizationCapability = require('./pre/verifyAuthedHasOrganizationCapability')
 const verifyUserWithEmail = require('./pre/verifyUserWithEmail')
 const pickValidations = require('./validations/pick')

@@ -1,4 +1,4 @@
-const { findItemInfo, promiseStreamOfItemContent } = require('../sections/cloudant/find')
+const { findItemInfo, promiseStreamOfItemContent } = require('../services/cloudant/find')
 
 const itemPath = '/1/@{organization}/{sha256}'
 

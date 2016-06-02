@@ -1,4 +1,4 @@
-const { findOrganizationNamed } = require('../../sections/cloudant/organization')
+const { findOrganizationNamed } = require('../../services/cloudant/organization')
 
 function verifyOrganization(request, reply) {
 	const { organizationName } = request.params

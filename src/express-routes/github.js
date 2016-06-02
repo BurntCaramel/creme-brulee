@@ -1,6 +1,6 @@
 const Express = require('express')
 
-const github = require('../sections/github')
+const github = require('../services/github')
 const routeRendering = require('../utils/routeRendering')
 
 const route = Express.Router()
