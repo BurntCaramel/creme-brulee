@@ -8,7 +8,7 @@ module.exports = {
 	email: emailRequired,
 	ownerEmail: emailRequired,
 	transforms: Joi.array().items(Joi.object({
-		type: emailRequired
+		type: stringRequired
 	}).unknown()).single(),
 	code: stringRequired
 }
