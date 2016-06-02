@@ -1,5 +1,6 @@
 const Cloudant = require('cloudant')
 
+// FIXME: use Cloudant API key instead
 const cloudant = Cloudant({
 	account: process.env.CLOUDANT_ACCOUNT,
 	password: process.env.CLOUDANT_PASSWORD

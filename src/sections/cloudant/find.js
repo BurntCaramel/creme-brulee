@@ -2,13 +2,13 @@ const R = require('ramda')
 const Boom = require('boom')
 const { PassThrough } = require('stream')
 const { databases } = require('./init')
-const { idForAccountAndHash } = require('./id')
+const { idForOrganizationAndHash } = require('./id')
 const nodePromise = require('../../utils/nodePromise')
 
 const findItem = R.pipeP(
-	({ account, sha256 }) => {
+	({ organization, sha256 }) => {
 		return nodePromise((callback) => {
-			const id = idForAccountAndHash(account, sha256)
+			const id = idForOrganizationAndHash(organization, sha256)
 			databases.items.get(
 				id,
 				callback

@@ -7,6 +7,7 @@ module.exports = R.unnest([
 	require('./organization'),
 	require('./collected'),
 	require('./collectedFind'),
+	require('./collectedPublish'),
 	require('./preview'),
 	require('./transform')
 ])

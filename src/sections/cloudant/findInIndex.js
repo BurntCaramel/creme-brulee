@@ -3,7 +3,7 @@ const Boom = require('boom')
 const { promiseItemContent } = require('./find')
 const throwWhenNil = require('../../utils/throwWhenNil')
 
- const findInIndexNamed = R.converge((indexPromise, name, account) => (
+ const findInIndexNamed = R.converge((indexPromise, name, organization) => (
 	 indexPromise
 	.then(R.tryCatch(
 		JSON.parse,
@@ -16,12 +16,12 @@ const throwWhenNil = require('../../utils/throwWhenNil')
 		throwWhenNil(Boom.notFound(`Item with name '${name}' was not found in index`)),
 		R.prop('sha256'),
 		R.objOf('sha256'),
-		R.merge({ account })
+		R.merge({ organization })
 	))
  ), [
 	promiseItemContent,
 	R.prop('name'),
-	R.prop('account')
+	R.prop('organization')
 ])
 
 module.exports = {

@@ -1,5 +1,5 @@
-const idForAccountAndHash = (account, sha256) => `${account}/${sha256}`
+const idForOrganizationAndHash = (organization, sha256) => `${organization}/${sha256}`
 
 module.exports = {
-	idForAccountAndHash
+	idForOrganizationAndHash
 }
