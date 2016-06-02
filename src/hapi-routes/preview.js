@@ -12,23 +12,23 @@ module.exports = [
 	{
 		// Redirects to imgix URL
 		method: 'GET',
-		path: `/${version}/preview/image/@{account}/{sha256}`,
+		path: `/${version}/preview/image/@{organization}/{sha256}`,
 		handler(request, reply) {
-			const { account, sha256 } = request.params
-			//reply.redirect(`https://royalicing.imgix.net/${version}/@${account}/${sha256}`)
+			const { organization, sha256 } = request.params
+			//reply.redirect(`https://royalicing.imgix.net/${version}/@${organization}/${sha256}`)
 			reply.redirect(
-				imgix.buildURL(`/${version}/@${account}/${sha256}`)
+				imgix.buildURL(`/${version}/@${organization}/${sha256}`)
 			)
 		}
 	},
 	{
 		// Finds item in collected index, then redirects to its imgix URL
 		method: 'GET',
-		path: `/${version}/preview/image/find/@{account}/{sha256}/{name*}`,
+		path: `/${version}/preview/image/find/@{organization}/{sha256}/{name*}`,
 		handler(request, reply) {
 			findInIndexNamed(request.params)
 			.then(
-				({ account, sha256 }) => {
+				({ organization, sha256 }) => {
 					reply.redirect(
 						imgix.buildURL(`/${version}/@${account}/${sha256}`, request.query)
 					)
@@ -40,7 +40,7 @@ module.exports = [
 	{
 		// Used by Imgix to load the source image
 		method: 'GET',
-		path: `/-imgix/${version}/@{account}/{sha256}`,
+		path: `/-imgix/${version}/@{organization}/{sha256}`,
 		config: {
 			cache: {
 				privacy: 'public',
@@ -58,7 +58,7 @@ module.exports = [
 	{
 		// Used by Imgix to find the source image in an index
 		method: 'GET',
-		path: `/-imgix/${version}/find/@{account}/{sha256}/{name*}`,
+		path: `/-imgix/${version}/find/@{organization}/{sha256}/{name*}`,
 		config: {
 			cache: {
 				privacy: 'public',
@@ -68,8 +68,8 @@ module.exports = [
 		handler(request, reply) {
 			findInIndexNamed(request.params)
 			.then(
-				({ account, sha256 }) => {
-					reply.redirect(`/-imgix/${version}/@${account}/${sha256}`)
+				({ organization, sha256 }) => {
+					reply.redirect(`/-imgix/${version}/@${organization}/${sha256}`)
 				},
 				reply
 			)
@@ -77,7 +77,7 @@ module.exports = [
 	},
 	{
 		method: 'GET',
-		path: `/${version}/preview/{format}/@{account}/{sha256}`,
+		path: `/${version}/preview/{format}/@{organization}/{sha256}`,
 		config: {
 			cache: {
 				privacy: 'public',
@@ -90,11 +90,11 @@ module.exports = [
 				rendererForFormat(request.params.format, {
 					imgixURLForImagePath: (imagePath, options) => (
 						URL.format({
-							pathname: `/${version}/preview/image/find/@${request.params.account}/${request.query.index}/${imagePath}`,
+							pathname: `/${version}/preview/image/find/@${request.params.organization}/${request.query.index}/${imagePath}`,
 							query: options
 						})
 						/*imgix.buildURL(
-							`/${version}/find/@${request.params.account}/${request.query.index}/${imagePath}`,
+							`/${version}/find/@${request.params.organization}/${request.query.index}/${imagePath}`,
 							options
 						)*/
 					),
