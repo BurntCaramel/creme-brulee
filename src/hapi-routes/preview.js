@@ -30,7 +30,7 @@ module.exports = [
 			.then(
 				({ organization, sha256 }) => {
 					reply.redirect(
-						imgix.buildURL(`/${version}/@${account}/${sha256}`, request.query)
+						imgix.buildURL(`/${version}/@${organization}/${sha256}`, request.query)
 					)
 				},
 				reply
