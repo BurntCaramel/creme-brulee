@@ -77,5 +77,38 @@ module.exports = [
 				})
 			)
 		}
+	},
+	{
+		method: 'GET',
+		path: `/${v}/transform/{inputFormat}/@{organization}/{sha256}/using/{transformsSHA256}`,
+		config: {
+			pre: [
+				{
+					method: replyPromise(preItemContent('organization', 'sha256')),
+					assign: 'itemContent' 
+				},
+				{
+					method: replyPromise(R.pipeP(
+						preItemContent('organization', 'transformsSHA256'),
+						JSON.parse,
+						R.prop('transforms'),
+						joiPromise(validations.transforms)
+					)),
+					assign: 'transforms' 
+				}
+			],
+			cache: {
+				privacy: 'public',
+				expiresIn: /* 30 days */ 30 * 24 * 60 * 60 * 1000, 
+			}
+		},
+		handler(request, reply) {
+			reply(
+				conformerForFormat(request.params.inputFormat, {}, request.pre.itemContent)
+				.then(
+					applyTransforms(request.pre.transforms)
+				)
+			)
+		}
 	}
 ]
