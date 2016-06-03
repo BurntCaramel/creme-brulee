@@ -9,8 +9,9 @@ const formatToRenderers = {
 	auto: require('./auto')
 }
 
-const rendererForFormat = R.uncurryN(3, (format, rendererOptions) => (
-	(formatToRenderers[format] || formatToRenderers.auto)(rendererOptions)
+const rendererForFormat = R.uncurryN(3, R.pipe(
+	R.prop(R.__, formatToRenderers),
+	R.defaultTo(formatToRenderers.auto)
 ))
 
 module.exports = {

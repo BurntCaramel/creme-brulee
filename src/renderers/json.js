@@ -77,11 +77,14 @@ const JSONComponent = R.converge(R.call, [
 	R.prop('json')
 ])
 
-module.exports = ({ isDeserialized = false }) => (input) => ({
-    innerHTML: renderToStaticMarkup(
-			createElement(
-				JSONComponent,
-				{ json: input, isDeserialized }
+module.exports = (options) => (json) => R.merge(options, {
+	innerHTML: renderToStaticMarkup(
+		createElement(
+			JSONComponent,
+			R.merge(
+				{ json },
+				R.pick(['isDeserialized'], options)
 			)
 		)
+	)
 })
