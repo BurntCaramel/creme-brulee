@@ -2,6 +2,8 @@ const R = require('ramda')
 const URL = require('url')
 const { promiseItemContent, promiseStreamOfItemContent } = require('../services/cloudant/find')
 const { findInIndexNamed } = require('../services/cloudant/findInIndex')
+const replyPipe = require('./pre/replyPipe')
+const preItemContent = require('./pre/itemContent')
 const { rendererForFormat } = require('../renderers')
 const defaultTemplate = require('../templates/default')
 const imgix = require('../services/imgix')
@@ -79,34 +81,34 @@ module.exports = [
 		method: 'GET',
 		path: `/${version}/preview/{format}/@{organization}/{sha256}`,
 		config: {
+			pre: [
+				{
+					method: replyPipe(preItemContent('organization', 'sha256')),
+					assign: 'itemContent' 
+				}
+			],
 			cache: {
 				privacy: 'public',
 				expiresIn: /* 30 days */ 30 * 24 * 60 * 60 * 1000, 
 			}
 		},
-		handler(request, reply) {
-			promiseItemContent(request.params)
-			.then(
-				rendererForFormat(request.params.format, {
-					imgixURLForImagePath: (imagePath, options) => (
-						URL.format({
-							pathname: `/${version}/preview/image/find/@${request.params.organization}/${request.query.index}/${imagePath}`,
-							query: options
-						})
-						/*imgix.buildURL(
-							`/${version}/find/@${request.params.organization}/${request.query.index}/${imagePath}`,
-							options
-						)*/
-					),
-					title: request.params.sha256,
-					//theme: 'gardenWhite',
-				})
-			)
-			.then(defaultTemplate)
-			.then(
-				reply,
-				reply
-			)
-		}
+		handler: replyPipe(
+			R.converge(R.call, [
+				({ params: { format, organization, sha256 }, query }) => (
+					rendererForFormat(format, {
+						imgixURLForImagePath: (imagePath, options) => (
+							URL.format({
+								pathname: `/${version}/preview/image/find/@${organization}/${query.index}/${imagePath}`,
+								query: options
+							})
+						),
+						title: sha256,
+						theme: 'gardenWhite',
+					})
+				),
+				R.path(['pre', 'itemContent'])
+			]),
+			defaultTemplate
+		)
 	}
 ]
