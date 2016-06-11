@@ -28,7 +28,7 @@ const findItem = R.pipeP(
 	//notFoundIfEmpty
 )
 
-const findItemInfo = R.pipeP(
+const promiseItemInfo = R.pipeP(
 	findItem,
 	R.path(['_attachments', 'length']),
 	R.objOf('contentLength')
@@ -82,7 +82,7 @@ const promiseItemContent = R.pipeP(
 )
 
 module.exports = {
-	findItemInfo,
+	promiseItemInfo,
 	promiseStreamOfItemContent,
 	promiseItemContent
 }

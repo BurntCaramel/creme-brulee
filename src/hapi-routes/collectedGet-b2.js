@@ -1,4 +1,4 @@
-const { findItemInfo, promiseStreamOfItemContent } = require('../services/cloudant/find')
+const { promiseStreamOfItemContent } = require('../services/b2/find')
 
 const itemPath = '/1/@{organization}/{sha256}'
 
@@ -9,7 +9,6 @@ module.exports = [
 		path: '/1',
 		handler(request, reply) {
 			reply({ available: true })
-			//reply({ available: true, credentials: request.auth.credentials.sub })
 		}
 	},
 	{

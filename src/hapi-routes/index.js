@@ -5,9 +5,18 @@ module.exports = R.unnest([
 	require('./seo'),
 	require('./auth'),
 	require('./organization'),
-	require('./collected'),
-	require('./collectedFind'),
-	require('./collectedPublish'),
+	
+	require('./collectedGet'),
+	//require('./collectedFind'),
+	
+	//require('./collectedGet-cloudant'),
+	require('./collectedPublish-cloudant'),
+	//require('./collectedFind-cloudant'),
+	
+	//require('./collected-b2'),
+	//require('./collectedPublish-b2'),
+	//require('./collectedFind-b2'),
+	
 	require('./preview'),
 	require('./transform')
 ])
