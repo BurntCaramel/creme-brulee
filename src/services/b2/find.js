@@ -12,12 +12,16 @@ const findItemContent = R.curry(({ content = true, stream = false }, { organizat
 		return axios({
 			method: content ? 'get' : 'head',
 			url: `${downloadUrl}/file/${bucketName}/${id}`,
-			responseType: stream ? 'stream' : 'arraybuffer'
+			responseType: stream ? 'stream' : 'arraybuffer',
+			headers: {
+				'Authorization': authorizationToken
+			}
 		})
+		.then(R.prop('data'))
 	})
 	.catch((error) => {
 		console.log('error', error)
-		throw Boom.create(error.statusCode)
+		throw Boom.create(error.status)
 	})
 ))
 

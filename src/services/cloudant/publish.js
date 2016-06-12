@@ -3,7 +3,7 @@ const { PassThrough } = require('stream')
 const hashStream = require('collected/hashStream')
 const Boom = require('boom')
 const { databases } = require('./init')
-const { idForAccountAndHash } = require('./id')
+const { idForOrganizationAndHash } = require('./id')
 const nodePromise = require('../../utils/nodePromise')
 
 
@@ -11,7 +11,7 @@ function uploadAttachment({ organization, sha256, contentStream, rev }) {
 	console.log('uploadAttachment', organization, sha256)
 	
 	const attachmentStream = databases.items.attachment.insert(
-		idForAccountAndHash(organization, sha256),
+		idForOrganizationAndHash(organization, sha256),
 		'content',
 		null,
 		'application/octet-stream',
@@ -64,7 +64,7 @@ function uploadAttachment({ organization, sha256, contentStream, rev }) {
 const publishItem = ({ organization, sha256, contentStream, force = false }) => (
 	nodePromise((callback) => {
 		databases.items.insert({
-			_id: idForAccountAndHash(organization, sha256),
+			_id: idForOrganizationAndHash(organization, sha256),
 			contentIsAttached: true,
 			sha256
 		}, callback)
@@ -78,7 +78,7 @@ const publishItem = ({ organization, sha256, contentStream, force = false }) => 
 				if (force) {
 					return nodePromise((callback) => {
 						databases.items.get(
-							idForAccountAndHash(organization, sha256),
+							idForOrganizationAndHash(organization, sha256),
 							callback
 						)
 					})

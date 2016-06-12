@@ -21,6 +21,10 @@ module.exports = [
 					sha256: request.params.sha256,
 					contentBuffer: request.payload
 				})
+				.catch(error => {
+					console.error(error)
+					throw error
+				})
 			)
 		}
 	}/*,

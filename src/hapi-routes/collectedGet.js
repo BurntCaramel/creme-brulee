@@ -30,7 +30,10 @@ module.exports = [
 						.type(request.headers['accept'])
 						//.etag(request.params.sha256)
 				},
-				(error) => reply(error)
+				(error) => {
+					console.error(error)
+					reply(error)
+				}
 			)
 		}
 	},
