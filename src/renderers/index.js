@@ -6,6 +6,7 @@ const formatToRenderers = {
 	icing: require('./icing'),
 	json: require('./json'),
 	svg: require('./svg'),
+	piping: require('./piping'),
 	auto: require('./auto')
 }
 
