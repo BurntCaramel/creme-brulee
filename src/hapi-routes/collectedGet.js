@@ -1,5 +1,5 @@
 const R = require('ramda')
-const { promiseStreamOfItemContent, findInIndexNamed } = require('../services/collected/find')
+const { promiseItemContent, promiseStreamOfItemContent, findInIndexNamed } = require('../services/collected/find')
 const replyPipe = require('./pre/replyPipe')
 
 const v = '1'
@@ -24,7 +24,8 @@ module.exports = [
 		},
 		handler(request, reply) {
 			// Unwrap promise to the underlying stream
-			promiseStreamOfItemContent(request.params).then(
+			promiseItemContent(request.params).then(
+			//promiseStreamOfItemContent(request.params).then(
 				(stream) => {
 					reply(stream)
 						.type(request.headers['accept'])
