@@ -23,11 +23,15 @@ const typeHandler = (actual, expected) => (
 )
 
 const transforms = {
+	'any.makeObject': require('./any.makeObject'),
+	'any.makeList': require('./any.makeList'),
 	'object.mapKeys': require('./object.mapKeys'),
 	'object.mapValues': require('./mapValues'),
 	'object.listValues': require('./object.listValues'),
 	//'object.pick': require('./object.pick'),
 	'object.propertySatisfies': require('./object.propertySatisfies'),
+	'object.merge': require('./object.merge'), 
+	'object.mergeAll': () => R.mergeAll, 
 	'list.first': require('./list.first'),
 	'list.filter': require('./list.filter'),
 	'list.map': require('./mapValues'),
@@ -62,7 +66,8 @@ const applyTransforms = R.curry((transforms, input) => R.reduce(
 		const expectedType = transform.type.split('.')[0]
 		let caller = typeHandler(actualType, expectedType)
 		
-		if (actualType === 'list' && expectedType === 'list') {
+		//if (actualType === 'list' && expectedType === 'list') {
+		if (actualType === 'list') {
 			const level = R.propOr(0, 'list.atLevel', transform)
 			if (level > 0) {
 				// Drill down into nested lists, to apply the transform there
