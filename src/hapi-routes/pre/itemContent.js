@@ -1,5 +1,6 @@
 const R = require('ramda')
 
+//const replyPipe = require('./replyPipe')
 const { promiseItemContent } = require('../../services/collected/find')
 //const { promiseItemContent } = require('../../services/cloudant/find')
 

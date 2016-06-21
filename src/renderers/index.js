@@ -7,6 +7,7 @@ const formatToRenderers = {
 	json: require('./json'),
 	svg: require('./svg'),
 	piping: require('./piping'),
+	video: require('./video'),
 	auto: require('./auto')
 }
 

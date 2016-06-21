@@ -2,27 +2,31 @@ const R = require('ramda')
 const URL = require('url')
 const { promiseItemContent, promiseStreamOfItemContent, findInIndexNamed } = require('../services/collected/find')
 const replyPipe = require('./pre/replyPipe')
+const replyPipeP = require('./pre/replyPipeP')
 const preItemContent = require('./pre/itemContent')
 const { rendererForFormat } = require('../renderers')
 const defaultTemplate = require('../templates/default')
 
 const version = '1'
 
-const previewItemContentHandler = replyPipe(
-	R.converge(R.call, [
-		({ params: { format }, query, pre: { organization } }) => (
-			rendererForFormat(format, {
-				imgixURLForImagePath: (imagePath, options) => (
-					URL.format({
-						pathname: `/${version}/preview/image/find/@${organization}/${query.index}/${imagePath}`,
-						query: options
-					})
-				),
-				theme: 'gardenWhite',
-			})
-		),
-		R.path(['pre', 'itemContent'])
-	]),
+const previewItemContentHandler = replyPipeP(
+	R.pipe(
+		R.converge(R.call, [
+			({ params: { format }, query, pre: { organization } }) => (
+				rendererForFormat(format, {
+					imgixURLForImagePath: (imagePath, options) => (
+						URL.format({
+							pathname: `/${version}/preview/image/find/@${organization}/${query.index}/${imagePath}`,
+							query: options
+						})
+					),
+					theme: 'gardenWhite',
+				})
+			),
+			R.path(['pre', 'itemContent'])
+		]),
+		(value) => Promise.resolve(value)
+	),
 	defaultTemplate
 )
 

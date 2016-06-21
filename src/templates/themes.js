@@ -1,8 +1,8 @@
 const themes = {
-	dark: {
-		color: '#fafaaf',
-		backgroundColor: '#1b1b1b1'
-	},
+	/*dark: {
+		color: '#fafafa',
+		backgroundColor: '#1b1b1b'
+	},*/
 	light: {
 		color: '#0a0a0a',
 		backgroundColor: '#fbfbfb'
