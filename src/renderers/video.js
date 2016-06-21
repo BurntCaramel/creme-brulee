@@ -11,10 +11,23 @@ function VideoEmbed({ videoInfo }) {
 
 	const { desktopSize: { embedCode } } = videoInfo
 
-	return createElement('div', {
-		className: 'embeddedVideo embeddedVideo-16-9',
+	return createElement('figure', {
+		className: 'ratio-16-9',
 		dangerouslySetInnerHTML: { __html: embedCode }
 	})
+}
+
+function VideoEmbedList({ videoInfos, showFork = true, showProvider = true }) {
+	return createElement('div',
+		null,
+		videoInfos.map((videoInfo, index) => (
+			createElement(VideoEmbed, R.merge({ key: index }, { videoInfo }))
+		)),
+		createElement('nav', { key: 'controls' }, [
+			showFork && createElement('a', { href: '#fork', key: 'fork' }, 'Use my content'),
+			showProvider && createElement('a', { href: '/', key: 'provider' }, 'Provided by Royal Icing')
+		])
+	)
 }
 
 module.exports = (options) => R.pipeP(
@@ -39,12 +52,7 @@ module.exports = (options) => R.pipeP(
 	(videoInfos) => {
 		return R.merge(options, {
 			innerHTML: renderToStaticMarkup(
-				createElement('div',
-					null,
-					videoInfos.map((videoInfo, index) => (
-						createElement(VideoEmbed, R.merge({ key: index }, { videoInfo }))
-					))
-				)
+				createElement(VideoEmbedList, { videoInfos })
 			)
 		})
 	}

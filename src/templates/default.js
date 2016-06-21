@@ -66,6 +66,9 @@ ${base} a {
 	color: ${linkColor};
 	text-decoration: none;
 }
+${base} nav {
+	display: flex;
+}
 ${base} nav a {
 	display: inline-block;
 	width: auto;
@@ -137,8 +140,21 @@ figure {
 	margin-right: -${baseLineHeight}rem;
 	text-align: center;
 }
-figure + figure {
+figure + figure,
+${base} nav {
 	margin-top: ${baseLineHeight}rem;
+}
+figure.ratio-16-9 {
+	position: relative;
+	height: 0;
+	padding-bottom: ${9 / 16 * 100}%;
+}
+figure.ratio-16-9 iframe {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
 }
 
 img {
