@@ -35,6 +35,7 @@ const transforms = {
 	'list.first': require('./list.first'),
 	'list.filter': require('./list.filter'),
 	'list.map': require('./mapValues'),
+	'list.insert': require('./list.insert'),
 	'list.join': require('./list.join'),
 	'list.reverse': () => R.reverse,
 	'text.uppercase': () => R.toUpper,

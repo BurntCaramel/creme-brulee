@@ -4,38 +4,25 @@ const { promiseItemContent, promiseStreamOfItemContent, findInIndexNamed } = req
 const replyPipe = require('./pre/replyPipe')
 const replyPipeP = require('./pre/replyPipeP')
 const preItemContent = require('./pre/itemContent')
+const previewContent = require('./handlers/previewContent')
 const { rendererForFormat } = require('../renderers')
 const defaultTemplate = require('../templates/default')
 
 const version = '1'
 
-const previewItemContentHandler = replyPipeP(
-	R.pipe(
-		R.converge(R.call, [
-			({ params: { format }, query, pre: { organization } }) => (
-				rendererForFormat(format, {
-					imgixURLForImagePath: (imagePath, options) => (
-						URL.format({
-							pathname: `/${version}/preview/image/find/@${organization}/${query.index}/${imagePath}`,
-							query: options
-						})
-					),
-					theme: 'gardenWhite',
-				})
-			),
-			R.path(['pre', 'itemContent'])
-		]),
-		(value) => Promise.resolve(value)
-	),
-	defaultTemplate
-)
+const previewContentHandler = ({ pre }, reply) => reply(previewContent(pre))
 
 module.exports = [
 	{
+		// Preview a collected item
 		method: 'GET',
-		path: `/${version}/preview/{format}/@{organization}/{sha256}`,
+		path: `/${version}/preview:{format}/@{organization}/{sha256}`,
 		config: {
 			pre: [
+				{
+					method: replyPipe(R.path(['params', 'format'])),
+					assign: 'previewFormat'
+				},
 				{
 					method: replyPipe(R.path(['params', 'organization'])),
 					assign: 'organization'
@@ -43,6 +30,10 @@ module.exports = [
 				{
 					method: replyPipe(preItemContent('organization', 'sha256')),
 					assign: 'itemContent'
+				},
+				{
+					method: replyPipe(R.prop('query')),
+					assign: 'query'
 				}
 			],
 			cache: {
@@ -50,22 +41,30 @@ module.exports = [
 				expiresIn: /* 30 days */ 30 * 24 * 60 * 60 * 1000, 
 			}
 		},
-		handler: previewItemContentHandler
+		handler: previewContentHandler
 	},
 	{
+		// Preview an uploaded item
+		// TODO: ensure authenticated has 'arbitrary' permission
 		method: 'POST',
 		path: `/${version}/preview:{format}/@{organization}`,
 		config: {
 			pre: [
 				{
+					method: replyPipe(R.path(['params', 'format'])),
+					assign: 'previewFormat'
+				},
+				{
 					method: replyPipe(R.path(['params', 'organization'])),
 					assign: 'organization'
 				},
 				{
-					method: replyPipe(
-						R.prop('payload')
-					),
+					method: replyPipe(R.prop('payload')),
 					assign: 'itemContent'
+				},
+				{
+					method: replyPipe(R.prop('query')),
+					assign: 'query'
 				}
 			],
 			cache: {
@@ -73,6 +72,6 @@ module.exports = [
 				expiresIn: /* 30 days */ 30 * 24 * 60 * 60 * 1000, 
 			}
 		},
-		handler: previewItemContentHandler
+		handler: previewContentHandler
 	}
 ]
