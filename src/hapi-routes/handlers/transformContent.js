@@ -8,11 +8,14 @@ const transformContentHandler = R.converge((content, conformer, transformer) => 
 	conformer(content).then(transformer)
 ), [
 	R.prop('itemContent'),
-	({ inputFormat }) => (
-		conformerForFormat(inputFormat, {})
+	R.pipe(
+		R.prop('inputFormat'),
+		conformerForFormat(R.__, {})
 	),
-	({ transforms = [] }) => (
-		applyTransforms(transforms)
+	R.pipe(
+		R.prop('transforms'),
+		R.defaultTo([]),
+		applyTransforms
 	)
 ])
 
