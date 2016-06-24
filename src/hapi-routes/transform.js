@@ -1,9 +1,9 @@
 const R = require('ramda')
 const URL = require('url')
 const Joi = require('joi')
-const replyPromise = require('./pre/replyPromise')
 const replyPipe = require('./pre/replyPipe')
 const replyPipeP = require('./pre/replyPipeP')
+const preMethods = require('./pre/preMethods')
 const joiPromise = require('../utils/joiPromise')
 const validations = require('./validations')
 const preItemContent = require('./pre/itemContent') 
@@ -41,18 +41,11 @@ module.exports = [
 				})
 			},
 			pre: [
-				{
-					method: replyPipe(R.path(['params', 'inputFormat'])),
-					assign: 'inputFormat'
-				},
-				{
-					method: replyPipeP(preItemContent('organization', 'sha256')),
-					assign: 'itemContent' 
-				},
-				{
-					method: replyPipe(R.path(['payload', 'transforms'])),
-					assign: 'transforms'
-				}
+				preMethods({
+					inputFormat: R.path(['params', 'inputFormat']),
+					itemContent: preItemContent('organization', 'sha256'),
+					transforms: R.path(['payload', 'transforms'])
+				})
 			]
 		},
 		handler: transformContentHandler
@@ -63,23 +56,16 @@ module.exports = [
 		path: `/${v}/transform:{inputFormat}/@{organization}/{sha256}/using:{transformsSHA256}`,
 		config: {
 			pre: [
-				{
-					method: replyPipe(R.path(['params', 'inputFormat'])),
-					assign: 'inputFormat'
-				},
-				{
-					method: replyPipeP(preItemContent('organization', 'sha256')),
-					assign: 'itemContent' 
-				},
-				{
-					method: replyPipeP(
+				preMethods({
+					inputFormat: R.path(['params', 'inputFormat']),
+					itemContent: preItemContent('organization', 'sha256'),
+					transforms: R.pipeP(
 						preItemContent('organization', 'transformsSHA256'),
 						JSON.parse,
 						R.prop('transforms'),
 						joiPromise(validations.transforms)
-					),
-					assign: 'transforms' 
-				}
+					)
+				})
 			],
 			cache: {
 				privacy: 'public',
@@ -93,34 +79,20 @@ module.exports = [
 		method: 'POST',
 		path: `/${v}/transform:{inputFormat}/preview:{previewFormat}/@{organization}/{sha256}`,
 		config: {
+			validate: {
+				payload: Joi.compile({
+					transforms: validations.transforms
+				})
+			},
 			pre: [
-				{
-					method: replyPipe(R.path(['params', 'inputFormat'])),
-					assign: 'inputFormat'
-				},
-				{
-					method: replyPipeP(preItemContent('organization', 'sha256')),
-					assign: 'itemContent' 
-				},
-				{
-					method: replyPipe(
-						R.path(['payload', 'transforms']),
-						joiPromise(validations.transforms)
-					),
-					assign: 'transforms'
-				},
-				{
-					method: replyPipe(R.path(['params', 'previewFormat'])),
-					assign: 'previewFormat'
-				},
-				{
-					method: replyPipe(R.path(['query', 'index'])),
-					assign: 'baseIndex'
-				},
-				{
-					method: replyPipe(R.path(['query', 'theme'])),
-					assign: 'theme'
-				}
+				preMethods({
+					inputFormat: R.path(['params', 'inputFormat']),
+					itemContent: preItemContent('organization', 'sha256'),
+					transforms: R.path(['payload', 'transforms']),
+					previewFormat: R.path(['params', 'previewFormat']),
+					baseIndex: R.path(['query', 'index']),
+					theme: R.path(['query', 'theme']),
+				})
 			],
 			handler: transformAndPreviewHandler
 		}
@@ -131,35 +103,19 @@ module.exports = [
 		path: `/${v}/transform:{inputFormat}/preview:{previewFormat}/@{organization}/{sha256}/using:{transformsSHA256}`,
 		config: {
 			pre: [
-				{
-					method: replyPipe(R.path(['params', 'inputFormat'])),
-					assign: 'inputFormat'
-				},
-				{
-					method: replyPipeP(preItemContent('organization', 'sha256')),
-					assign: 'itemContent' 
-				},
-				{
-					method: replyPipeP(
+				preMethods({
+					inputFormat: R.path(['params', 'inputFormat']),
+					itemContent: preItemContent('organization', 'sha256'),
+					transforms: R.pipeP(
 						preItemContent('organization', 'transformsSHA256'),
 						JSON.parse,
 						R.prop('transforms'),
 						joiPromise(validations.transforms)
 					),
-					assign: 'transforms' 
-				},
-				{
-					method: replyPipe(R.path(['params', 'previewFormat'])),
-					assign: 'previewFormat'
-				},
-				{
-					method: replyPipe(R.path(['query', 'index'])),
-					assign: 'baseIndex'
-				},
-				{
-					method: replyPipe(R.path(['query', 'theme'])),
-					assign: 'theme'
-				}
+					previewFormat: R.path(['params', 'previewFormat']),
+					baseIndex: R.path(['query', 'index']),
+					theme: R.path(['query', 'theme']),
+				})
 			],
 			handler: transformAndPreviewHandler
 		}

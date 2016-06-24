@@ -2,7 +2,6 @@
 const R = require('ramda')
 const URL = require('url')
 const { promiseItemContent, promiseStreamOfItemContent, findInIndexNamed } = require('../services/collected/find')
-const replyPipe = require('./pre/replyPipe')
 const imgix = require('../services/imgix')
 
 const version = '1'

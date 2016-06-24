@@ -2,7 +2,7 @@ const R = require('ramda')
 const Boom = require('boom')
 const { createElement } = require('react')
 const { renderToStaticMarkup } = require('react-dom/server')
-const SilverScreen = require('silver-screen')
+const SilverScreen = require('silverscreen')
 
 function VideoEmbed({ videoInfo }) {
 	if (!videoInfo) {

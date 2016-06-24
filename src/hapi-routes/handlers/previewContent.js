@@ -1,6 +1,5 @@
 const R = require('ramda')
 const URL = require('url')
-const replyPipeP = require('../pre/replyPipeP')
 const { rendererForFormat } = require('../../renderers')
 const defaultTemplate = require('../../templates/default')
 

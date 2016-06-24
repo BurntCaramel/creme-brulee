@@ -1,6 +1,4 @@
 const R = require('ramda')
-const replyPipe = require('../pre/replyPipe')
-const replyPipeP = require('../pre/replyPipeP')
 const { conformerForFormat } = require('../../conformers') 
 const { applyTransforms } = require('../../transforms')
 

@@ -39,7 +39,7 @@ module.exports = [
 		}
 	},
 	{
-		// Redirects to item’s URL
+		// Return SHA256 of item in collected index
 		method: 'GET',
 		path: `/${v}/find/@{account}/{sha256}/{name*}`,
 		handler: replyPipe(
