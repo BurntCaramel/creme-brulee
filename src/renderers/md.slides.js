@@ -18,7 +18,7 @@ module.exports = (options) => R.tryCatch(
 		]),
 		R.objOf('slides'),
 		JSON.stringify,
-		slidesRenderer(options),
+		slidesRenderer(options)
 	),
 	(error) => {
 		console.log('caught', error)
