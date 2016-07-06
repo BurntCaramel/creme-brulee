@@ -31,7 +31,7 @@ const convertObjectToReact = R.converge((type, props, children) => (
 ])
 
 const autoFormat = (options) => R.ifElse(
-	R.is(String),
+	R.anyPass([R.is(String), Buffer.isBuffer]),
 	plainRenderer(options),
 	R.ifElse(
 		R.anyPass([R.is(Array), R.is(Object)]),
