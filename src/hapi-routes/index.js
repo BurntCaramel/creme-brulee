@@ -12,6 +12,8 @@ module.exports = R.unnest([
 
 	require('./auth'),
 	require('./organization'),
+
+	require('./trays'),
 	
 	require('./collectedGet'),
 	
