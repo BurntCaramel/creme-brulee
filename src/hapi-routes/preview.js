@@ -4,6 +4,7 @@ const { promiseItemContent, promiseStreamOfItemContent, findInIndexNamed } = req
 const preMethods = require('./pre/preMethods')
 const preItemContent = require('./pre/itemContent')
 const preTray = require('./pre/tray')
+const preGitHub = require('./pre/github')
 const previewContent = require('./handlers/previewContent')
 
 const version = '1'
@@ -22,6 +23,28 @@ module.exports = [
 				trays: preTray.promiseTrays,
 				tray: preTray.promiseTray,
 				itemContent: preTray.promiseCup,
+				query: R.prop('query')
+			}),
+			cache: {
+				privacy: 'public',
+				expiresIn: /* 30 days */ 30 * 24 * 60 * 60 * 1000, 
+			}
+		},
+		handler: previewContentHandler
+	},
+	{
+		// Preview a file stored on GitHub
+		method: 'GET',
+		path: `/${version}/preview:{previewFormat}/@{organization}/github:{gitHubUsername}/{project}/{branch}/{filePath}`,
+		config: {
+			pre: preMethods({
+				previewFormat: R.path(['params', 'previewFormat']),
+				organization: R.path(['params', 'organization']),
+				gitHubUsername: R.path(['params', 'gitHubUsername']),
+				project: R.path(['params', 'project']),
+				branch: R.path(['params', 'branch']),
+				filePath: R.path(['params', 'filePath']),
+				itemContent: preGitHub.promiseRawFile,
 				query: R.prop('query')
 			}),
 			cache: {
