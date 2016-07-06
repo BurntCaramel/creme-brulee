@@ -4,11 +4,11 @@ const { createElement } = require('react')
 
 module.exports = (options) => R.tryCatch(
 	R.pipe(
-		(json) => (
+		(input) => (
 			R.merge(options, {
 				noStyles: true,
 				innerHTML: `
-<div id="json" style="display: none">${ JSON.stringify(json) }</div>
+<div id="json" style="display: none">${ input }</div>
 <div id="app"></div>
 `,
 				bodyLastElements: [

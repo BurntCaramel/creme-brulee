@@ -14,16 +14,28 @@ export default React.createClass({
 	},
 
 	render() {
-		const markdownTexts = [].concat(this.state.json)
+		const { json } = this.state
+		const { slides, backgroundColor = '#222' } = Array.isArray(json) ? { slides: json } : json
 
 		return (
-			<Spectacle>
-				<Deck transition={[ "zoom", "slide" ]}>
-					{ markdownTexts.map((markdownText, index) => (
-						<Slide key={ index }>
-							<Markdown source={ markdownText } />
-						</Slide>
-					)) }
+			<Spectacle bgColor={ backgroundColor }>
+				<Deck transition={[ "zoom", "slide" ]} bgColor={ backgroundColor }>
+					{ slides.map((slideOrSource, index) => {
+						const slide = (typeof slideOrSource === 'string') ? { markdownSource: slideOrSource } : slideOrSource
+						const { transition, markdownSource, textColor, backgroundColor, backgroundImage, backgroundDarken } = slide
+
+						return (
+							<Slide key={ index }
+								transition={ transition }
+								textColor={ textColor }
+								bgColor={ backgroundColor }
+								bgImage={ backgroundImage }
+								bgDarken={ backgroundDarken }
+							>
+								<Markdown source={ markdownSource } />
+							</Slide>
+						)
+					}) }
 				</Deck>
 			</Spectacle>
 		)
