@@ -68,13 +68,20 @@ module.exports = function icingFormatter(options) {
 	//const adjustBlock = adjustBlock_options(options)
 	const renderBlock = renderBlock_options(options)
 	
-	return (input) => R.merge(options, {
-		innerHTML: previewHTMLWithContent(
-			Immutable.fromJS(
-				JSON.parse(input).sections.main
-			),
+	return R.pipeP(
+		(input) => Promise.resolve(input),
+		R.when(
+			R.is(String),
+			JSON.parse
+		),
+		R.path(['sections', 'main']),
+		Immutable.fromJS,
+		(content) => previewHTMLWithContent(
+			content,
 			spec,
 			{ pretty: true, renderBlock }
-		)
-	})
+		),
+		R.objOf('innerHTML'),
+		R.merge(options)
+	)
 }
