@@ -9,6 +9,7 @@ const formatToRenderers = {
 	piping: require('./piping'),
 	video: require('./video'),
 	slides: require('./slides'),
+	'md:slides': require('./md.slides'),
 	auto: require('./auto')
 }
 
