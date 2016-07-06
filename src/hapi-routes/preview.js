@@ -35,7 +35,7 @@ module.exports = [
 	{
 		// Preview a file stored on GitHub
 		method: 'GET',
-		path: `/${version}/preview:{previewFormat}/@{organization}/github:{gitHubUsername}/{project}/{branch}/{filePath}`,
+		path: `/${version}/preview:{previewFormat}/@{organization}/github:{gitHubUsername}/{project}/{branch}/{filePath*}`,
 		config: {
 			pre: preMethods({
 				previewFormat: R.path(['params', 'previewFormat']),
@@ -45,6 +45,7 @@ module.exports = [
 				branch: R.path(['params', 'branch']),
 				filePath: R.path(['params', 'filePath']),
 				itemContent: preGitHub.promiseRawFile,
+				isDeserialized: R.T,
 				query: R.prop('query')
 			}),
 			cache: {

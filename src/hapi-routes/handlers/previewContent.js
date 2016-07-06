@@ -6,7 +6,7 @@ const defaultTemplate = require('../../templates/default')
 const previewContentHandler = R.pipeP(
 	R.pipe(
 		R.converge(R.call, [
-			({ previewFormat, organization, baseIndex, theme = 'gardenWhite' }) => (
+			({ previewFormat, organization, baseIndex, isDeserialized, theme = 'gardenWhite' }) => (
 				rendererForFormat(previewFormat, {
 					imgixURLForImagePath: (imagePath, options) => (
 						URL.format({
@@ -14,6 +14,7 @@ const previewContentHandler = R.pipeP(
 							query: options
 						})
 					),
+					isDeserialized,
 					theme
 				})
 			),
