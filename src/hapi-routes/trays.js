@@ -5,8 +5,8 @@ const throwWhenNil = require('../utils/throwWhenNil')
 const preTray = require('./pre/tray')
 
 const traysPath = '/1/@{organization}/trays'
-const trayPath = `${traysPath}/{trayID}`
-const cupPath = `${trayPath}/{cupID}` 
+const trayPath = `${traysPath}:{trayID}`
+const cupPath = `${trayPath}:{cupID}` 
 
 module.exports = [
 	{

@@ -14,7 +14,7 @@ module.exports = [
 	{
 		// Preview a tray cup
 		method: 'GET',
-		path: `/${version}/preview:{previewFormat}/@{organization}/trays/{trayID}/{cupID}`,
+		path: `/${version}/preview:{previewFormat}/@{organization}/trays:{trayID}:{cupID}`,
 		config: {
 			pre: preMethods({
 				previewFormat: R.path(['params', 'previewFormat']),
