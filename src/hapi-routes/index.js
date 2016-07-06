@@ -1,8 +1,15 @@
 const R = require('ramda')
 
 module.exports = R.unnest([
+	// STATIC
+	
 	require('./landing'),
 	require('./seo'),
+
+	require('./web/slides'),
+
+	// API
+
 	require('./auth'),
 	require('./organization'),
 	

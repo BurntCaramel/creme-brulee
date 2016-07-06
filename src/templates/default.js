@@ -191,23 +191,33 @@ const renderElements = R.pipe(
     R.join('\n')
 )
 
-module.exports = (props) => (`<!doctype html>
+module.exports = ({
+	title,
+	originalSourceURL,
+	noStyles = false,
+	theme,
+	headElements,
+	innerHTML,
+	bodyLastElements
+}) => (`<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>${ escape(props.title) }</title>
+<title>${ escape(title) }</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${ renderMetas({
-	'original-source': props.originalSourceURL
+	'original-source': originalSourceURL
 }) }
-<style>${ renderStyles(props.theme) }</style>
-${ renderElements(props.headElements) }
+${ noStyles ? '' : (
+	`<style>${ renderStyles(theme) }</style>`
+) }
+${ renderElements(headElements) }
 </head>
 <body>
 <article>
-${ props.innerHTML }
+${ innerHTML }
 </article>
-${ renderElements(props.bodyLastElements) }
+${ renderElements(bodyLastElements) }
 </body>
 </html>
 `)

@@ -7,8 +7,10 @@ module.exports = {
 	organizationName: Joi.string().token().required(),
 	email: emailRequired,
 	ownerEmail: emailRequired,
-	transforms: Joi.array().items(Joi.object({
-		type: stringRequired
-	}).unknown()).single(),
+	transforms: Joi.array().items(
+		Joi.object({
+			type: stringRequired
+		}).unknown()
+	).single(),
 	code: stringRequired
 }
