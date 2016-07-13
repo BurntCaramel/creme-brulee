@@ -9,8 +9,8 @@
             "stopOnEntry": false,
             "args": [],
             "cwd": "${workspaceRoot}",
-            "preLaunchTask": null,
-            "runtimeExecutable": null,
+            "preLaunchTask": "nvm",
+            "runtimeExecutable": "${workspaceRoot}/.nvm-node",
             "runtimeArgs": [
                 "--nolazy"
             ],
