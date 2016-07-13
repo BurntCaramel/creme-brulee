@@ -2,9 +2,13 @@ const R = require('ramda')
 const escape = require('lodash/escape')
 
 const themes = require('./themes')
+const getThemeWithID = R.pipe(
+	R.defaultTo('light'),
+	R.prop(R.__, themes)
+)
 
 function renderStyles(themeID) {
-	const theme = themes[R.defaultTo('light', themeID)]
+	const theme = getThemeWithID(themeID)
 	 
 	const measure = 30
 	const baseFontSize = 18
@@ -175,20 +179,20 @@ hr {
 `
 }
 
-const renderMeta = (name, content) => !!content ? (
+const renderMeta = (name, content) => (
 	`<meta name="${ name }" content="${ escape(content) }">`
-) : ''
+)
 
 const renderMetas = R.pipe(
-    R.reject(R.isNil),
+	R.reject(R.isNil),
 	R.toPairs,
 	R.map(R.apply(renderMeta)),
 	R.join('\n')
 )
 
 const renderElements = R.pipe(
-    R.defaultTo([]),
-    R.join('\n')
+	R.defaultTo([]),
+	R.join('\n')
 )
 
 module.exports = ({
@@ -199,25 +203,34 @@ module.exports = ({
 	headElements,
 	innerHTML,
 	bodyLastElements
-}) => (`<!doctype html>
+}) => (
+`<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
 <title>${ escape(title) }</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-${ renderMetas({
-	'original-source': originalSourceURL
-}) }
+${
+	renderMetas({
+		'original-source': originalSourceURL
+	})
+}
 ${ noStyles ? '' : (
 	`<style>${ renderStyles(theme) }</style>`
 ) }
-${ renderElements(headElements) }
+${
+	renderElements(headElements)
+}
 </head>
 <body>
 <article>
-${ innerHTML }
+${
+	innerHTML
+}
 </article>
-${ renderElements(bodyLastElements) }
+${
+	renderElements(bodyLastElements)
+}
 </body>
 </html>
 `)
