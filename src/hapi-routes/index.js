@@ -21,5 +21,6 @@ module.exports = R.unnest([
 	require('./collectedPublish-b2'),
 	
 	require('./preview'),
-	require('./transform')
+	require('./transform'),
+	require('./template')
 ])
