@@ -22,45 +22,46 @@ const memberfulScript =
   })();
 </script>`
 
-const title = 'Royal Icing'
+const title = 'Royal Icing · Content served like a professional'
 
-//const tagLine = `# Boldly simple webpages for your content`
-//const tagLine = `# Boldy simple web pages that let you communicate`
-//const tagLine = `# For boldy simple communication`
-//const tagLine = `# Fearlessly simple web pages`
-//const tagLine = `# For communicators who just want something simple`
-//const secondary = `## Create fast, elegant websites`
-
-const tagLine = `# A catalog of your content`
-const secondary = `## Reuse and share text & data.`
+const tagLine = `# Create like a developer: just add content`
+// const tagLine = `# Content is king, so we built it a palace`
+const secondary = `## Build rapidly using just text, images & spreadsheets.`
 
 const pitch = `
-Royal Icing is great for:
+Royal Icing lets you get closer to what a developer makes. All you need is your content.
 
-- Simple web pages
-- Photo galleries
-- Hosted press releases
-- FAQs
+- Responsive web pages
+- App and website wireframes
+- Slide decks
+- Photo and video galleries
 
-Royal Icing takes care of web best practices for you:
+## Professional recipes
+Recipes allow transforming your content into new forms.
+You just have to provide the ingredients: your text, spreadsheets & imagery.
+You can combine recipes to create ever more powerfully.
 
-- Fast to load, even over a cellular connection.
-- Resizes and optimizes images for your users’ devices automatically.
-- Responsive design with legible typography from phone to desktop.
+## Even designers and developers will love it
+Royal Icing is built on development best practices: reusability, composability, and efficient caching.
+The best part is you automatically take advantage of this in an easy-to-use workflow.
+
+## Organize and share
+Collections allow your content to be easily grouped together and cataloged.
+You and your collaborators can then reuse any piece of content and combine them in new ways.
+Use familiar concepts such as #hashtags to organize.
 
 ## See what’s possible:
 
-- [Product website](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Lantern?format=icing&theme=dark)
-- [Photo gallery](http://github.icing.space/@BurntCaramel/burntcaramel.com/Content/Photography?format=icing&theme=dark)
+- [Product website](http://icing.space/1/preview:icing/@BurntCaramel/github:BurntCaramel/burntcaramel.com/master/Content/Lantern.icing?theme=dark)
 `
 
-const signIn = `[Sign In](https://burntcaramel.memberful.com/account)`
+const signIn = `[Sign In](/signin)`
 
 const plans = [
 	{
-		title: 'Get Started',
+		title: 'Entry',
 		body: `
-1 custom domain, automatically optimized images, Markdown
+Public publicly, 100MB storage
 
 30 day free trial, then $6 / month
 
