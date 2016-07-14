@@ -19,9 +19,9 @@ const templateAndPreviewHandler = replyPipe(
 	R.prop('pre'),
 	(pre) => (
 		fillPlaceholdersHandler(pre)
-		.then((transformedContent) => (
+		.then((itemContent) => (
 			previewContent(
-				R.merge(pre, { itemContent: transformedContent })
+				R.merge(pre, { itemContent })
 			)
 		))
 	)

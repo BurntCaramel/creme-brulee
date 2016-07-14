@@ -36,16 +36,19 @@ const replacePlaceholders = R.uncurryN(2, (placeholdersToReplacements) => (
 	])
 ))
 
-const fillPlaceholdersHandler = R.converge(replacePlaceholders, [
-	R.pipe(
-		R.prop('placeholdersToReplacements'),
-		R.map(R.pipe(
-			R.props(['placeholder', 'replacement']),
-			R.adjust(placeholderToKey, 0)
-		)),
-		R.fromPairs
-	),
-	R.prop('template')
-])
+const fillPlaceholdersHandler = R.pipe(
+	R.converge(replacePlaceholders, [
+		R.pipe(
+			R.prop('placeholdersToReplacements'),
+			R.map(R.pipe(
+				R.props(['placeholder', 'replacement']),
+				R.adjust(placeholderToKey, 0)
+			)),
+			R.fromPairs
+		),
+		R.prop('template'),
+	]),
+	(result) => Promise.resolve(result)
+)
 
 module.exports = fillPlaceholdersHandler
