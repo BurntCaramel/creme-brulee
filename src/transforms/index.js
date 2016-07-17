@@ -61,27 +61,35 @@ const performRawTransform = R.converge(R.call, [
 	(options) => R.merge(baseOptions, options)
 ])
 
-const applyTransforms = R.curry((transforms, input) => R.reduce(
-	(acc, transform) => {
-		const actualType = typeOf(acc)
-		const expectedType = transform.type.split('.')[0]
-		let caller = typeHandler(actualType, expectedType)
-		
-		//if (actualType === 'list' && expectedType === 'list') {
-		if (actualType === 'list') {
-			const level = R.propOr(0, 'list.atLevel', transform)
-			if (level > 0) {
-				// Drill down into nested lists, to apply the transform there
-				caller = caller(
-					R.apply(R.pipe, R.repeat(R.map, level))
-				)
+const applyTransforms = R.curry((transforms, input) => (
+	R.reduce(
+		(acc, transform) => {
+			const actualType = typeOf(acc)
+			const expectedType = transform.type.split('.')[0]
+			let caller = typeHandler(actualType, expectedType)
+			
+			//if (actualType === 'list' && expectedType === 'list') {
+			if (actualType === 'list') {
+				const level = R.propOr(0, 'list.atLevel', transform)
+				if (level > 0) {
+					// Drill down into nested lists, to apply the transform there
+					caller = caller(
+						R.apply(R.pipe, R.repeat(R.map, level))
+					)
+				}
 			}
-		}
-		
-		return caller(performRawTransform(transform), acc)
-	},
-	input,
-	[].concat(transforms)
+
+			try {		
+				return caller(performRawTransform(transform), acc)
+			}
+			catch (error) {
+				console.error(error)
+				throw Boom.wrap(error, 406, 'Unexpected transform')
+			}
+		},
+		input,
+		[].concat(transforms)
+	)
 ))
 
 baseOptions.applyTransforms = applyTransforms
