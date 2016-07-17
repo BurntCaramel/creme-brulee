@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-		"nvm": "~/.nvm/nvm-exec which node | xargs -J % ln -sf % ./.nvm-node && chmod +x ./.nvm-node"
+    "nvm": "~/.nvm/nvm-exec which node | xargs -J % ln -sf % ./.nvm-node && chmod +x ./.nvm-node"
   },
   "repository": {
     "type": "git",
@@ -47,7 +47,7 @@
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "remarkable": "^1.6.2",
-    "royal-piping": "^0.1.1",
+    "royal-piping": "^0.2.0",
     "silverscreen": "^0.1.2"
   }
 }
