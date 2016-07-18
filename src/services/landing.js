@@ -3,38 +3,19 @@ const escape = require('lodash/escape')
 
 const renderMarkdown = require('../utils/renderMarkdown')
 
-const memberfulScript =
-`<script type="text/javascript">
-  window.MemberfulOptions = {site: "https://burntcaramel.memberful.com"};
-
-  (function() {
-    var s   = document.createElement('script');
-
-    s.type  = 'text/javascript';
-    s.async = true;
-    s.src   = 'https://d35xxde4fgg0cx.cloudfront.net/assets/embedded.js';
-
-    setup = function() { window.MemberfulEmbedded.setup(); }
-
-    if(s.addEventListener) { s.addEventListener("load", setup, false); } else { s.attachEvent("onload", setup); }
-
-    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
-  })();
-</script>`
 
 const title = 'Royal Icing · Content served like a professional'
 
-const tagLine = `# Create like a developer: just add content`
-// const tagLine = `# Content is king, so we built it a palace`
+//const tagLine = `# Create like a developer: just add content`
+const tagLine = `# Just add content`
 const secondary = `## Build rapidly using just text, images & spreadsheets.`
 
 const pitch = `
-Royal Icing lets you get closer to what a developer makes. All you need is your content.
-
 - Responsive web pages
 - App and website wireframes
 - Slide decks
 - Photo and video galleries
+- Interactive prototypes
 
 ## Professional recipes
 Recipes allow transforming your content into new forms.
@@ -112,7 +93,6 @@ function renderHomePageRequest(req) {
 		title,
 		innerHTML: homePageHTML,
 		headElements: [
-			memberfulScript
 		],
 		theme: 'gardenWhite',
 	}
