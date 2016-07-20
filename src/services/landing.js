@@ -6,31 +6,32 @@ const renderMarkdown = require('../utils/renderMarkdown')
 
 const title = 'Royal Icing · Content served like a professional'
 
-//const tagLine = `# Create like a developer: just add content`
 const tagLine = `# Just add content`
-const secondary = `## Build rapidly using just text, images & spreadsheets.`
+const secondary = `## Build powerfully using just text, images & spreadsheets.`
 
 const pitch = `
 - Responsive web pages
-- App and website wireframes
+- App and web wireframes
 - Slide decks
 - Photo and video galleries
-- Interactive prototypes
+- Interactive prototypes & micro apps
 
-## Professional recipes
-Recipes allow transforming your content into new forms.
+## You provide the ingredients, we take care of the rest
+Recipes are a step-by-step process to transform your content into new forms.
 You just have to provide the ingredients: your text, spreadsheets & imagery.
-You can combine recipes to create ever more powerfully.
+Recipes can be combined to allow small things to solve big problems.
 
-## Even designers and developers will love it
-Royal Icing is built on development best practices: reusability, composability, and efficient caching.
-The best part is you automatically take advantage of this in an easy-to-use workflow.
-
-## Organize and share
-Collections allow your content to be easily grouped together and cataloged.
-You and your collaborators can then reuse any piece of content and combine them in new ways.
+## Organize, and then share
+Group, tag, and smartly catalog your content.
+You and your collaborators can then get any piece of content and combine them in new ways.
 Use familiar concepts such as #hashtags to organize.
 
+## Made for designers, but even developers will love it
+Royal Icing is built on development best practices: reusability, composability, and efficient caching.
+The best part is you take advantage of this automatically in an easy-to-use workflow.
+`
+
+const examples = `
 ## See what’s possible:
 
 - [Product website](http://icing.space/1/preview:icing/@BurntCaramel/github:BurntCaramel/burntcaramel.com/master/Content/Lantern.icing?theme=dark)
