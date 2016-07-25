@@ -1,3 +1,4 @@
 node_modules
 .env
 .nvm-node
+web/npm-debug.log
