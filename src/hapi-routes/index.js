@@ -3,7 +3,8 @@ const R = require('ramda')
 module.exports = R.unnest([
 	// STATIC
 	
-	require('./landing'),
+	require('../sections').routes,
+	//require('./landing'),
 	require('./seo'),
 
 	require('./web/slides'),

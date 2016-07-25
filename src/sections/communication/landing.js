@@ -1,7 +1,7 @@
 const R = require('ramda')
 const escape = require('lodash/escape')
 
-const renderMarkdown = require('../utils/renderMarkdown')
+const renderMarkdown = require('../../utils/renderMarkdown')
 
 
 const title = 'Royal Icing · Content served like a professional'
@@ -89,7 +89,7 @@ ${ renderMapping(renderPlan, plans) }
 */
 
 
-function renderHomePageRequest(req) {
+function renderRequest(req) {
 	return {
 		title,
 		innerHTML: homePageHTML,
@@ -101,5 +101,5 @@ function renderHomePageRequest(req) {
 
 
 module.exports = {
-	renderHomePageRequest
+	renderRequest
 }
