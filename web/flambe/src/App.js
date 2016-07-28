@@ -2,7 +2,9 @@ import React from 'react'
 import Main from './Main'
 
 const initialContent = (
-`User name #field
+`#video
+
+User name #field
 Password #field
 
 Sign In #button @signIn

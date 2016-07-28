@@ -1,3 +1,10 @@
 module.exports = {
-  type: 'react-app'
+  type: 'react-app',
+	webpack: {
+		extra: {
+			output: {
+				publicPath: '/flambe'
+			}
+		}
+	}
 }

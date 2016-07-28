@@ -5,14 +5,8 @@ import seeds, { Seed } from 'react-seeds'
 import { parseInput } from './parser'
 import renderWebDestination from './destinations/web'
 
-const colors = {
-	dark: '#262626',
-	mid: '#555',
-	light1mid: '#eee', 
-	light: '#f8f8f8',
-	lightKeyA: '#FBF9ED',
-	lightKeyB: '#F3F9FF'
-}
+import * as colors from './colors'
+import Button from './ui/Button'
 
 const stylers = {
 	mainColumn: seeds({
@@ -35,15 +29,6 @@ function updateFieldHeight(el) {
 		el.style.height = `${el.scrollHeight}px`
 }
 
-const Button = (props) => (
-	<Seed Component='button'
-		{ ...props }
-		font={{ size: 24, weight: 700 }}
-		background={{ color: 'white' }}
-		border='none'
-	/>
-)
-
 const ReferenceHeading = (props) => (
 	<Seed Component='h3'
 		text={{ align: 'center' }}
@@ -52,12 +37,20 @@ const ReferenceHeading = (props) => (
 )
 
 const AddReferenceButton = ({ onClick }) => (
-	<Button children='+' grow={ 1 } onClick={ onClick } />
+	<Button children='+' grow={ 1 } huge onClick={ onClick } />
 )
 
 const ReferenceActions = () => (
 	<Seed row margin={{ top: '1rem' }}>
 		<AddReferenceButton />
+	</Seed>
+)
+
+const PreviewTabs = () => (
+	<Seed Component='nav' row margin={{ bottom: '1rem' }}>
+		<Button children='Wireframe' grow={ 1 } />
+		<Button children='Web' grow={ 1 } selected />
+		<Button children='React Code' grow={ 1 } />
 	</Seed>
 )
 
@@ -144,6 +137,7 @@ export default React.createClass({
 					grow={ 1 } shrink={ 1 } padding='1rem' background={{ color: colors.lightKeyA }}
 					{ ...stylers.mainColumn }
 				>
+					<PreviewTabs />
 					{
 						!!data ? renderWebDestination({ props: sourceProps })(data) : null
 					}

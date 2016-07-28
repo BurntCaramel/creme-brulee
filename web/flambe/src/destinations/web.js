@@ -1,6 +1,7 @@
 import R from 'ramda'
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
+import rgba from 'react-sow/rgba'
 
 const isPassword = (tags, mentions, title) => (
 	R.test(/\bpassword\b/i, title)
@@ -14,7 +15,10 @@ export const field = (tags, mentions, title) => (
 )
 
 export const button = (tags, mentions, title) => (
-	<button children={ title } />
+	<Seed Component='button'
+		margin={{ bottom: '0.5rem' }}
+		children={ title }
+	/>
 )
 export const cta = button
 
@@ -23,23 +27,32 @@ export const text = (tags, mentions, content) => (
 )
 
 export const image = (tags, mentions, content) => (
-	<Seed minHeight={ 150 } />
+	<Seed column grow={ 1 } width='100%' minHeight={ 150 } background={{ color: rgba.whiteValue(0, 0.1) }} />
 )
 
-export const fallback = (tags, mentions, content) => {
-	console.log('mentions', mentions)
-	return R.isEmpty(mentions) ? (
+export const video = (tags, mentions, content) => (
+	<Seed
+		column grow={ 1 } alignItems='center' justifyContent='center'
+		width='100%' minHeight={ 150 }
+		background={{ color: rgba.whiteValue(0, 0.1) }}
+		children='▶'
+	/>
+)
+
+export const fallback = (tags, mentions, content) => (
+	R.isEmpty(mentions) ? (
 		text(tags, mentions, content)
 	) : (
 		mentions[0]
 	)
-}
+)
 
 const elementRendererForTags = R.cond([
 	[ R.contains('#field'), R.curry(field) ],
 	[ R.contains('#button'), R.curry(button) ],
 	[ R.contains('#cta'), R.curry(cta) ],
 	[ R.contains('#image'), R.curry(image) ],
+	[ R.contains('#video'), R.curry(video) ],
 	[ R.contains('#text'), R.curry(text) ],
 	[ R.T, R.curry(fallback) ]
 ])
@@ -67,10 +80,13 @@ export default ({ props }) => R.map(R.pipe( // sections
 			]
 		)),
 		(elements) => (
-			<Seed children={ elements } />
+			<Seed column alignItems='center' children={ elements } />
 		)
 	)),
 	(elements) => (
-		<Seed column margin={{ bottom: sectionSpacing }} alignItems='center' children={ elements } />
+		<Seed Component='section'
+			column margin={{ bottom: sectionSpacing }}
+			children={ elements }
+		/>
 	)
 ))
