@@ -10,7 +10,9 @@ User name #field
 Password #field
 
 Sign In #button #primary
-Forgot Your Password? #button
+Forgot Your Password? #button #small
+
+About Me #link: https://icing.space/about
 
 @legal
 `)

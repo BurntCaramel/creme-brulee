@@ -1,5 +1,6 @@
 import R from 'ramda'
 import React from 'react'
+import { findDOMNode } from 'react-dom'
 import seeds, { Seed } from 'react-seeds'
 
 import { parseInput } from './parser'
@@ -29,7 +30,8 @@ export default React.createClass({
 		return {
 			content,
 			contentTree: !!content ? parseInput(content) : null,
-			ingredients
+			ingredients,
+			destination: destinations.bootstrap
 		}
 	},
 
@@ -61,12 +63,16 @@ export default React.createClass({
 		}))
 	},
 
+	componentDidMount() {
+		const { destination } = this.state
+		destination.init(findDOMNode(this))
+	},
+
   render() {
 		const { showTree } = this.props
-		const { content, contentTree, ingredients } = this.state
+		const { content, contentTree, ingredients, destination } = this.state
 
-		const destination = destinations.bootstrap
-		destination.init()
+		console.dir(contentTree)
 
     return (
 			<Seed row grow={ 1 } shrink={ 0 } wrap>
@@ -105,7 +111,7 @@ export default React.createClass({
 					{
 						!!contentTree ? R.tryCatch(
 							(contentTree) => destination.renderTree({ ingredients, contentTree }),
-							(error, contentTree) => console.error('Invalid tree', contentTree)
+							(error, contentTree) => console.error('Invalid tree', error, contentTree)
 						)(contentTree) : null
 					}
 					</Seed>

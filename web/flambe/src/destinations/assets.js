@@ -11,6 +11,20 @@ export function css({ url, id }) {
 	document.head.appendChild(styleElement)
 }
 
+export function cssScoped({ url, id, scopeTo }) {
+	if (document.getElementById(id)) {
+		return
+	}
+	
+	let styleElement = document.createElement('style')
+	styleElement.id = id
+	styleElement.scoped = "scoped"
+	styleElement.innerText = (
+`@import "${ url }";
+`)
+	scopeTo.appendChild(styleElement)
+}
+
 export function js({ url, id }) {
 	if (document.getElementById(id)) {
 		return
@@ -21,4 +35,10 @@ export function js({ url, id }) {
 	scriptElement.type = 'text/javascript'
 	scriptElement.src = url
 	document.head.appendChild(scriptElement)
+}
+
+export function remove(ids) {
+	ids.forEach((id) => {
+		document.head.removeChild(document.getElementById(id))
+	})
 }

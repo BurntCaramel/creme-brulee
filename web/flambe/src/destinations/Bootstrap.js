@@ -4,8 +4,9 @@ import React from 'react'
 import seeds, { Seed } from 'react-seeds'
 import rgba from 'react-sow/rgba'
 
-import resolveReferences from '../resolveReferences'
-import * as addAsset from './addAsset'
+import * as assets from './assets'
+import { text, columns, Section } from './Web'
+import { renderElement, renderTreeUsing } from './render'
 
 const isPassword = (tags, mentions, title) => (
 	R.test(/\bpassword\b/i, title)
@@ -22,13 +23,13 @@ const buttonTagsToClass = R.converge(
 	R.unapply(R.join(' ')), [
 		R.always('btn'),
 		R.cond([
-			[ R.contains('#primary'), R.always('btn-primary') ],
+			[ R.has('primary'), R.always('btn-primary') ],
 			[ R.T, R.always('btn-default') ]
 		]),
 		R.cond([
-			[ R.contains('#large'), R.always('btn-lg') ],
-			[ R.contains('#small'), R.always('btn-sm') ],
-			[ R.contains('#extrasmall'), R.always('btn-xs') ],
+			[ R.has('large'), R.always('btn-lg') ],
+			[ R.has('small'), R.always('btn-sm') ],
+			[ R.has('extrasmall'), R.always('btn-xs') ],
 			[ R.T, R.always('') ]
 		])
 	]
@@ -38,31 +39,11 @@ export const button = (tags, mentions, title) => (
 	<Seed Component='button'
 		className={ buttonTagsToClass(tags) }
 		margin={{ bottom: '0.5rem' }}
+		maxWidth='20em'
 		children={ title }
 	/>
 )
 export const cta = button
-
-export const text = (tags, mentions, content) => (
-	<span children={ content } />
-)
-
-export const heading = (tags, mentions, content) => {
-	const Component = (
-		R.contains('#primary', mentions) ? (
-			'h1'
-		) : (
-			'h2'
-		)
-	)
-
-	return (
-		<Seed Component={ Component }
-			children={ content }
-			margin={ 0 }
-		/>
-	)
-}
 
 export const image = (tags, mentions, content) => (
 	<Seed column
@@ -80,6 +61,14 @@ export const video = (tags, mentions, content) => (
 	/>
 )
 
+export const nav = (tags, mentions, content, children, renderElement) => (
+	<Seed row Component='nav'>
+	{
+		children.map(renderElement)
+	}
+	</Seed>
+)
+
 export const fallback = (tags, mentions, content) => (
 	R.isEmpty(mentions) ? (
 		text(tags, mentions, content)
@@ -89,53 +78,32 @@ export const fallback = (tags, mentions, content) => (
 )
 
 const elementRendererForTags = R.cond([
-	[ R.contains('#field'), R.curry(field) ],
-	[ R.contains('#button'), R.curry(button) ],
-	[ R.contains('#cta'), R.curry(cta) ],
-	[ R.contains('#image'), R.curry(image) ],
-	[ R.contains('#video'), R.curry(video) ],
-	[ R.contains('#heading'), R.curry(heading) ],
-	[ R.contains('#text'), R.curry(text) ],
+	[ R.has('field'), R.curry(field) ],
+	[ R.has('button'), R.curry(button) ],
+	[ R.has('cta'), R.curry(cta) ],
+	[ R.has('image'), R.curry(image) ],
+	[ R.has('video'), R.curry(video) ],
+	[ R.has('text'), R.curry(text) ],
+	[ R.has('nav'), R.curry(nav) ],
+	[ R.has('columns'), R.curry(columns) ],
 	[ R.T, R.curry(fallback) ]
 ])
 
-const Line = (elements) => (
-	<Seed column alignItems='center' children={ elements } />
-)
+export const renderTree = renderTreeUsing({ elementRendererForTags })
 
-const Section = (elements) => (
-	<Seed Component='section'
-		column margin={{ bottom: '2rem' }}
-		children={ elements }
-	/>
-)
-
-export function renderTree({ ingredients, contentTree }) {
-	return R.map(R.pipe( // sections
-		R.map(R.converge( // elements
-			R.call, [
-				R.pipe(
-					R.prop('tags'),
-					elementRendererForTags
-				),
-				R.pipe(
-					R.prop('references'),
-					resolveReferences(ingredients)
-				),
-				R.prop('name')
-			]
-		)),
-		Section
-	))(contentTree)
-}
-
-export function init() {
-	addAsset.css({
+export function init(el) {
+	assets.cssScoped({
 		id: 'bootstrap-css',
-		url: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'
+		//url: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css'
+		url: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+		scopeTo: el
 	})
-	addAsset.js({
+	assets.js({
 		id: 'bootstrap-js',
 		url: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
 	})
+}
+
+export function deinit() {
+	assets.remove(['bootstrap-css', 'bootstrap-js'])
 }
