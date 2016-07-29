@@ -8,9 +8,7 @@ export const parseInput = R.pipe(
 		R.split('\n'), // elements
 		rejectEmptyStrings, // must have content
 		R.map(R.pipe(
-			R.split('|'),
-			rejectEmptyStrings, // must have content
-			R.map(R.converge(
+			R.converge(
 				(name, tags, references) => ({ name, tags, references }),
 				[
 					R.pipe(
@@ -19,9 +17,13 @@ export const parseInput = R.pipe(
 						R.trim
 					),
 					R.match(/#\w+/g), // match tags,
-					R.match(/@\w+/g) // match references
+					R.pipe(
+						R.match(/@(\w+)/g), // match references
+						R.map(R.tail),
+						rejectEmptyStrings
+					)
 				]
-			))
+			)
 		))
 	)),
 	R.reject(R.isEmpty)

@@ -11,16 +11,67 @@
 
 <style>
 html {
+	height: 100%;
 	background-color: #fdfdfd;
 }
-html, input, button {
+html, h1, input, button {
 	font-family: 'Lato', sans-serif;
+}
+body {
+	height: 100%;
+	margin: 0;
+}
+
+.rows {
+	display: flex;
+	flex-direction: column;
+}
+.columns {
+	display: flex;
+	flex-direction: row;
+}
+
+#primary-section {
+	height: 100%;
+}
+
+#header {
+	flex-shrink: 0;
+	min-height: 42px;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	background-color: #303030;
+}
+h1 {
+	margin: 0;
+	padding-right: 1rem;
+	line-height: 2.4;
+	color: white;
+	font-style: italic;
+}
+#subscribe {
+	flex-grow: 1;
+}
+
+#app {
+	flex-grow: 1;
 }
 </style>
 </head>
 
 <body>
-<div id="app"></div>
+
+<section id="primary-section" class="rows">
+	<header id="header" class="columns">
+		<h1>Royal Icing</h1>
+		<div id="subscribe">
+			<script async id="_ck_81556" src="https://forms.convertkit.com/81556?v=6"></script>
+		</div>
+	</header>
+
+	<div id="app" class="rows"></div>
+</section>
+
 </body>
 
 </html>

@@ -3,56 +3,15 @@ import React from 'react'
 import seeds, { Seed } from 'react-seeds'
 
 import { parseInput } from './parser'
-import renderWebDestination from './destinations/web'
+//import * as Web from './destinations/Web'
+import * as destinations from './destinations'
 
 import * as colors from './colors'
+import * as stylers from './stylers'
 import Button from './ui/Button'
-
-const stylers = {
-	mainColumn: seeds({
-		margin: { left: '0.5rem', right: '0.5rem' },
-		//padding: { top: '1rem' }
-	}),
-	sourceField: seeds({
-		column: true,
-		width: '100%',
-		padding: '1em',
-		font: { size: 16 },
-		//text: { color: colors.light },
-		background: { color: colors.lightKeyB },
-		border: { width: 1, style: 'solid', color: colors.light1mid }
-	})
-}
-
-function updateFieldHeight(el) {
-		el.style.height = '1px'
-		el.style.height = `${el.scrollHeight}px`
-}
-
-const ReferenceHeading = (props) => (
-	<Seed Component='h3'
-		text={{ align: 'center' }}
-		{ ...props }
-	/>
-)
-
-const AddReferenceButton = ({ onClick }) => (
-	<Button children='+' grow={ 1 } huge onClick={ onClick } />
-)
-
-const ReferenceActions = () => (
-	<Seed row margin={{ top: '1rem' }}>
-		<AddReferenceButton />
-	</Seed>
-)
-
-const PreviewTabs = () => (
-	<Seed Component='nav' row margin={{ bottom: '1rem' }}>
-		<Button children='Wireframe' grow={ 1 } />
-		<Button children='Web' grow={ 1 } selected />
-		<Button children='React Code' grow={ 1 } />
-	</Seed>
-)
+import Field from './ui/Field'
+import References from './sections/references'
+import PreviewTabs from './sections/components/PreviewTabs'
 
 export default React.createClass({
 	getDefaultProps() {
@@ -62,84 +21,96 @@ export default React.createClass({
 	},
 
 	getInitialState() {
-		const content = this.props.initialContent
+		const {
+			initialContent: content,
+			initialIngredients: ingredients
+		} = this.props
 
 		return {
 			content,
-			data: !!content ? parseInput(content) : null
+			contentTree: !!content ? parseInput(content) : null,
+			ingredients
 		}
 	},
 
-	setSourceField(el) {
-		this.sourceField = el
-		updateFieldHeight(el)
-	},
-
-	onSourceChange(event) {
-		const sourceField = event.target
-
-		updateFieldHeight(sourceField)
-
-		const input = sourceField.value
-
+	onSourceChange(input) {
 		this.setState({
 			content: input,
-			data: parseInput(input)
+			contentTree: parseInput(input)
 		})
 	},
 
+	onAddNewIngredient(event) {
+		this.setState(({ ingredients }) => ({
+			ingredients: ingredients.concat({
+				id: 'untitled',
+				content: ''
+			})
+		}))
+	},
+
+	onChangeIngredientAtIndex(index, newValue) {
+		this.setState(({ ingredients }) => ({
+			ingredients: R.update(index, newValue, ingredients)
+		}))
+	},
+
+	onRemoveIngredientAtIndex(index) {
+		this.setState(({ ingredients }) => ({
+			ingredients: R.remove(index, 1, ingredients)
+		}))
+	},
+
   render() {
-		const { showTree, sourceProps } = this.props
-		const { content, data } = this.state
+		const { showTree } = this.props
+		const { content, contentTree, ingredients } = this.state
+
+		const destination = destinations.bootstrap
+		destination.init()
 
     return (
-			<Seed row minHeight='90vh'>
-				<Seed column grow={ 1 } shrink={ 1 } width={ 600 } { ...stylers.mainColumn }>
-					<textarea
-						ref={ this.setSourceField }
+			<Seed row grow={ 1 } shrink={ 0 } wrap>
+				<Seed column
+					grow={ 1 } shrink={ 0 } basis='50%'
+					{ ...stylers.mainColumn }
+				>
+					<Field
 						value={ content }
 						onChange={ this.onSourceChange }
 						{ ...stylers.sourceField }
 					/>
-					<div>
-					{
-						R.pipe(
-							R.toPairs,
-							R.map(([id, value]) => {
-								console.log('id', id, 'value', value)
-								return (
-									<Seed key={ `key-${id}` }
-										column
-									>
-										<ReferenceHeading>{ id }</ReferenceHeading>
-										<textarea
-											value={ value }
-											{ ...stylers.sourceField }
-										/>
-									</Seed>
-								)
-							})	
-						)(sourceProps)
-					}
-					</div>
-					<ReferenceActions />
+					<References
+						ingredients={ ingredients }
+						onAddNew={ this.onAddNewIngredient }
+						onChangeAtIndex={ this.onChangeIngredientAtIndex }
+						onRemoveAtIndex={ this.onRemoveIngredientAtIndex }
+					/>
 				</Seed>
 				{ showTree &&
-					<Seed row grow={ 1 } shrink={ 1 } { ...stylers.preview }>
+					<Seed row grow={ 1 } shrink={ 1 }
+						{ ...stylers.preview }>
 						<pre>
 						{
-							!!data ? JSON.stringify(data, null, 2) : null
+							!!contentTree ? JSON.stringify(contentTree, null, 2) : null
 						}
 						</pre>
 					</Seed>
 				}
 				<Seed column
-					grow={ 1 } shrink={ 1 } padding='1rem' background={{ color: colors.lightKeyA }}
+					grow={ 1 } shrink={ 0 } basis='50%'
+					background={{ color: colors.lightKeyA }}
 					{ ...stylers.mainColumn }
 				>
-					<PreviewTabs />
+					<Seed column grow={ 1 } padding='1rem'>
 					{
-						!!data ? renderWebDestination({ props: sourceProps })(data) : null
+						!!contentTree ? R.tryCatch(
+							(contentTree) => destination.renderTree({ ingredients, contentTree }),
+							(error, contentTree) => console.error('Invalid tree', contentTree)
+						)(contentTree) : null
+					}
+					</Seed>
+					{ false &&
+						<PreviewTabs />
 					}
 				</Seed>
 			</Seed>

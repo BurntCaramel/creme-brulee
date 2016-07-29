@@ -2,25 +2,30 @@ import React from 'react'
 import Main from './Main'
 
 const initialContent = (
-`#video
+`Welcome to Royal Icing #heading
+
+#video
 
 User name #field
 Password #field
 
-Sign In #button @signIn
-Forgot Your Password? #button @showForgotPassword
+Sign In #button #primary
+Forgot Your Password? #button
 
 @legal
 `)
 
-const source = {
-	'@legal': `Copyright Company Inc. 2016`
-}
+const source = [
+	{
+		id: 'legal',
+		content: `Copyright Company Inc. 2016`
+	}
+]
 
 export default React.createClass({
   render() {
     return (
-			<Main initialContent={ initialContent } sourceProps={ source } />
+			<Main initialContent={ initialContent } initialIngredients={ source } />
 		)
   }
 })

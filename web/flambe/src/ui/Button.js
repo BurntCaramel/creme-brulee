@@ -5,7 +5,7 @@ import * as colors from '../colors'
 
 const fontSizeForProps = (props) => (
 	(props.huge) ? (
-		24
+		21
 	) : (props.small) ? (
 		14
 	) : (

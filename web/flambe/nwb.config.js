@@ -3,7 +3,7 @@ module.exports = {
 	webpack: {
 		extra: {
 			output: {
-				publicPath: '/flambe'
+				publicPath: '/1/-web/flambe'
 			}
 		}
 	}
