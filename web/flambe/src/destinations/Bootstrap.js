@@ -5,25 +5,15 @@ import seeds, { Seed } from 'react-seeds'
 import rgba from 'react-sow/rgba'
 
 import * as assets from './assets'
-import { text, columns, Section } from './Web'
+import * as Web from './Web'
 import { renderElement, renderTreeUsing } from './render'
-
-const isPassword = (tags, mentions, title) => (
-	R.test(/\bpassword\b/i, title)
-)
-
-export const field = (tags, mentions, title) => (
-	<label>
-		<span children={ title } style={{ display: 'block' }} />
-		<input type={ isPassword(tags, title) ? 'password' : 'text' } />
-	</label>
-)
 
 const buttonTagsToClass = R.converge(
 	R.unapply(R.join(' ')), [
 		R.always('btn'),
 		R.cond([
 			[ R.has('primary'), R.always('btn-primary') ],
+			[ R.has('link'), R.always('btn-link') ],
 			[ R.T, R.always('btn-default') ]
 		]),
 		R.cond([
@@ -45,22 +35,6 @@ export const button = (tags, mentions, title) => (
 )
 export const cta = button
 
-export const image = (tags, mentions, content) => (
-	<Seed column
-		grow={ 1 } width='100%' minHeight={ 150 }
-		background={{ color: rgba.whiteValue(0, 0.1) }}
-	/>
-)
-
-export const video = (tags, mentions, content) => (
-	<Seed column
-		grow={ 1 } alignItems='center' justifyContent='center'
-		width='100%' minHeight={ 150 }
-		background={{ color: rgba.whiteValue(0, 0.1) }}
-		children='▶'
-	/>
-)
-
 export const nav = (tags, mentions, content, children, renderElement) => (
 	<Seed row Component='nav'>
 	{
@@ -69,24 +43,17 @@ export const nav = (tags, mentions, content, children, renderElement) => (
 	</Seed>
 )
 
-export const fallback = (tags, mentions, content) => (
-	R.isEmpty(mentions) ? (
-		text(tags, mentions, content)
-	) : (
-		mentions[0]
-	)
-)
-
 const elementRendererForTags = R.cond([
-	[ R.has('field'), R.curry(field) ],
+	[ R.has('field'), R.curry(Web.field) ],
 	[ R.has('button'), R.curry(button) ],
 	[ R.has('cta'), R.curry(cta) ],
-	[ R.has('image'), R.curry(image) ],
-	[ R.has('video'), R.curry(video) ],
-	[ R.has('text'), R.curry(text) ],
+	[ R.has('image'), R.curry(Web.image) ],
+	[ R.has('video'), R.curry(Web.video) ],
+	[ R.has('text'), R.curry(Web.text) ],
 	[ R.has('nav'), R.curry(nav) ],
-	[ R.has('columns'), R.curry(columns) ],
-	[ R.T, R.curry(fallback) ]
+	[ R.has('columns'), R.curry(Web.columns) ],
+	[ R.has('swatch'), R.curry(Web.swatch) ],
+	[ R.T, R.curry(Web.fallback) ]
 ])
 
 export const renderTree = renderTreeUsing({ elementRendererForTags })
