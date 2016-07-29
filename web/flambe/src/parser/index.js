@@ -3,7 +3,7 @@ import R from 'ramda'
 const rejectEmptyStrings = R.filter(R.test(/\S/))
 
 const parseElement = R.converge(
-	(name, tags, references) => ({ name, tags, references, children: [] }),
+	(text, tags, references) => ({ text, tags, references, children: [] }),
 	[
 		R.pipe(
 			R.replace(/[#@]\w*(:\s*\S*)?/g, ''), // remove tags

@@ -15,7 +15,7 @@ export const renderElement = ({ ingredients, elementRendererForTags }) => {
 				R.prop('references'),
 				resolveReferences(ingredients)
 			),
-			R.prop('name'),
+			R.prop('text'),
 			R.prop('children'),
 			() => renderElement
 		]
