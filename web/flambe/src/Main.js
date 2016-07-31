@@ -14,6 +14,13 @@ import Field from './ui/Field'
 import References from './sections/references'
 import PreviewTabs from './sections/components/PreviewTabs'
 
+const suggestReferenceFromTree = R.uncurryN(2, (ingredients) => R.pipe(
+	R.chain(R.pluck('references')),
+	R.unnest,
+	R.difference(R.__, R.pluck('id', ingredients)),
+	R.head,
+))
+
 export default React.createClass({
 	getDefaultProps() {
 		return {
@@ -43,12 +50,19 @@ export default React.createClass({
 	},
 
 	onAddNewIngredient(event) {
-		this.setState(({ ingredients }) => ({
-			ingredients: ingredients.concat({
-				id: 'untitled',
-				content: ''
-			})
-		}))
+		this.setState(({ ingredients, contentTree }) => {
+
+			return {
+				ingredients: ingredients.concat({
+					id: R.when(
+						R.isNil,
+						R.always('untitled'),
+						suggestReferenceFromTree(ingredients, contentTree)
+					),
+					content: ''
+				})
+			}
+		})
 	},
 
 	onChangeIngredientAtIndex(index, newValue) {
