@@ -4,7 +4,7 @@ import Main from './Main'
 const initialContent = (
 `Welcome to Royal Icing #primary
 
-Create using just text and hashtags #image #unsplash: dessert
+Create with just text & hashtags #image #unsplash: dessert
 
 User name #field
 Password #field

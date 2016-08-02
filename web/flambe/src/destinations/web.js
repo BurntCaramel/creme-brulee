@@ -58,13 +58,13 @@ const wrapInInline = (tags, element) => {
 export const text = (tags, mentions, content, children, Element, renderContent) => {
 	const [Component, fontSize, textAlign] = (
 		R.has('primary', tags) ? (
-			['h1', '2rem', 'center']
+			['h1', '2em', 'center']
 		) : R.has('secondary', tags) ? (
-			['h2', '1.5rem', 'center']
+			['h2', '1.5em', 'center']
 		) : R.has('tertiary', tags) ? (
-			['h3', '1.25rem', 'center']
+			['h3', '1.25em', 'center']
 		) : (
-			['p', '1rem', 'left']
+			['p', '1em', 'left']
 		)
 	)
 
@@ -320,11 +320,33 @@ const elementRendererForTags = R.cond([
 	[ R.T, R.curry(fallback) ]
 ])
 
-export const renderTree = renderTreeUsing({
+export const Preview = renderTreeUsing({
 	elementRendererForTags
 })
 
 export function init() {
+}
+
+export const title = 'Vanilla'
+
+export function head() {
+	return (
+		<head>
+			<style children={`
+html {
+	height: 100%;
+	background-color: #fdfdfd;
+}
+html, h1, input, button {
+	font-family: 'Lato', sans-serif;
+}
+body {
+	height: 100%;
+	margin: 0;
+}
+`} />
+		</head>
+	)
 }
 
 export function deinit() {

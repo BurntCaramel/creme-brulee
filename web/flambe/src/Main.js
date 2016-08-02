@@ -62,7 +62,7 @@ export default React.createClass({
 	getDefaultProps() {
 		return {
 			showTree: false,
-			initialDestinationID: 'bootstrap'
+			initialDestinationID: 'foundation'
 		}
 	},
 
@@ -77,8 +77,7 @@ export default React.createClass({
 			content,
 			contentTree: !!content ? parseInput(content) : null,
 			ingredients: R.map(validateContent, ingredients),
-			destinationID,
-			destination: destinations[destinationID]
+			destinationID
 		}
 	},
 
@@ -90,20 +89,17 @@ export default React.createClass({
 	},
 
 	onAddNewIngredient(event) {
-		this.setState(({ ingredients, contentTree }) => {
-
-			return {
-				ingredients: ingredients.concat({
-					id: R.when(
-						R.isNil,
-						R.always('untitled'),
-						suggestReferenceFromTree(ingredients, contentTree)
-					),
-					type: 'text',
-					content: ''
-				})
-			}
-		})
+		this.setState(({ ingredients, contentTree }) => ({
+			ingredients: ingredients.concat({
+				id: R.when(
+					R.isNil,
+					R.always('untitled'),
+					suggestReferenceFromTree(ingredients, contentTree)
+				),
+				type: 'text',
+				content: ''
+			})
+		}))
 	},
 
 	onChangeIngredientAtIndex(index, newValue) {
@@ -131,8 +127,10 @@ export default React.createClass({
   render() {
 		const { showTree } = this.props
 		const {
-			content, contentTree, ingredients, destinationID, destination
+			content, contentTree, ingredients, destinationID
 		} = this.state
+
+		const { head: renderHead, Preview } = destinations[destinationID]
 
 		console.dir(contentTree)
 		console.dir(ingredients)
@@ -172,19 +170,29 @@ export default React.createClass({
 					background={{ color: colors.lightKeyA }}
 					{ ...stylers.mainColumn }
 				>
-					<Seed column grow={ 1 }>
+					<Seed column grow={ 1 } key={ destinationID }>
 					{
 						!!contentTree ? (
 							catchRenderErrors ? (
 								R.tryCatch(
-								(contentTree) => destination.renderTree({ ingredients, contentTree }),
+								(contentTree) => (
+									<Preview
+										ingredients={ ingredients }
+										contentTree={ contentTree }
+									/>
+								),
 								(error, contentTree) => console.error('Invalid tree', error, contentTree)
 							)(contentTree)
 							) : (
 								<Frame
 									key={ destinationID }
-									head={ destination.head() }
-									children={ destination.renderTree({ ingredients, contentTree }) }
+									head={ renderHead() }
+									children={
+										<Preview
+											ingredients={ ingredients }
+											contentTree={ contentTree }
+										/>
+									}
 									{ ...iframeStyler }
 								/>
 							)	

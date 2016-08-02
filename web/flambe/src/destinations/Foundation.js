@@ -8,9 +8,36 @@ import * as Web from './Web'
 import { renderTreeUsing } from './render'
 
 
+const buttonTagsToClass = R.converge(
+	R.unapply(R.join(' ')), [
+		R.always('button'),
+		R.cond([
+			[ R.has('secondary'), R.always('secondary') ],
+			[ R.has('disabled'), R.always('disabled') ],
+			[ R.T, R.always('') ]
+		]),
+		R.cond([
+			[ R.has('large'), R.always('large') ],
+			[ R.has('small'), R.always('small') ],
+			[ R.has('extrasmall'), R.always('tiny') ],
+			[ R.T, R.always('') ]
+		])
+	]
+)
+
+export const button = (tags, mentions, title) => (
+	<Seed Component='button'
+		className={ buttonTagsToClass(tags) }
+		margin={{ bottom: '0.5rem' }}
+		maxWidth='20em'
+		children={ title }
+	/>
+)
+export const cta = button
+
 const elementRendererForTags = R.cond([
 	[ R.has('field'), R.curry(Web.field) ],
-	[ R.has('button'), R.curry(Web.button) ],
+	[ R.has('button'), R.curry(button) ],
 	[ R.has('cta'), R.curry(Web.cta) ],
 	[ R.has('image'), R.curry(Web.image) ],
 	[ R.has('video'), R.curry(Web.video) ],
@@ -22,21 +49,19 @@ const elementRendererForTags = R.cond([
 	[ R.T, R.curry(Web.fallback) ]
 ])
 
-export const renderTree = renderTreeUsing({ elementRendererForTags })
+export const Preview = renderTreeUsing({ elementRendererForTags })
 
-export function init(el) {
-	assets.cssScoped({
-		id: 'foundation-css',
-		url: 'https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css',
-		//url: 'https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation.min.css',
-		scopeTo: el
-	})
-	assets.js({
-		id: 'foundation-js',
-		url: 'https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation.min.js'
-	})
-}
+export const title = 'Foundation'
 
-export function deinit() {
-	assets.remove(['foundation-css', 'foundation-js'])
+export function head() {
+	return (
+		<head>
+			<link rel='stylesheet' type='text/css'
+				href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css'
+			/>
+			<script
+				src='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation.min.js'
+			/>
+		</head>
+	)
 }

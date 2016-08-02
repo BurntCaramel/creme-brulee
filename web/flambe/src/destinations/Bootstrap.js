@@ -1,4 +1,3 @@
-
 import R from 'ramda'
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
@@ -49,21 +48,19 @@ const elementRendererForTags = R.cond([
 	[ R.T, R.curry(Web.fallback) ]
 ])
 
-export const renderTree = renderTreeUsing({ elementRendererForTags })
+export const Preview = renderTreeUsing({ elementRendererForTags })
 
-export function init(el) {
-	assets.cssScoped({
-		id: 'bootstrap-css',
-		//url: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css'
-		url: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-		scopeTo: el
-	})
-	assets.js({
-		id: 'bootstrap-js',
-		url: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
-	})
-}
+export const title = 'Bootstrap'
 
-export function deinit() {
-	assets.remove(['bootstrap-css', 'bootstrap-js'])
+export function head() {
+	return (
+		<head>
+			<link rel='stylesheet' type='text/css'
+				href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'
+			/>
+			<script
+				src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
+			/>
+		</head>
+	)
 }
