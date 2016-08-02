@@ -2,10 +2,22 @@ import R from 'ramda'
 import React from 'react'
 import { Seed } from 'react-seeds'
 
-import resolveReferences from './resolveReferences'
+import resolveReferencesUsing from './resolveReferences'
+
+const renderContentUsing = (resolveReferences) => ({ references, text }) => {
+	if (references != null && references.length > 0) {
+		return resolveReferences(references)
+	}
+	else {
+		return text
+	}
+}
 
 export const renderElement = ({ ingredients, elementRendererForTags }) => {
-	const renderElement = R.converge(
+	const resolveReferences = resolveReferencesUsing(ingredients)
+	const renderContent = renderContentUsing(resolveReferences)
+
+	const renderElementLocal = R.converge(
 		R.call, [
 			R.pipe(
 				R.prop('tags'),
@@ -13,15 +25,16 @@ export const renderElement = ({ ingredients, elementRendererForTags }) => {
 			),
 			R.pipe(
 				R.prop('references'),
-				resolveReferences(ingredients)
+				resolveReferences
 			),
 			R.prop('text'),
 			R.prop('children'),
-			() => renderElement
+			(ignore) => renderElementLocal, // Have to put in closure as it is being assigned
+			R.always(renderContent)
 		]
 	)
 
-	return renderElement
+	return renderElementLocal
 }
 
 export const Section = (elements) => (

@@ -3,7 +3,8 @@ import seeds from 'react-seeds'
 import * as colors from '../colors' 
 
 export const mainColumn = seeds({
-	minWidth: 320
+	minWidth: 320,
+	maxWidth: 414
 	//margin: { left: '0.5rem', right: '0.5rem' },
 	//padding: { top: '1rem' }
 })
@@ -33,5 +34,13 @@ export const ingredientIDField = seeds({
 	font: { size: 16 },
 	text: { align: 'center' },
 	background: { color: 'white' },
+	border: { width: 1, style: 'solid', color: colors.light1mid }
+})
+
+export const ingredientContentField = ({ error }) => seeds({
+	padding: '0.5rem',
+	font: { size: 16 },
+	text: { align: 'center' },
+	background: { color: error != null ? colors.errorFieldBackground : 'white' },
 	border: { width: 1, style: 'solid', color: colors.light1mid }
 })

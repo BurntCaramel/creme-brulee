@@ -4,8 +4,8 @@ import { findDOMNode } from 'react-dom'
 import seeds, { Seed } from 'react-seeds'
 
 import { parseInput } from './parser'
-//import * as Web from './destinations/Web'
 import * as destinations from './destinations'
+import validateContent from './ingredients/validateContent'
 
 import * as colors from './colors'
 import * as stylers from './stylers'
@@ -13,6 +13,8 @@ import Button from './ui/Button'
 import Field from './ui/Field'
 import References from './sections/references'
 import PreviewTabs from './sections/components/PreviewTabs'
+
+const catchRenderErrors = false
 
 const suggestReferenceFromTree = R.uncurryN(2, (ingredients) => R.pipe(
 	R.chain(R.pluck('references')),
@@ -37,8 +39,8 @@ export default React.createClass({
 		return {
 			content,
 			contentTree: !!content ? parseInput(content) : null,
-			ingredients,
-			destination: destinations.bootstrap
+			ingredients: R.map(validateContent, ingredients),
+			destination: destinations.web
 		}
 	},
 
@@ -59,6 +61,7 @@ export default React.createClass({
 						R.always('untitled'),
 						suggestReferenceFromTree(ingredients, contentTree)
 					),
+					type: 'text',
 					content: ''
 				})
 			}
@@ -67,7 +70,11 @@ export default React.createClass({
 
 	onChangeIngredientAtIndex(index, newValue) {
 		this.setState(({ ingredients }) => ({
-			ingredients: R.update(index, newValue, ingredients)
+			ingredients: R.update(
+				index,
+				validateContent(newValue),
+				ingredients
+			)
 		}))
 	},
 
@@ -89,7 +96,9 @@ export default React.createClass({
 		console.dir(contentTree)
 
     return (
-			<Seed row grow={ 1 } shrink={ 0 } wrap>
+			<Seed row wrap justifyContent='center'
+				grow={ 1 } shrink={ 0 }
+			>
 				<Seed column
 					grow={ 1 } shrink={ 0 } basis='50%'
 					{ ...stylers.mainColumn }
@@ -123,10 +132,16 @@ export default React.createClass({
 				>
 					<Seed column grow={ 1 } padding='1rem'>
 					{
-						!!contentTree ? R.tryCatch(
-							(contentTree) => destination.renderTree({ ingredients, contentTree }),
-							(error, contentTree) => console.error('Invalid tree', error, contentTree)
-						)(contentTree) : null
+						!!contentTree ? (
+							catchRenderErrors ? (
+								R.tryCatch(
+								(contentTree) => destination.renderTree({ ingredients, contentTree }),
+								(error, contentTree) => console.error('Invalid tree', error, contentTree)
+							)(contentTree)
+							) : (
+								destination.renderTree({ ingredients, contentTree })
+							)	
+						) : null
 					}
 					</Seed>
 					{ false &&

@@ -11,9 +11,11 @@
     "test:watch": "nwb test --server"
   },
   "dependencies": {
+    "lodash": "^4.14.1",
     "ramda": "^0.21.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
+    "react-icons": "^2.2.1",
     "react-seeds": "^0.3.7-0",
     "react-sow": "^0.3.0-b3"
   },

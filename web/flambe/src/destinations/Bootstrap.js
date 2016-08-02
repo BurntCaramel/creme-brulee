@@ -6,7 +6,7 @@ import rgba from 'react-sow/rgba'
 
 import * as assets from './assets'
 import * as Web from './Web'
-import { renderElement, renderTreeUsing } from './render'
+import { renderTreeUsing } from './render'
 
 const buttonTagsToClass = R.converge(
 	R.unapply(R.join(' ')), [
@@ -35,14 +35,6 @@ export const button = (tags, mentions, title) => (
 )
 export const cta = button
 
-export const nav = (tags, mentions, content, children, renderElement) => (
-	<Seed row Component='nav'>
-	{
-		children.map(renderElement)
-	}
-	</Seed>
-)
-
 const elementRendererForTags = R.cond([
 	[ R.has('field'), R.curry(Web.field) ],
 	[ R.has('button'), R.curry(button) ],
@@ -50,9 +42,10 @@ const elementRendererForTags = R.cond([
 	[ R.has('image'), R.curry(Web.image) ],
 	[ R.has('video'), R.curry(Web.video) ],
 	[ R.has('text'), R.curry(Web.text) ],
-	[ R.has('nav'), R.curry(nav) ],
-	[ R.has('columns'), R.curry(Web.columns) ],
 	[ R.has('swatch'), R.curry(Web.swatch) ],
+	[ R.has('nav'), R.curry(Web.nav) ],
+	[ R.has('columns'), R.curry(Web.columns) ],
+	[ R.has('list'), R.curry(Web.list) ],
 	[ R.T, R.curry(Web.fallback) ]
 ])
 

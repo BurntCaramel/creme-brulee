@@ -16,9 +16,11 @@ const fontSizeForProps = (props) => (
 export default ({ huge, small, selected, ...props }) => (
 	<Seed Component='button'
 		{ ...props }
+		padding={ 0 }
 		font={{ size: fontSizeForProps({ huge, small }) }}
 		text={{ color: selected ? colors.light : colors.dark }}
 		background={{ color: selected ? colors.dark : colors.light }}
 		border={{ width: 1, style: 'solid', color: selected ? colors.dark : colors.light1mid }}
+		cornerRadius={ 0 }
 	/>
 )

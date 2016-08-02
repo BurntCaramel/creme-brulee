@@ -2,9 +2,9 @@ import React from 'react'
 import Main from './Main'
 
 const initialContent = (
-`Welcome to Royal Icing #heading
+`Welcome to Royal Icing #primary
 
-#video
+Create using just text and hashtags #image #unsplash: dessert
 
 User name #field
 Password #field
@@ -12,15 +12,24 @@ Password #field
 Sign In #button #primary
 Forgot Your Password? #button #small
 
-About Me #link: https://icing.space/about
+Features #link: https://icing.space/features
 
-@legal
+@legal #small
 `)
+
+/*
+	# shorthand #primary
+	## shorthand #secondary
+	### shorthand #tertiary
+
+	#collected:(hash)
+*/
 
 const source = [
 	{
 		id: 'legal',
-		content: `Copyright Company Inc. 2016`
+		type: 'text',
+		rawContent: `Copyright Company Inc. 2016`
 	}
 ]
 

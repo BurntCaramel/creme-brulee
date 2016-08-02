@@ -4,7 +4,17 @@ import seeds, { Seed } from 'react-seeds'
 
 import Button from '../../ui/Button'
 import Field from '../../ui/Field'
+import Choice from '../../ui/Choice'
 import * as stylers from '../../stylers'
+
+const types = [
+	{ value: 'text', title: 'Text' },
+	{ value: 'markdown', title: 'Markdown' },
+	{ value: 'json', title: 'JSON' },
+	{ value: 'csv', title: 'CSV' },
+	{ value: 'gist', title: 'Gist' },
+	{ value: 'icing', title: 'Icing' }
+]
 
 const ReferenceHeading = (props) => (
 	<Seed Component='h3'
@@ -25,7 +35,7 @@ function List({
 	return (
 		<div>
 		{
-			ingredients.map(({ id, content }, index) => (
+			ingredients.map(({ id, rawContent, type, error }, index) => (
 				<Seed key={ index }
 					column
 					margin={{ top: '1rem' }}
@@ -34,21 +44,34 @@ function List({
 						<Field
 							value={ id }
 							grow={ 1 }
-							onChange={ (value) => onChangeAtIndex(index, {
-								id: value,
-								content
+							onChange={ (newID) => onChangeAtIndex(index, {
+								id: newID,
+								rawContent,
+								type
 							}) }
 							{ ...stylers.ingredientIDField }
+						/>
+						<Choice
+							value={ type } items={ types }
+							onChange={ (newType) => {
+								console.log('change type', newType)
+								onChangeAtIndex(index, {
+									id,
+									rawContent,
+									type: newType
+								})
+							} }
 						/>
 						<RemoveButton onClick={ () => onRemoveAtIndex(index) } />
 					</Seed>
 					<Field
-						value={ content }
-						onChange={ (value) => onChangeAtIndex(index, {
+						value={ rawContent }
+						onChange={ (newRawContent) => onChangeAtIndex(index, {
 							id,
-							content: value
+							rawContent: newRawContent,
+							type
 						}) }
-						{ ...stylers.sourceField }
+						{ ...stylers.ingredientContentField({ error }) }
 					/>
 				</Seed>
 			))	
