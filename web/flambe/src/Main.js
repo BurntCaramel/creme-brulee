@@ -2,6 +2,7 @@ import R from 'ramda'
 import React from 'react'
 import { findDOMNode } from 'react-dom'
 import seeds, { Seed } from 'react-seeds'
+import Frame from 'react-frame-component'
 
 import { parseInput } from './parser'
 import * as destinations from './destinations'
@@ -11,6 +12,7 @@ import * as colors from './colors'
 import * as stylers from './stylers'
 import Button from './ui/Button'
 import Field from './ui/Field'
+import Choice from './ui/Choice'
 import References from './sections/references'
 import PreviewTabs from './sections/components/PreviewTabs'
 
@@ -19,28 +21,64 @@ const catchRenderErrors = false
 const suggestReferenceFromTree = R.uncurryN(2, (ingredients) => R.pipe(
 	R.chain(R.pluck('references')),
 	R.unnest,
+	R.map(R.head),
 	R.difference(R.__, R.pluck('id', ingredients)),
-	R.head,
+	R.head // First pick
 ))
+
+const iframeStyler = seeds({
+	grow: 1,
+	border: 'none'
+})
+
+function DestinationChoice({
+	destinationID, destinations,
+	onChange
+}) {
+	const items = R.pipe(
+		R.toPairs,
+		R.map(R.converge(R.merge, [
+			R.pipe(
+				R.prop(0),
+				R.objOf('value')
+			),
+			R.pipe(
+				R.prop(1),
+				R.pick(['title'])
+			)
+		]))
+	)(destinations)
+
+	return (
+		<Choice
+			value={ destinationID }
+			items={ items }
+			onChange={ onChange }
+		/>
+	)
+}
 
 export default React.createClass({
 	getDefaultProps() {
 		return {
-			showTree: false
+			showTree: false,
+			initialDestinationID: 'bootstrap'
 		}
 	},
 
 	getInitialState() {
 		const {
 			initialContent: content,
-			initialIngredients: ingredients
+			initialIngredients: ingredients,
+			initialDestinationID: destinationID 
 		} = this.props
 
 		return {
 			content,
 			contentTree: !!content ? parseInput(content) : null,
 			ingredients: R.map(validateContent, ingredients),
-			destination: destinations.web
+			destinationID,
+			destination: destinations[destinationID]
 		}
 	},
 
@@ -84,16 +122,20 @@ export default React.createClass({
 		}))
 	},
 
-	componentDidMount() {
-		const { destination } = this.state
-		destination.init(findDOMNode(this))
+	onChangeDestination(newDestinationID) {
+		this.setState({
+			destinationID: newDestinationID
+		})
 	},
 
   render() {
 		const { showTree } = this.props
-		const { content, contentTree, ingredients, destination } = this.state
+		const {
+			content, contentTree, ingredients, destinationID, destination
+		} = this.state
 
 		console.dir(contentTree)
+		console.dir(ingredients)
 
     return (
 			<Seed row wrap justifyContent='center'
@@ -130,7 +172,7 @@ export default React.createClass({
 					background={{ color: colors.lightKeyA }}
 					{ ...stylers.mainColumn }
 				>
-					<Seed column grow={ 1 } padding='1rem'>
+					<Seed column grow={ 1 }>
 					{
 						!!contentTree ? (
 							catchRenderErrors ? (
@@ -139,11 +181,20 @@ export default React.createClass({
 								(error, contentTree) => console.error('Invalid tree', error, contentTree)
 							)(contentTree)
 							) : (
-								destination.renderTree({ ingredients, contentTree })
+								<Frame
+									key={ destinationID }
+									head={ destination.head() }
+									children={ destination.renderTree({ ingredients, contentTree }) }
+									{ ...iframeStyler }
+								/>
 							)	
 						) : null
 					}
 					</Seed>
+					<DestinationChoice
+						destinationID={ destinationID } destinations={ destinations }
+						onChange={ this.onChangeDestination }
+					/>
 					{ false &&
 						<PreviewTabs />
 					}
