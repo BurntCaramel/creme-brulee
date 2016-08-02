@@ -1,19 +1,28 @@
 import R from 'ramda'
+import parseInt from 'lodash/parseInt'
 
 const tagsRegex = /\B#\w+(:\s*\S*)?/g
 const rejectEmptyStrings = R.filter(R.test(/\S/))
 
 const parseText = R.pipe(
-	R.replace(/\B[#@]\w*(:\s*\S*)?/g, ''), // remove tags and mentions
+	R.replace(/\B#\w*(:\s*\S*)?/g, ''), // remove tags
+	R.replace(/\B@\w*(.\w)*/g, ''), // remove mentions
 	//R.replace(/([#@]\w*(:\s*\S*)\s?)+\s*$/, ''), // remove tags and mentions
 	R.replace(/\s+/g, ' '), // clean up spaces
 	R.trim
 )
 
 const parseMentions = R.pipe(
-	R.match(/@(\w+)/g), // match references
+	R.match(/@(\w+)(.\w)*/g), // match references
 	R.map(R.tail),
-	rejectEmptyStrings
+	rejectEmptyStrings,
+	R.map(R.pipe(
+		R.split('.'),
+		R.map(R.when(
+			R.test(/^\d/), // Starts with a digit
+			parseInt // Convert to number
+		))
+	))
 )
 
 const parseTagContent = R.converge(

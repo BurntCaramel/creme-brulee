@@ -1,13 +1,18 @@
 import R from 'ramda'
 
-const resolveReference = (source) => R.pipe(
-	R.propEq('id'),
-	R.find(R.__, source),
-	R.unless(
-		R.isNil,
-		R.prop('content')
-	)
-) 
+const resolveReference = (source) => R.converge(
+	R.call, [
+		R.pipe(
+			R.tail,
+			R.concat(['content']),
+			R.path
+		),
+		R.pipe(
+			R.head,
+			R.propEq('id'),
+			R.find(R.__, source),
+		)
+]) 
 
 const resolveReferences = R.pipe(
 	resolveReference, // pass source
