@@ -4,7 +4,7 @@ import seeds, { Seed } from 'react-seeds'
 import rgba from 'react-sow/rgba'
 
 import * as assets from './assets'
-import * as Web from './Web'
+import * as Vanilla from './Vanilla'
 import { renderTreeUsing } from './render'
 
 const buttonTagsToClass = R.converge(
@@ -34,18 +34,9 @@ export const button = (tags, mentions, title) => (
 )
 export const cta = button
 
-const elementRendererForTags = R.cond([
-	[ R.has('field'), R.curry(Web.field) ],
+const elementRendererForTags = Vanilla.extendTagConds([
 	[ R.has('button'), R.curry(button) ],
-	[ R.has('cta'), R.curry(cta) ],
-	[ R.has('image'), R.curry(Web.image) ],
-	[ R.has('video'), R.curry(Web.video) ],
-	[ R.has('text'), R.curry(Web.text) ],
-	[ R.has('swatch'), R.curry(Web.swatch) ],
-	[ R.has('nav'), R.curry(Web.nav) ],
-	[ R.has('columns'), R.curry(Web.columns) ],
-	[ R.has('list'), R.curry(Web.list) ],
-	[ R.T, R.curry(Web.fallback) ]
+	[ R.has('cta'), R.curry(cta) ]
 ])
 
 export const Preview = renderTreeUsing({ elementRendererForTags })

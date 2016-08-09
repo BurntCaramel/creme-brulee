@@ -16,10 +16,10 @@ const isPassword = (tags, mentions, title) => (
 )
 
 export const field = (tags, mentions, title) => (
-	<label>
+	<Seed Component='label' column>
 		<span children={ title } style={{ display: 'block' }} />
 		<input type={ isPassword(tags, title) ? 'password' : 'text' } />
-	</label>
+	</Seed>
 )
 
 export const button = (tags, mentions, title) => (
@@ -32,10 +32,31 @@ export const button = (tags, mentions, title) => (
 )
 export const cta = button
 
-const wrapTextForTags = (tags, element, renderContent) => {
+export const choice = (tags, mentions, title, children, Element, renderContent) => (
+	<Seed Component='label' column>
+		<span children={ title } style={{ display: 'block' }} /> 
+		<Seed Component='select'
+			value={ tags.value }
+			//onChange={ this.onChange }
+			shrink={ 0 }
+			maxWidth='20em'
+			//padding={{ top: 0, bottom: 0, left: '0.5em', right: '0.5em' }}
+			font={{ size: 16 }}
+		>
+		{
+			children.map(({ text, tags }) => (
+				<option key={ text }
+					value={ text } children={ tags.title || text }
+				/>
+			))
+		}
+		</Seed>
+	</Seed>
+)
+
+const wrapTextForTags = (tags, element, resolveContent) => {
 	if (R.has('link', tags)) {
-		const url = renderContent(tags.link)
-		//const url = tags.link.text
+		const url = resolveContent(tags.link)
 		return (
 			<a href={ url } children={ element } />
 		)
@@ -55,14 +76,14 @@ const wrapInInline = (tags, element) => {
 	return element
 }
 
-export const text = (tags, mentions, content, children, Element, renderContent) => {
+export const text = (tags, references, text, children, Element, resolveContent) => {
 	const [Component, fontSize, textAlign] = (
 		R.has('primary', tags) ? (
 			['h1', '2em', 'center']
 		) : R.has('secondary', tags) ? (
 			['h2', '1.5em', 'center']
 		) : R.has('tertiary', tags) ? (
-			['h3', '1.25em', 'center']
+			['h3', '1.25em', 'left']
 		) : (
 			['p', '1em', 'left']
 		)
@@ -76,10 +97,12 @@ export const text = (tags, mentions, content, children, Element, renderContent) 
 				margin={ 0 }
 				text={{ align: textAlign }}
 				font={{ size: fontSize }}
-				children={ wrapInInline(tags, content) }
+				children={
+					wrapInInline(tags, resolveContent({ references, text }))
+				}
 			/>
 		),
-		renderContent
+		resolveContent
 	)
 }
 
@@ -127,25 +150,27 @@ const UnsplashImage = React.createClass({
 	}
 })
 
-const imageContent = (tags, text, resolveContent) => {
+const placeholderImageContent = (tags, text, resolveContent) => (
+	<Seed column justifyContent='center'
+			minHeight={ imageHeight }
+			font={{ style: 'italic' }}
+			background={ imageBackground }
+			children={ text }
+		/>
+) 
+
+const richImageContent = (tags, text, resolveContent) => {
 	if (R.has('unsplash', tags)) {
 		return (
 			<UnsplashImage category={ resolveContent(tags['unsplash']) } text={ text } />
 		)
 	}
 	else {
-		return (
-			<Seed column justifyContent='center'
-				minHeight={ imageHeight }
-				font={{ style: 'italic' }}
-				background={ imageBackground }
-				children={ text }
-			/>
-		)
+		return placeholderImageContent(tags, text, resolveContent)
 	}
 }
 
-export const image = (tags, mentions, text, children, Element, resolveContent) => {
+export const imageMaker = (imageContent) => (tags, mentions, text, children, Element, resolveContent) => {
 	return (
 		<Seed Component='figure' column
 			grow={ 1 } width='100%'
@@ -165,6 +190,9 @@ export const image = (tags, mentions, text, children, Element, resolveContent) =
 		/>
 	)
 }
+
+export const image = imageMaker(richImageContent)
+export const placeholderImage = imageMaker(placeholderImageContent)
 
 export const video = (tags, mentions, content) => (
 	<Seed Component='figure' column
@@ -195,14 +223,15 @@ const hexColorRegex = /^[a-fA-F09]{3,6}$/
 
 export const swatch = (tags, mentions, content, children, Element, renderContent) => (
 	<Seed
-		width={
+		grow={ 1 }
+		minWidth={
 			R.cond([
 				[ R.has('width'), R.pipe(R.prop('width'), renderContent) ],
 				[ R.has('size'), R.pipe(R.prop('size'), renderContent) ],
 				[ R.T, R.always(32) ]
 			])(tags)
 		}
-		height={
+		minHeight={
 			R.cond([
 				[ R.has('height'), R.pipe(R.prop('height'), renderContent) ],
 				[ R.has('size'), R.pipe(R.prop('size'), renderContent) ],
@@ -217,6 +246,12 @@ export const swatch = (tags, mentions, content, children, Element, renderContent
 			)
 		}}
 	/>
+)
+
+const isHiddenForTags = R.propSatisfies(Boolean, 'hidden')
+
+export const hidden = (tags, mentions, content) => (
+	<noscript />
 )
 
 export const list = (tags, mentions, content, children, Element) => {
@@ -234,9 +269,15 @@ export const list = (tags, mentions, content, children, Element) => {
 	)
 }
 
-export const nav = (tags, mentions, content, children, renderElement, renderContent) => (
-	<Seed Component='nav'
-		row reverse={ R.has('reverse', tags) } justifyContent='center'
+const columnsComponentForTags = R.cond([
+	[ R.has('nav'), R.always('nav') ],
+	[ R.T, R.always('div') ]
+])
+
+export const columns = (tags, mentions, content, children, renderElement, renderContent) => (
+	<Seed Component={ columnsComponentForTags(tags) }
+		row wrap reverse={ R.has('reverse', tags) } justifyContent='center'
+		width='100%'
 	>
 	{ // Render content, interleaving an optional divider
 		R.pipe(
@@ -257,7 +298,11 @@ export const nav = (tags, mentions, content, children, renderElement, renderCont
 				),
 				R.pipe(
 					R.last,
-					renderElement
+					R.ifElse(
+						R.isNil,
+						R.always([]),
+						renderElement
+					)
 				)
 			])
 		)(children)
@@ -265,15 +310,7 @@ export const nav = (tags, mentions, content, children, renderElement, renderCont
 	</Seed>
 )
 
-export const columns = (tags, mentions, content, children, Element) => (
-	<Seed row wrap reverse={ R.has('reverse', tags) } justifyContent='space-around'>
-	{
-		children.map((element, index) => (
-			<Element key={ index } { ...element } />
-		))
-	}
-	</Seed>
-)
+export const nav = columns
 
 export const record = (tags, mentions, text, children, Element, renderContent) => {
 	if (mentions.length > 0) {
@@ -292,33 +329,29 @@ export const gist = (tags, mentions, text, children, Element, renderContent) => 
 	<script src={ (mentions[0] || text) + '.js' } />
 )
 
-export const fallback = (tags, mentions, content, children, Element, renderContent) => (
-	R.isEmpty(mentions) ? (
-		text(tags, mentions, content, children, Element, renderContent)
-	) : R.allPass([R.propEq('length', 1), R.propSatisfies(R.is(String), 0)])(mentions) ? (
-		text(tags, [], mentions[0], children, Element, renderContent)
-	) : (
-		record(tags, mentions, content, children, Element, renderContent)
-	)
-)
-
-const elementRendererForTags = R.cond([
+export const extendTagConds = (conds) => R.cond([
+	[ isHiddenForTags, R.curry(hidden) ],
+	...conds,
 	[ R.has('field'), R.curry(field) ],
 	[ R.has('button'), R.curry(button) ],
 	[ R.has('cta'), R.curry(cta) ],
+	[ R.has('choice'), R.curry(choice) ],
 	[ R.has('quote'), R.curry(quote) ],
 	[ R.has('image'), R.curry(image) ],
 	[ R.has('video'), R.curry(video) ],
-	[ R.has('text'), R.curry(text) ],
 	[ R.has('code'), R.curry(code) ],
+	[ R.has('text'), R.curry(text) ],
 	[ R.has('swatch'), R.curry(swatch) ],
+	[ R.has('fill'), R.curry(swatch) ],
 	[ R.has('columns'), R.curry(columns) ],
 	[ R.has('nav'), R.curry(nav) ],
 	[ R.has('list'), R.curry(list) ],
 	[ R.has('record'), R.curry(record) ],
 	[ R.has('gist'), R.curry(gist) ],
-	[ R.T, R.curry(fallback) ]
+	[ R.T, R.curry(text) ]
 ])
+
+const elementRendererForTags = extendTagConds([])
 
 export const Preview = renderTreeUsing({
 	elementRendererForTags
@@ -327,7 +360,7 @@ export const Preview = renderTreeUsing({
 export function init() {
 }
 
-export const title = 'Vanilla'
+export const title = 'Vanilla Web'
 
 export function head() {
 	return (

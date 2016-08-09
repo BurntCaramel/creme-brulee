@@ -6,18 +6,19 @@ const rejectEmptyStrings = R.filter(R.test(/\S/))
 
 const parseText = R.pipe(
 	R.replace(/\B#\w*(:\s*\S*)?/g, ''), // remove tags
-	R.replace(/\B@\w*(.\w)*/g, ''), // remove mentions
-	//R.replace(/([#@]\w*(:\s*\S*)\s?)+\s*$/, ''), // remove tags and mentions
+	R.replace(/\B@\w*(.\w*)*/g, ''), // remove mentions
 	R.replace(/\s+/g, ' '), // clean up spaces
 	R.trim
 )
 
 const parseMentions = R.pipe(
-	R.match(/@(\w+)(.\w)*/g), // match references
+	R.match(/@(\w+)(.\w*)*/g), // match references
 	R.map(R.tail),
 	rejectEmptyStrings,
 	R.map(R.pipe(
+		R.trim,
 		R.split('.'),
+		rejectEmptyStrings,
 		R.map(R.when(
 			R.test(/^\d/), // Starts with a digit
 			parseInt // Convert to number

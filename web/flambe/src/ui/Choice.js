@@ -1,9 +1,16 @@
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
+import defaultStyler from 'react-sow/default'
 
 import * as colors from '../colors'
 
 const Choice = React.createClass({
+	getDefaultProps() {
+		return {
+			styler: () => defaultStyler
+		}
+	},
+
 	onChange(event) {
 		const el = event.target
 		const value = el.value
@@ -11,18 +18,17 @@ const Choice = React.createClass({
 	},
 
 	render() {
-		const { value, items, onChange } = this.props
+		const { value, items, onChange, styler, ...rest } = this.props
 
 		return (
 			<Seed Component='select'
+				{ ...rest }
 				value={ value }
 				onChange={ this.onChange }
 				padding={{ top: 0, bottom: 0, left: '0.5em', right: '0.5em' }}
 				font={{ size: 16 }}
-				text={{ color: colors.dark }}
-				background={{ color: colors.light }}
-				border={{ width: 1, style: 'solid', color: colors.light1mid }}
 				cornerRadius={ 0 }
+				{ ...styler(rest) }
 			>
 			{
 				items.map(({ value, title }) => (

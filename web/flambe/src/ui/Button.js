@@ -1,5 +1,6 @@
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
+import defaultStyler from 'react-sow/default'
 
 import * as colors from '../colors'
 
@@ -13,14 +14,19 @@ const fontSizeForProps = (props) => (
 	)
 )
 
-export default ({ huge, small, selected, ...props }) => (
+export default ({
+	huge, small, selected,
+	styler = defaultStyler,
+	...props
+}) => (
 	<Seed Component='button'
 		{ ...props }
 		padding={ 0 }
 		font={{ size: fontSizeForProps({ huge, small }) }}
 		text={{ color: selected ? colors.light : colors.dark }}
 		background={{ color: selected ? colors.dark : colors.light }}
-		border={{ width: 1, style: 'solid', color: selected ? colors.dark : colors.light1mid }}
+		border='none'
 		cornerRadius={ 0 }
+		{ ...styler({ selected }) }
 	/>
 )

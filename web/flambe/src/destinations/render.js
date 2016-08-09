@@ -13,8 +13,8 @@ const renderContentUsing = (resolveReferences) => ({ references, text }) => {
 	}
 }
 
-export const renderElement = ({ ingredients, elementRendererForTags }) => {
-	const resolveReferences = resolveReferencesUsing(ingredients)
+export const renderElement = ({ ingredients, ingredientVariationIndexes, elementRendererForTags }) => {
+	const resolveReferences = resolveReferencesUsing(ingredientVariationIndexes)(ingredients)
 	const renderContent = renderContentUsing(resolveReferences)
 
 	const Element = R.converge(
@@ -23,10 +23,7 @@ export const renderElement = ({ ingredients, elementRendererForTags }) => {
 				R.prop('tags'),
 				elementRendererForTags
 			),
-			R.pipe(
-				R.prop('references'),
-				resolveReferences
-			),
+			R.prop('references'),
 			R.prop('text'),
 			R.prop('children'),
 			(ignore) => Element, // Have to put in closure as it is being assigned
@@ -45,7 +42,12 @@ export const DefaultSection = ({ children }) => (
 	/>
 )
 
-export const DefaultMaster = 'div'
+export const DefaultMaster = ({ children }) => (
+	<Seed
+		padding={{ top: '1rem' }}
+		children={ children }
+	/>
+)
 
 export const renderTreeUsing = ({
 	elementRendererForTags,
@@ -53,12 +55,13 @@ export const renderTreeUsing = ({
 	Master = DefaultMaster
 }) => ({
 	ingredients,
+	ingredientVariationIndexes,
 	contentTree
 }) => {
-	const Element = renderElement({ ingredients, elementRendererForTags }) 
+	const Element = renderElement({ ingredients, ingredientVariationIndexes, elementRendererForTags }) 
 
 	return (
-		<Master>
+		<Master ingredients={ ingredients }>
 		{
 			contentTree.map((section, sectionIndex) => (
 				<Section key={ sectionIndex }>

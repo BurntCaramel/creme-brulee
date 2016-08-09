@@ -2,17 +2,15 @@ import React from 'react'
 import Main from './Main'
 
 const initialContent = (
-`Welcome to Royal Icing #primary
+`Just add hashtags #primary
 
-Create with just text & hashtags #image #unsplash: dessert
+Create rich layouts just by typing #image #unsplash: dessert
 
-User name #field
-Password #field
+Create fields #field
+And Buttons #button #primary
+Big and Small #button #small
 
-Sign In #button #primary
-Forgot Your Password? #button #small
-
-Features #link: https://icing.space/features
+Features #link: @links.features
 
 @legal #small
 `)
@@ -25,18 +23,42 @@ Features #link: https://icing.space/features
 	#collected:(hash)
 */
 
-const source = [
+const ingredients = [
+	{
+		id: 'links',
+		type: 'json',
+		variations: [
+			{
+				rawContent: `{"features": "https://icing.space/features"}`
+			}
+		]
+	},
 	{
 		id: 'legal',
 		type: 'text',
-		rawContent: `Copyright Company Inc. 2016`
+		variations: [
+			{
+				rawContent: `Copyright Company Inc. 2016`
+			}
+		]
+	}
+]
+
+const scenarios = [
+	{
+		links: 0,
+		legal: 0
 	}
 ]
 
 export default React.createClass({
   render() {
     return (
-			<Main initialContent={ initialContent } initialIngredients={ source } />
+			<Main
+				initialContent={ initialContent }
+				initialIngredients={ ingredients }
+				initialScenarios={ scenarios }
+			/>
 		)
   }
 })

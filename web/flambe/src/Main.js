@@ -53,8 +53,68 @@ function DestinationChoice({
 		<Choice
 			value={ destinationID }
 			items={ items }
+			maxWidth='20em'
 			onChange={ onChange }
 		/>
+	)
+}
+
+function PreviewSection({
+	contentTree,
+	ingredients,
+	ingredientVariationIndexes,
+	destinationID,
+	destinations,
+	onChangeDestination
+}) {
+	const { head: renderHead, Preview } = destinations[destinationID]
+
+	return (
+		<Seed column alignItems='center'
+			grow={ 1 } shrink={ 0 } basis='50%'
+			{ ...stylers.mainColumn }
+		>
+			<Seed key={ destinationID }
+				column
+				grow={ 1 } width='100%'
+			>
+			{
+				!!contentTree ? (
+					catchRenderErrors ? (
+						R.tryCatch(
+						(contentTree) => (
+							<Preview
+								ingredients={ ingredients }
+								ingredientVariationIndexes={ ingredientVariationIndexes }
+								contentTree={ contentTree }
+							/>
+						),
+						(error, contentTree) => console.error('Invalid tree', error, contentTree)
+					)(contentTree)
+					) : (
+						<Frame
+							head={ renderHead() }
+							children={
+								<Preview
+									ingredients={ ingredients }
+									ingredientVariationIndexes={ ingredientVariationIndexes }
+									contentTree={ contentTree }
+								/>
+							}
+							{ ...iframeStyler }
+						/>
+					)	
+				) : null
+			}
+			</Seed>
+			<DestinationChoice
+				destinationID={ destinationID } destinations={ destinations }
+				onChange={ onChangeDestination }
+			/>
+			{ false &&
+				<PreviewTabs />
+			}
+		</Seed>
 	)
 }
 
@@ -70,14 +130,18 @@ export default React.createClass({
 		const {
 			initialContent: content,
 			initialIngredients: ingredients,
-			initialDestinationID: destinationID 
+			initialDestinationID: destinationID,
+			initialScenarios: scenarios,
+			initialActiveScenarioIndex: activeScenarioIndex = 0
 		} = this.props
 
 		return {
 			content,
 			contentTree: !!content ? parseInput(content) : null,
 			ingredients: R.map(validateContent, ingredients),
-			destinationID
+			destinationID,
+			scenarios,
+			activeScenarioIndex
 		}
 	},
 
@@ -97,24 +161,57 @@ export default React.createClass({
 					suggestReferenceFromTree(ingredients, contentTree)
 				),
 				type: 'text',
-				content: ''
+				variations: [
+					{
+						rawContent: ''
+					}
+				]
 			})
 		}))
 	},
 
-	onChangeIngredientAtIndex(index, newValue) {
-		this.setState(({ ingredients }) => ({
-			ingredients: R.update(
-				index,
-				validateContent(newValue),
-				ingredients
+	onChangeIngredientAtIndex(index, updater) {
+		this.setState(R.evolve({
+			ingredients: R.adjust(
+				R.pipe(
+					updater,
+					validateContent
+				),
+				index
 			)
 		}))
 	},
 
 	onRemoveIngredientAtIndex(index) {
-		this.setState(({ ingredients }) => ({
-			ingredients: R.remove(index, 1, ingredients)
+		this.setState(R.evolve({
+			ingredients: R.remove(index, 1)
+		}))
+	},
+
+	onAddVariationAtIndex(index) {
+		this.setState(R.evolve({
+			ingredients: R.pipe(
+				R.adjust(
+					R.evolve({
+						variations: R.append({
+							rawContent: ''
+						})
+					}),
+					index
+				),
+				R.map(validateContent)
+			)
+		}))
+	},
+
+	onSelectVariation({ ingredientIndex, variationIndex }) {
+		this.setState(({ ingredients, scenarios, activeScenarioIndex }) => ({
+			scenarios: R.adjust(
+				R.merge(R.__, {
+					[ingredients[ingredientIndex].id]: variationIndex
+				}),
+				activeScenarioIndex
+			)(scenarios)
 		}))
 	},
 
@@ -127,11 +224,17 @@ export default React.createClass({
   render() {
 		const { showTree } = this.props
 		const {
-			content, contentTree, ingredients, destinationID
+			content,
+			contentTree,
+			ingredients,
+			destinationID,
+			scenarios,
+			activeScenarioIndex
 		} = this.state
 
-		const { head: renderHead, Preview } = destinations[destinationID]
+		const scenario = scenarios[activeScenarioIndex]
 
+		console.dir(scenario)
 		console.dir(contentTree)
 		console.dir(ingredients)
 
@@ -145,14 +248,17 @@ export default React.createClass({
 				>
 					<Field
 						value={ content }
-						onChange={ this.onSourceChange }
+						onChange={ this.onSourceChange  }
 						{ ...stylers.sourceField }
 					/>
 					<References
 						ingredients={ ingredients }
+						ingredientIDToVariationIndex={ scenario }
 						onAddNew={ this.onAddNewIngredient }
 						onChangeAtIndex={ this.onChangeIngredientAtIndex }
 						onRemoveAtIndex={ this.onRemoveIngredientAtIndex }
+						onAddVariationAtIndex={ this.onAddVariationAtIndex }
+						onSelectVariation={ this.onSelectVariation }
 					/>
 				</Seed>
 				{ showTree &&
@@ -165,48 +271,14 @@ export default React.createClass({
 						</pre>
 					</Seed>
 				}
-				<Seed column
-					grow={ 1 } shrink={ 0 } basis='50%'
-					background={{ color: colors.lightKeyA }}
-					{ ...stylers.mainColumn }
-				>
-					<Seed column grow={ 1 } key={ destinationID }>
-					{
-						!!contentTree ? (
-							catchRenderErrors ? (
-								R.tryCatch(
-								(contentTree) => (
-									<Preview
-										ingredients={ ingredients }
-										contentTree={ contentTree }
-									/>
-								),
-								(error, contentTree) => console.error('Invalid tree', error, contentTree)
-							)(contentTree)
-							) : (
-								<Frame
-									key={ destinationID }
-									head={ renderHead() }
-									children={
-										<Preview
-											ingredients={ ingredients }
-											contentTree={ contentTree }
-										/>
-									}
-									{ ...iframeStyler }
-								/>
-							)	
-						) : null
-					}
-					</Seed>
-					<DestinationChoice
-						destinationID={ destinationID } destinations={ destinations }
-						onChange={ this.onChangeDestination }
-					/>
-					{ false &&
-						<PreviewTabs />
-					}
-				</Seed>
+				<PreviewSection
+					contentTree={ contentTree }
+					ingredients={ ingredients }
+					ingredientVariationIndexes={ scenario }
+					destinationID={ destinationID }
+					destinations={ destinations }
+					onChangeDestination={ this.onChangeDestination }
+				/>
 			</Seed>
 		)
   }
