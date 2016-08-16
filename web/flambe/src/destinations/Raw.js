@@ -10,7 +10,7 @@ export const Preview = ({ ingredients, contentTree }) => (
 	<JSONComponent json={ contentTree } isDeserialized />
 )
 
-export const title = 'Records'
+export const title = 'Raw'
 
 const styleSheet = `
 html {

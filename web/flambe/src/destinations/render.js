@@ -58,6 +58,7 @@ export const renderTreeUsing = ({
 	ingredientVariationIndexes,
 	contentTree
 }) => {
+	// FIXME: use valueForIngredient instead that encapsulates ingredientVariationIndexes 
 	const Element = renderElement({ ingredients, ingredientVariationIndexes, elementRendererForTags }) 
 
 	return (

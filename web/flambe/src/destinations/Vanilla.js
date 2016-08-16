@@ -274,7 +274,7 @@ const columnsComponentForTags = R.cond([
 	[ R.T, R.always('div') ]
 ])
 
-export const columns = (tags, mentions, content, children, renderElement, renderContent) => (
+export const columns = (tags, mentions, content, children, renderElement, resolveContent) => (
 	<Seed Component={ columnsComponentForTags(tags) }
 		row wrap reverse={ R.has('reverse', tags) } justifyContent='center'
 		width='100%'
@@ -290,7 +290,7 @@ export const columns = (tags, mentions, content, children, renderElement, render
 						R.append(divider(
 							R.defaultTo(8, R.unless(
 								R.isNil,
-								renderContent,
+								resolveContent,
 								tags['divider']
 							))
 						))

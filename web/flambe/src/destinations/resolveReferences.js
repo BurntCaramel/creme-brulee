@@ -6,6 +6,7 @@ const resolveReference = R.curry((variationIndexes, source) => R.converge(
 			R.concat,
 			R.path
 		), [
+			// FIXME: refactor
 			R.pipe(
 				R.head, // The ingredient id
 				R.prop(R.__, variationIndexes),
