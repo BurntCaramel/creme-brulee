@@ -1,0 +1,33 @@
+{
+  "name": "outpost-b2",
+  "version": "0.1.0",
+  "description": "Publish collected assets to B2",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/RoyalIcing/creme-brulee.git"
+  },
+  "keywords": [
+    "b2",
+    "collected",
+    "royal",
+    "icing"
+  ],
+  "author": "Patrick Smith <patrick@burntcaramel.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/RoyalIcing/creme-brulee/issues"
+  },
+  "homepage": "https://github.com/RoyalIcing/creme-brulee#readme",
+  "dependencies": {
+    "boom": "^3.2.2",
+    "creed": "^1.0.2",
+    "hapi": "^14.1.0",
+    "joi": "^9.0.4",
+    "ramda": "^0.22.1"
+  }
+}
