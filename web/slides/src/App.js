@@ -6,6 +6,8 @@ function readJSON() {
 	return JSON.parse(element.innerText)
 }
 
+//const fontFamilyStack = 'system, "-apple-system", "-webkit-system-font", BlinkMacSystemFont, "Helvetica Neue", "Helvetica", "Segoe UI", "Roboto", "Arial", "freesans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
+
 export default React.createClass({
 	getInitialState() {
 		return {
