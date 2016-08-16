@@ -3,32 +3,40 @@ const R = require('ramda')
 const URL = require('url')
 const { promiseItemContent, promiseStreamOfItemContent, findInIndexNamed } = require('../services/collected/find')
 const imgix = require('../services/imgix')
+const preMethods = require('./pre/preMethods')
 
-const version = '1'
+const v = '1'
 
 module.exports = [
 	{
 		// Redirects to imgix URL
 		method: 'GET',
-		path: `/${version}/preview/image/@{organization}/{sha256}`,
+		path: `/${v}/preview/image/@{organization}/{sha256}`,
+		config: {
+			pre: [
+				preMethods({
+					imageAdjustments: R.path(['payload', 'adjustments'])
+				}) 
+			]
+		},
 		handler(request, reply) {
 			const { organization, sha256 } = request.params
-			//reply.redirect(`https://royalicing.imgix.net/${version}/@${organization}/${sha256}`)
+			//reply.redirect(`https://royalicing.imgix.net/${v}/@${organization}/${sha256}`)
 			reply.redirect(
-				imgix.buildURL(`/${version}/@${organization}/${sha256}`)
+				imgix.buildURL(`/${v}/@${organization}/${sha256}`)
 			)
 		}
 	},
 	{
 		// Finds item in collected index, then redirects to its imgix URL
 		method: 'GET',
-		path: `/${version}/preview/image/find/@{organization}/{sha256}/{name*}`,
+		path: `/${v}/preview/image/find/@{organization}/{sha256}/{name*}`,
 		handler(request, reply) {
 			findInIndexNamed(request.params)
 			.then(
 				({ organization, sha256 }) => {
 					reply.redirect(
-						imgix.buildURL(`/${version}/@${organization}/${sha256}`, request.query)
+						imgix.buildURL(`/${v}/@${organization}/${sha256}`, request.query)
 					)
 				},
 				reply
@@ -38,7 +46,7 @@ module.exports = [
 	{
 		// Used by Imgix to load the source image
 		method: 'GET',
-		path: `/-imgix/${version}/@{organization}/{sha256}`,
+		path: `/-imgix/${v}/@{organization}/{sha256}`,
 		config: {
 			cache: {
 				privacy: 'public',
@@ -56,7 +64,7 @@ module.exports = [
 	{
 		// Used by Imgix to find the source image in an index
 		method: 'GET',
-		path: `/-imgix/${version}/find/@{organization}/{sha256}/{name*}`,
+		path: `/-imgix/${v}/find/@{organization}/{sha256}/{name*}`,
 		config: {
 			cache: {
 				privacy: 'public',
@@ -67,7 +75,7 @@ module.exports = [
 			findInIndexNamed(request.params)
 			.then(
 				({ organization, sha256 }) => {
-					reply.redirect(`/-imgix/${version}/@${organization}/${sha256}`)
+					reply.redirect(`/-imgix/${v}/@${organization}/${sha256}`)
 				},
 				reply
 			)
