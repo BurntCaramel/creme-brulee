@@ -8,6 +8,7 @@ module.exports = R.unnest([
 	require('./seo'),
 
 	require('./web/slides'),
+	require('./web/flambe'),
 
 	// API
 
