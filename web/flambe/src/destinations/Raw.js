@@ -25,7 +25,7 @@ body {
 	max-width: 100vw;
 	margin: auto;
 	padding: 1.333333333rem 1.7em;
-	line-height: 1.333333333rem;
+	line-height: ${ 4/3 }rem;
 	font-family: system, "-apple-system", "-webkit-system-font", BlinkMacSystemFont, "Helvetica Neue", "Helvetica", "Segoe UI", "Roboto", "Arial", "freesans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	-webkit-hypens: auto; -ms-hypens: auto; hypens: auto;
 }
@@ -40,11 +40,15 @@ ol,
 dt,
 pre,
 hr {
-	margin-bottom: 1.333333333rem;
+	margin-bottom: ${ 2/3 }rem;
 }
 
 ol {
 	padding-left: 2rem;
+}
+
+li {
+	margin-bottom: ${ 4/3 }rem;
 }
 
 dl,
