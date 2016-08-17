@@ -1,10 +1,10 @@
 const R = require('ramda')
+const { reject } = require('creed')
 const axios = require('axios')
 const Boom = require('boom')
 const Crypto = require('crypto')
+
 const { idForOrganizationAndHash } = require('./id')
-const { promiseSettings } = require('./auth')
-const bucketID = process.env.B2_BUCKET_ID
 
 const hashBuffer = (buffer, hashType) => {
 	const hash = Crypto.createHash(hashType)
@@ -12,21 +12,19 @@ const hashBuffer = (buffer, hashType) => {
 	return hash.digest('hex')
 }
 
-const publishItem = ({ organization, sha256, contentBuffer, force = false }) => (
-	promiseSettings()
-	.then(({ authorizationToken, apiUrl }) => (
-		axios({
+const requestUploadURLFromAPI = (requestAPI) => (
+	requestAPI(({ apiUrl, bucketID }) => ({
 			method: 'POST',
-			url: `${apiUrl}/b2api/v1/b2_get_upload_url`,
+			url: `${ apiUrl }/b2api/v1/b2_get_upload_url`,
 			data: {
 				bucketId: bucketID
-			},
-			headers: {
-				'Authorization': authorizationToken
 			}
-		})
-	))
+	}))
 	.then(R.prop('data'))
+)
+
+const createPublishItem = (requestAPI) => ({ organization, sha256, contentBuffer, force = false }) => (
+	requestUploadURLFromAPI(requestAPI)
 	.then(({ authorizationToken, uploadUrl: uploadURL }) => {
 		console.log('sha256', sha256)
 		
@@ -35,7 +33,7 @@ const publishItem = ({ organization, sha256, contentBuffer, force = false }) => 
 		console.log('calculatedHash', calculatedHash, sha256)
 		
 		if (!R.equals(sha256, calculatedHash)) {
-			return Promise.reject(Boom.conflict('Expected SHA256 hash to match', {
+			return reject(Boom.conflict('Expected SHA256 hash to match', {
 				calculatedHash,
 				expectedHash: sha256 
 			}))
@@ -45,12 +43,12 @@ const publishItem = ({ organization, sha256, contentBuffer, force = false }) => 
 		
 		const id = idForOrganizationAndHash(organization, sha256)
 		
-		console.log(
+		console.log({
 			uploadURL,
 			id,
 			sha1,
 			calculatedHash
-		)
+		})
 		
 		return axios({
 			method: 'POST',
@@ -67,11 +65,10 @@ const publishItem = ({ organization, sha256, contentBuffer, force = false }) => 
 				'X-Bz-Info-SHA256': sha256
 			}
 		})
-		.catch(error => console.error(error))
+		.then(R.tap(result => console.log('UPLOADED', result)))
+		.catch(error => console.error('ERROR UPLOADING', error))
 		.then(R.always({ success: true, wasNew: true, sha256 }))
 	})
 )
 
-module.exports = {
-	publishItem
-}
+module.exports = createPublishItem

@@ -1,6 +1,4 @@
 const Hapi = require('hapi')
-require('./env')
-
 
 const server = new Hapi.Server()
 server.connection({
