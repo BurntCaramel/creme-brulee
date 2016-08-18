@@ -65,7 +65,6 @@ const createPublishItem = (requestAPI) => ({ organization, sha256, contentBuffer
 				'X-Bz-Info-SHA256': sha256
 			}
 		})
-		.then(R.tap(result => console.log('UPLOADED', result)))
 		.catch(error => console.error('ERROR UPLOADING', error))
 		.then(R.always({ success: true, wasNew: true, sha256 }))
 	})

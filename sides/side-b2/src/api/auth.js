@@ -2,8 +2,6 @@ const R = require('ramda')
 const { resolve, reject, future } = require('creed')
 const axios = require('axios')
 
-const tapLog = R.tap(result => console.log('result', result))
-
 class B2Auth {
 	constructor(settings) {
 		this.settings = settings
@@ -34,15 +32,13 @@ class B2Auth {
 		.then(R.prop('data'))
 		.then(
 			(result) => {
-				console.log('auth', result)
-
 				delete this.request
 
 				this._resolvePendingWith(resolve(result))
 				this._createPromise = () => resolve(result)
 			},
 			(error) => {
-				console.log('auth error', error)
+				console.error('auth error', error)
 
 				delete this.request
 
@@ -54,8 +50,7 @@ class B2Auth {
 
 	then(transform) {
 		if (!R.isNil(this._createPromise)) {
-			console.log('Using this._createPromise')
-			return this._createPromise().then(tapLog).then(transform)
+			return this._createPromise().then(transform)
 		}
 			
 		this._authAccountIfNeeded()
@@ -63,8 +58,7 @@ class B2Auth {
 		const { resolve, promise } = future()
 		this.pendingResolves.push(resolve)
 
-		console.log('Created pending', promise, resolve)
-		return promise.then(tapLog).then(transform)
+		return promise.then(transform)
 	}
 
 	invalidate() {
