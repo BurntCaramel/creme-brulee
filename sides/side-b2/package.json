@@ -4,8 +4,8 @@
   "description": "Publish collected assets to B2",
   "main": "index.js",
   "scripts": {
-    "start": "node .",
-		"deploy": "cp .env .envnow && now && rm .envnow",
+    "start": "node index.js",
+    "deploy": "cp .env .envnow && now && rm .envnow",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/RoyalIcing/creme-brulee#readme",
   "dependencies": {
+    "axios": "^0.13.1",
     "boom": "^3.2.2",
     "creed": "^1.0.2",
     "dotenv": "^2.0.0",

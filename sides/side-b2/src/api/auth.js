@@ -1,6 +1,7 @@
 const R = require('ramda')
 const { resolve, reject, future } = require('creed')
 const axios = require('axios')
+const Boom = require('boom')
 
 class B2Auth {
 	constructor(settings) {
@@ -89,6 +90,9 @@ const requestAuthedTo = R.memoize((settings) => {
 					console.log('B2 token has expired')
 					auth.invalidate()
 					return makeRequest()
+				}
+				else if (error.status === 404) {
+					return reject(Boom.notFound())
 				}
 				else {
 					return reject(error)
