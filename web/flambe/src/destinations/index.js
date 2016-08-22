@@ -11,4 +11,4 @@ import * as records from './Records'
 
 import * as raw from './Raw'
 
-export { piping, vanilla, bootstrap, foundation, reactCode, records, raw }
+export default { piping, vanilla, bootstrap, foundation, reactCode, records, raw }

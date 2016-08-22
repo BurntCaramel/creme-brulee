@@ -5,7 +5,7 @@ import seeds, { Seed } from 'react-seeds'
 import Frame from 'react-frame-component'
 
 import { parseInput } from './parser'
-import * as destinations from './destinations'
+import destinations from './destinations'
 import validateContent from './ingredients/validateContent'
 
 import * as colors from './colors'
