@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Login = React.createClass({
+const SignIn = React.createClass({
 	render() {
 		return (
 			<div>
@@ -20,4 +20,4 @@ const Login = React.createClass({
 	}
 })
 
-export default Login
+export default SignIn

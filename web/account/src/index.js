@@ -26,10 +26,12 @@ function useToken(idToken) {
 
 	lock.getProfile(idToken, (error, userProfile) => {
 		renderApp(error ? {
+			token: idToken,
 			signedIn: true,
 			userProfile: null,
 			userProfileError: error
 		} : {
+			token: idToken,
 			signedIn: true,
 			userProfile,
 			userProfileError: null
