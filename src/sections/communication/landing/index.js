@@ -1,40 +1,39 @@
 const R = require('ramda')
-const escape = require('lodash/escape')
+const L = require('lodash/fp')
 
 const renderMarkdown = require('../../../utils/renderMarkdown')
 
 
-const title = 'Royal Icing · Professional UX tools'
+const title = 'Royal Icing · Content-first UX tools'
 
 const tagLine = `# Your users know content is king. So why do our design & prototyping tools forget?`
 //const secondary = `## Build better user experiences from the content up.`
-const secondary = `## Build better user experiences by designing content-first.`
+const secondary = `## Royal Icing’s content-first approach lets you design efficiently.`
 
 const pitch = `
 Our tools help you:
-- Rapidly create interactive prototypes from content — [try demo](/flambe)
-- Create more in-depth user experiences by letting your design team have more control
-- Allow your design team to communicate more easily, both with stakeholders and developers
-- Use reusable components in your design workflow
-- Share and reuse content between projects
-- Ensure your designs cover more edge cases
+- Rapidly create prototypes from content — [try demo](/flambe)
+- Reuse any piece of content or layout, and update once
+- Allow your design team more responsibility and control
 
 ## Treat your content like the royalty it is
-- Design making use of your information architecture
+- Share and reuse content between screens and projects
+- Catalog your content using #hashtags
+- Leverage your information architecture directly in designs
+- Share any piece of content with collaborators
 
-## Prototypes that communicate
-- Rapid prototyping as easy as writing Markdown
-- Create action stories: the visual steps of a user story
-- Publish diagrams and reports to assist communicating with stakeholders
-- Share the responsibility of naming, one of the hardest things of programming, with the design team 
+## Design efficiently and robustly
+- Create reusable components
+- Ensure edge cases are covered, such as errors & empty states
 
-## Catalog and share your content
-- Group and tag your content: use #hashtags to organize
-- Autmatically share any piece of content with collaborators
-- Combine content in new ways
+## Communicate more easily with stakeholders and developers
+- Publish diagrams and reports
+- Create component specs, and even React code
+- Upload content to your S3, where it can be used with live code
 
-## Complement existing workflows
-Our tools are designed to enhance by letting you rapidly improve your content, help battle test layouts, and keep everything organized so no details are lost.
+## Action stories
+- Turn your user stories into visual steps
+- Highlight the interactions involved
 `
 
 const examples = `
@@ -67,7 +66,7 @@ ${ signIn }
 
 const renderPlan = (plan) => `
 <dt>
-${ escape(plan.title) }
+${ L.escape(plan.title) }
 </dt>
 <dd>
 <article>
