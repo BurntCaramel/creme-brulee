@@ -2,6 +2,7 @@ import R from 'ramda'
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
 
+import * as Vanilla from './Vanilla'
 import { renderTreeUsing } from './render'
 
 const Code = ({ children, indent = 0 }) => (
@@ -11,8 +12,16 @@ const Code = ({ children, indent = 0 }) => (
 	</Seed>
 ) 
 
-const field = (tag, mentions, text) => (
-	<Code children={ `<Field title="${text}" />` } indent={ 2 } />
+const field = (tags, references, text) => (
+	<Code>
+	{
+`    <label
+      <span>${ text }</span>
+      <input type='${ Vanilla.isPassword(tags, text) ? 'password' : 'text' }' />
+    </label>
+`
+	}
+	</Code>
 )
 
 const button = (tag, mentions, text) => (

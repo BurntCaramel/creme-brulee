@@ -22,6 +22,11 @@ body {
 	margin: 0;
 }
 
+* {
+	margin: 0;
+	padding: 0;
+}
+
 .rows {
 	display: flex;
 	flex-direction: column;
@@ -32,7 +37,15 @@ body {
 }
 
 #primary-section {
-	height: 100%;
+	
+}
+#primary-section article > h2 {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	text-align: center;
+}
+#primary-section article > .flambe-app + h2 {
+	margin-top: 1.5em;
 }
 
 #header {
@@ -68,6 +81,8 @@ body {
 
 <body>
 
+<!-- BEGIN -->
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -87,8 +102,77 @@ body {
 		</div>
 	</header>
 
-	<div id="app" class="rows"></div>
+<div>
+
+<article class="">
+<h2>Create Bootstrap & Foundation mockups with #hashtags</h2>
+<div class="flambe-app" data-destination="bootstrap">
+Just add hashtags #primary
+
+Create rich layouts just by typing #image #unsplash: dessert
+
+Create fields #field
+And Buttons #button #primary
+Big and Small #button #small
+
+Features #link: @links.features
+
+@legal #small
+</div>
+</article>
+
+<article class="">
+<h2>Or preview as wireframes</h2>
+<div class="flambe-app" data-destination="piping">
+Just add hashtags #primary
+
+Create rich layouts just by typing #image #unsplash: dessert
+
+Create fields #field
+And Buttons #button #primary
+Big and Small #button #small
+
+Features #link: @links.features
+
+@legal #small
+</div>
+</article>
+
+<article class="">
+<h2>Even copy React code</h2>
+<div class="flambe-app" data-destination="reactCode">
+Just add hashtags #primary
+
+Create rich layouts just by typing #image #unsplash: dessert
+
+Create fields #field
+And Buttons #button #primary
+Big and Small #button #small
+
+Features #link: @links.features
+
+@legal #small
+</div>
+</article>
+
+<article class="">
+<h2>Create Action Stories</h2>
+<div class="flambe-app" data-destination="piping">
+Subscribe #link
+
+First name #field
+Last name #field
+Subscribe #button
+
+Hi, Welcome to my fancy service #email
+</div>
+</article>
+
+</div>
+
 </section>
+
+<!-- END -->
 
 </body>
 

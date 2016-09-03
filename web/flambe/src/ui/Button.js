@@ -28,5 +28,6 @@ export default ({
 		border='none'
 		cornerRadius={ 0 }
 		{ ...styler({ selected }) }
+		//styler={ styler }
 	/>
 )

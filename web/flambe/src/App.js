@@ -52,11 +52,19 @@ const scenarios = [
 ]
 
 export default React.createClass({
+	getDefaultProps() {
+		return {
+			initialContent
+		}
+	},
+
   render() {
+		const { initialContent, initialDestinationID } = this.props
     return (
 			<Main
 				initialContent={ initialContent }
 				initialIngredients={ ingredients }
+				initialDestinationID={ initialDestinationID }
 				initialScenarios={ scenarios }
 			/>
 		)

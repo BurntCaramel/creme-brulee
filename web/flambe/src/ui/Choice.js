@@ -1,5 +1,5 @@
 import React from 'react'
-import seeds, { Seed } from 'react-seeds'
+import seeds, { Seed, appearanceNone } from 'react-seeds'
 import defaultStyler from 'react-sow/default'
 
 import * as colors from '../colors'
@@ -28,6 +28,7 @@ const Choice = React.createClass({
 				padding={{ top: 0, bottom: 0, left: '0.5em', right: '0.5em' }}
 				font={{ size: 16 }}
 				cornerRadius={ 0 }
+				{ ...appearanceNone() }
 				{ ...styler(rest) }
 			>
 			{

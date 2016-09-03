@@ -7,8 +7,9 @@ import repeatString from 'lodash/repeat'
 import { renderTreeUsing } from './render'
 import divider from './divider'
 import JSONComponent from './JSONComponent'
+import * as Message from './Message'
 
-const isPassword = (tags, mentions, title) => (
+export const isPassword = (tags, mentions, title) => (
 	[
 		R.has('password', tags),
 		R.test(/\bpassword\b/i, title)
@@ -329,7 +330,7 @@ export const gist = (tags, mentions, text, children, Element, renderContent) => 
 	<script src={ (mentions[0] || text) + '.js' } />
 )
 
-export const extendTagConds = (conds) => R.cond([
+export const extendTagConds = (conds) => Message.useWithFallback(R.cond([
 	[ isHiddenForTags, R.curry(hidden) ],
 	...conds,
 	[ R.has('field'), R.curry(field) ],
@@ -349,7 +350,7 @@ export const extendTagConds = (conds) => R.cond([
 	[ R.has('record'), R.curry(record) ],
 	[ R.has('gist'), R.curry(gist) ],
 	[ R.T, R.curry(text) ]
-])
+]))
 
 const elementRendererForTags = extendTagConds([])
 

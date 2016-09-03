@@ -1,12 +1,23 @@
 import seeds from 'react-seeds'
+import rgba from 'react-sow/rgba'
 
 import * as colors from '../colors' 
 
 export const mainColumn = seeds({
+	basis: '49%',
 	minWidth: 320,
 	maxWidth: 414,
-	margin: { left: '0.25rem', right: '0.25rem' }
+	margin: { left: '0.5%', right: '0.5%' }
 	//padding: { top: '1rem' }
+})
+
+export const previewColumn = seeds({
+	zIndex: 1,
+	basis: '49%',
+	minWidth: 320,
+	maxWidth: 414,
+	margin: { right: 5 },
+	boxShadow: `0 0 10px ${ rgba.whiteValue(0, 0.333) }`
 })
 
 export const sourceField = ({

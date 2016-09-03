@@ -18,6 +18,8 @@ const types = [
 	{ value: 'error', title: 'Error' }
 ]
 
+const gutter = 5
+
 const ReferenceHeading = (props) => (
 	<Seed Component='h3'
 		text={{ align: 'center' }}
@@ -38,7 +40,11 @@ const AddButton = (props) => (
 )
 
 const ReferenceActions = ({ onAddNew }) => (
-	<Seed row margin={{ top: '1rem' }}>
+	<Seed row
+		shrink={ 1 }
+		width={ 200 }
+		margin={{ left: gutter, right: gutter * 2 }}
+	>
 		<AddButton onClick={ onAddNew } />
 	</Seed>
 )
@@ -68,14 +74,14 @@ function List({
 	onSelectVariation
 }) {
 	return (
-		<div>
+		<Seed row>
 		{
 			ingredients.map(({ id, type, variations }, index) => {
 				const selectedVariation = R.defaultTo(0, ingredientIDToVariationIndex[id])
 				return (
 					<Seed key={ index }
 						column
-						margin={{ top: '1rem' }}
+						margin={{ left: gutter, right: gutter }}
 					>
 						<Seed row>
 							<Field
@@ -131,7 +137,7 @@ function List({
 				)
 			})
 		}
-		</div>
+		</Seed>
 	)
 }
 
@@ -142,7 +148,7 @@ export default function References({
 	onAddNew, onChangeAtIndex, onRemoveAtIndex, onAddVariationAtIndex, onSelectVariation
 }) {
 	return (
-		<Seed>
+		<Seed row>
 			<List
 				ingredients={ ingredients }
 				ingredientIDToVariationIndex={ ingredientIDToVariationIndex }

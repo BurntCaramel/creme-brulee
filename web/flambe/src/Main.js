@@ -27,7 +27,8 @@ const suggestReferenceFromTree = R.uncurryN(2, (ingredients) => R.pipe(
 ))
 
 const iframeStyler = seeds({
-	grow: 1,
+	//grow: 1,
+	height: 600,
 	border: 'none'
 })
 
@@ -53,8 +54,13 @@ function DestinationChoice({
 		<Choice
 			value={ destinationID }
 			items={ items }
-			maxWidth='20em'
+			width='100%'
+			minHeight={ 32 }
+			grow={ 1 }
+			border='none'
+			//maxWidth='20em'
 			onChange={ onChange }
+			styler={ stylers.masterButton }
 		/>
 	)
 }
@@ -71,8 +77,8 @@ function PreviewSection({
 
 	return (
 		<Seed column alignItems='center'
-			grow={ 1 } shrink={ 0 } basis='50%'
-			{ ...stylers.mainColumn }
+			grow={ 1 } shrink={ 0 }
+			{ ...stylers.previewColumn }
 		>
 			<Seed key={ destinationID }
 				column
@@ -141,7 +147,9 @@ export default React.createClass({
 			ingredients: R.map(validateContent, ingredients),
 			destinationID,
 			scenarios,
-			activeScenarioIndex
+			activeScenarioIndex,
+			dragging: false,
+			mouseX: null
 		}
 	},
 
@@ -221,6 +229,34 @@ export default React.createClass({
 		})
 	},
 
+	onClickDrag({ type, currentTarget, clientX }) {
+		console.log('onClickDrag', type, clientX, currentTarget)
+
+		//currentTarget.scrollLeft -= 2
+
+		//return;
+
+		this.setState(({ dragging, mouseX }) => {
+			console.log('dragging', dragging)
+			if (dragging && (type == 'mousemove')) {
+				console.log('(clientX - mouseX)', (clientX - mouseX))
+				currentTarget.scrollLeft += (mouseX - clientX)
+			}
+
+			if (type == 'mouseup') {
+				return {
+					dragging: false
+				}
+			}
+			else {
+				return {
+					dragging: (type == 'mousedown') ? true : dragging,
+					mouseX: clientX
+				}
+			}
+		})
+	},
+
   render() {
 		const { showTree } = this.props
 		const {
@@ -239,31 +275,43 @@ export default React.createClass({
 		console.dir(ingredients)
 
     return (
-			<Seed row wrap justifyContent='center'
-				grow={ 1 } shrink={ 0 }
+			<Seed row justifyContent='center'
+				grow={ 0 } shrink={ 0 }
 			>
-				<Seed column
-					grow={ 1 } shrink={ 0 } basis='50%'
-					{ ...stylers.mainColumn }
+				<Seed row
+					grow={ 1 } shrink={ 1 }
+					minWidth={ 320 }
+					overflow='scroll'
+					onMouseDown={ this.onClickDrag }
+					onMouseMove={ this.onClickDrag }
+					onMouseUp={ this.onClickDrag }
 				>
-					<Field
-						value={ content }
-						onChange={ this.onSourceChange  }
-						{ ...stylers.sourceField }
-					/>
-					<References
-						ingredients={ ingredients }
-						ingredientIDToVariationIndex={ scenario }
-						onAddNew={ this.onAddNewIngredient }
-						onChangeAtIndex={ this.onChangeIngredientAtIndex }
-						onRemoveAtIndex={ this.onRemoveIngredientAtIndex }
-						onAddVariationAtIndex={ this.onAddVariationAtIndex }
-						onSelectVariation={ this.onSelectVariation }
-					/>
+					<Seed column
+						grow={ 1 }
+						{ ...stylers.mainColumn }
+					>
+						<Field
+							value={ content }
+							onChange={ this.onSourceChange  }
+							{ ...stylers.sourceField }
+						/>
+					</Seed>
+					<Seed column>
+						<References
+							ingredients={ ingredients }
+							ingredientIDToVariationIndex={ scenario }
+							onAddNew={ this.onAddNewIngredient }
+							onChangeAtIndex={ this.onChangeIngredientAtIndex }
+							onRemoveAtIndex={ this.onRemoveIngredientAtIndex }
+							onAddVariationAtIndex={ this.onAddVariationAtIndex }
+							onSelectVariation={ this.onSelectVariation }
+						/>
+					</Seed>
 				</Seed>
 				{ showTree &&
 					<Seed row grow={ 1 } shrink={ 1 }
-						{ ...stylers.preview }>
+						{ ...stylers.preview }
+					>
 						<pre>
 						{
 							!!contentTree ? JSON.stringify(contentTree, null, 2) : null

@@ -5,6 +5,7 @@ import rgba from 'react-sow/rgba'
 import * as Piping from 'royal-piping/lib/kits/ios'
 
 import * as Vanilla from './Vanilla'
+import * as Message from './Message'
 import { renderTreeUsing } from './render'
 
 const tone1 = rgba.whiteValue(200, 1.0)
@@ -65,7 +66,7 @@ const text = (tags, references, text, children, Element, resolveContent) => {
 	)
 }
 
-const elementRendererForTags = R.cond([
+const elementRendererForTags = Message.useWithFallback(R.cond([
 	[ R.has('button'), R.curry(button) ],
 	// [ R.has('cta'), R.curry(Vanilla.cta) ],
 	[ R.has('choice'), R.curry(button) ],
@@ -78,7 +79,7 @@ const elementRendererForTags = R.cond([
 	// [ R.has('columns'), R.curry(Vanilla.columns) ],
 	// [ R.has('list'), R.curry(Vanilla.list) ],
 	[ R.T, R.curry(text) ]
-])
+]))
 
 export const Preview = R.pipe(
 	renderTreeUsing({
@@ -86,7 +87,7 @@ export const Preview = R.pipe(
 	})
 )
 
-export const title = 'Piping'
+export const title = 'Piping Wireframes'
 
 export function head() {
 	return (
@@ -102,6 +103,12 @@ html, h1, input, button {
 body {
 	height: 100%;
 	margin: 0;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
 `} />
 		</head>
