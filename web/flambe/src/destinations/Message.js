@@ -29,8 +29,8 @@ function MetaPair({ title, content, resolveContent }) {
 
 export const email = (tags, references, text, children, Element, resolveContent) => (
 	<Seed width='90%'
-		text={{ align: 'left' }}
 		padding={{ top: '0.5em', base: '1em' }}
+		text={{ align: 'left' }}
 		boxShadow='0 2px 8px #bbb'
 	>
 		<MetaPair resolveContent={ resolveContent }
@@ -47,7 +47,21 @@ export const email = (tags, references, text, children, Element, resolveContent)
 	</Seed>
 )
 
+export const commandline = (tags, references, text, children, Element, resolveContent) => (
+	<Seed width='90%'
+		padding='1em'
+		text={{ align: 'left', color: 'white' }}
+		background={{ color: '#1f1f1f' }}
+		boxShadow='0 2px 8px #bbb'
+	>
+		<Seed>
+			{ resolveContent({ text, references }) }
+		</Seed>
+	</Seed>
+)
+
 export const useWithFallback = (fallback) => R.cond([
 	[ R.has('email'), R.curry(email) ],
+	[ R.has('commandline'), R.curry(commandline) ],
 	[ R.T, fallback ]
 ])

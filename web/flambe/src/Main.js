@@ -13,7 +13,7 @@ import * as stylers from './stylers'
 import Button from './ui/Button'
 import Field from './ui/Field'
 import Choice from './ui/Choice'
-import References from './sections/references'
+import IngredientsEditor from './sections/IngredientsEditor'
 import PreviewTabs from './sections/components/PreviewTabs'
 
 const catchRenderErrors = false
@@ -230,31 +230,30 @@ export default React.createClass({
 	},
 
 	onClickDrag({ type, currentTarget, clientX }) {
-		console.log('onClickDrag', type, clientX, currentTarget)
-
-		//currentTarget.scrollLeft -= 2
-
-		//return;
-
-		this.setState(({ dragging, mouseX }) => {
-			console.log('dragging', dragging)
-			if (dragging && (type == 'mousemove')) {
-				console.log('(clientX - mouseX)', (clientX - mouseX))
-				currentTarget.scrollLeft += (mouseX - clientX)
-			}
-
-			if (type == 'mouseup') {
-				return {
-					dragging: false
+		if (type == 'mouseup') {
+			this.setState({
+				dragging: false
+			})
+		}
+		else if (this.state.dragging || type == 'mousedown') {
+			this.setState(({ mouseX }) => {
+				if (type == 'mousemove') {
+					currentTarget.scrollLeft += (mouseX - clientX)
 				}
-			}
-			else {
-				return {
-					dragging: (type == 'mousedown') ? true : dragging,
-					mouseX: clientX
+
+				if (type == 'mouseup') {
+					return {
+						dragging: false
+					}
 				}
-			}
-		})
+				else {
+					return {
+						dragging: true,
+						mouseX: clientX
+					}
+				}
+			})
+		}
 	},
 
   render() {
@@ -297,7 +296,7 @@ export default React.createClass({
 						/>
 					</Seed>
 					<Seed column>
-						<References
+						<IngredientsEditor
 							ingredients={ ingredients }
 							ingredientIDToVariationIndex={ scenario }
 							onAddNew={ this.onAddNewIngredient }

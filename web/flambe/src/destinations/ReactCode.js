@@ -40,7 +40,17 @@ const image = (tag, mentions, text) => (
 )
 
 const text = (tag, mentions, text, children) => (
-	<Code children={ `<span>${mentions[0] || text}</span>` } indent={ 2 } />
+	<Code children={
+		`<span>${mentions[0] || text}</span>`
+	} indent={ 2 }>
+		{ '<span>' }
+		{ R.ifElse(
+			R.isNil,
+			R.always(text),
+			(mentionName) => `{ ${ mentionName } }`
+		)(mentions[0]) }
+		{ '</span>' }
+	</Code>
 )
 
 const elementRendererForTags = R.cond([

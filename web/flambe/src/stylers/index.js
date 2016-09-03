@@ -4,9 +4,10 @@ import rgba from 'react-sow/rgba'
 import * as colors from '../colors' 
 
 export const mainColumn = seeds({
-	basis: '49%',
-	minWidth: 320,
-	maxWidth: 414,
+	//basis: '49%',
+	grow: 0,
+	shrink: 0,
+	width: 320,
 	margin: { left: '0.5%', right: '0.5%' }
 	//padding: { top: '1rem' }
 })

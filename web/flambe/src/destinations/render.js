@@ -13,7 +13,8 @@ const renderContentUsing = (resolveReferences) => ({ references, text }) => {
 	}
 }
 
-export const renderElement = ({ ingredients, ingredientVariationIndexes, elementRendererForTags }) => {
+export const renderElement = ({ ingredients, ingredientVariationIndexes = {}, elementRendererForTags }) => {
+	console.log('ingredientVariationIndexes', ingredientVariationIndexes)
 	const resolveReferences = resolveReferencesUsing(ingredientVariationIndexes)(ingredients)
 	const renderContent = renderContentUsing(resolveReferences)
 
@@ -24,6 +25,10 @@ export const renderElement = ({ ingredients, ingredientVariationIndexes, element
 				elementRendererForTags
 			),
 			R.prop('references'),
+			/*R.pipe(
+				R.prop('references'),
+				(path) => resolveReferences({ references: [path] })
+			),*/
 			R.prop('text'),
 			R.prop('children'),
 			(ignore) => Element, // Have to put in closure as it is being assigned

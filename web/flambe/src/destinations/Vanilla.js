@@ -8,6 +8,7 @@ import { renderTreeUsing } from './render'
 import divider from './divider'
 import JSONComponent from './JSONComponent'
 import * as Message from './Message'
+import UnsplashImage from './components/UnsplashImage'
 
 export const isPassword = (tags, mentions, title) => (
 	[
@@ -59,7 +60,7 @@ const wrapTextForTags = (tags, element, resolveContent) => {
 	if (R.has('link', tags)) {
 		const url = resolveContent(tags.link)
 		return (
-			<a href={ url } children={ element } />
+			<a href={ url } rel='nofollow' children={ element } />
 		)
 	}
 	else {
@@ -67,7 +68,7 @@ const wrapTextForTags = (tags, element, resolveContent) => {
 	}
 }
 
-const wrapInInline = (tags, element) => {
+const wrapInInline = R.curry((tags, element) => {
 	if (R.has('small', tags)) {
 		element =  (
 			<small children={ element } />
@@ -75,7 +76,20 @@ const wrapInInline = (tags, element) => {
 	}
 
 	return element
-}
+})
+
+const rejectEmptyStrings = R.filter(R.test(/\S/))
+
+const multilinedText = (content, Component = 'p', wrapText) => R.pipe(
+	R.concat([]),
+	R.map(R.pipe(
+		R.split('\n\n'),
+		rejectEmptyStrings,
+		R.map((text) => (
+			<Component children={ wrapText(text) } />
+		))
+	))
+)(content)
 
 export const text = (tags, references, text, children, Element, resolveContent) => {
 	const [Component, fontSize, textAlign] = (
@@ -93,13 +107,17 @@ export const text = (tags, references, text, children, Element, resolveContent) 
 	return wrapTextForTags(
 		tags,
 		(
-			<Seed Component={ Component }
+			<Seed
 				maxWidth='30rem'
 				margin={ 0 }
 				text={{ align: textAlign }}
 				font={{ size: fontSize }}
 				children={
-					wrapInInline(tags, resolveContent({ references, text }))
+					multilinedText(
+						resolveContent({ references, text }),
+						Component,
+						wrapInInline(tags)
+					)
 				}
 			/>
 		),
@@ -109,47 +127,6 @@ export const text = (tags, references, text, children, Element, resolveContent) 
 
 const imageHeight = 150
 const imageBackground = { color: rgba.whiteValue(0, 0.1) }
-
-const unsplashURLForKeywords = R.pipe(
-	R.ifElse(
-		R.is(String),
-		(keywords) => `/800x600?${keywords}`,
-		R.always(`/800x600?`)
-	),
-	R.concat('https://source.unsplash.com')
-)
-
-const UnsplashImage = React.createClass({
-	getInitialState() {
-		const url = unsplashURLForKeywords(this.props.category)
-		return {
-			url,
-			refreshCount: 0
-		}
-	},
-
-	onRefresh() {
-		this.setState(({ refreshCount }, { category }) => {
-			refreshCount += 1
-			const url = `${ unsplashURLForKeywords(category) }${ repeatString(',', refreshCount) }`
-			return ({
-				url,
-				refreshCount
-			})
-		})
-	},
-
-	render() {
-		const { text } = this.props
-		const { url, refreshCount } = this.state;
-		return (
-			<img key={ refreshCount } src={ url } alt={ text }
-				style={{ width: '100%', height: 'auto' }}
-				onClick={ this.onRefresh }
-			/>
-		)
-	}
-})
 
 const placeholderImageContent = (tags, text, resolveContent) => (
 	<Seed column justifyContent='center'
@@ -215,7 +192,7 @@ export const code = (tags, references, text, children, Element, resolveContent) 
 		overflow='scroll'
 	>
 		<Seed Component='code'
-			children={ references[0] || text }
+			children={ resolveContent({ references, text }) }
 		/>
 	</Seed>
 )

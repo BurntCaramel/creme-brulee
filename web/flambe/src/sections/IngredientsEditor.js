@@ -2,11 +2,11 @@ import R from 'ramda'
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
 
-import Button from '../../ui/Button'
-import Field from '../../ui/Field'
-import Choice from '../../ui/Choice'
-import Tabs from '../../ui/Tabs'
-import * as stylers from '../../stylers'
+import Button from '../ui/Button'
+import Field from '../ui/Field'
+import Choice from '../ui/Choice'
+import Tabs from '../ui/Tabs'
+import * as stylers from '../stylers'
 
 const types = [
 	{ value: 'text', title: 'Text' },
@@ -77,7 +77,7 @@ function List({
 		<Seed row>
 		{
 			ingredients.map(({ id, type, variations }, index) => {
-				const selectedVariation = R.defaultTo(0, ingredientIDToVariationIndex[id])
+				const selectedVariation = R.defaultTo(0, R.path([id], ingredientIDToVariationIndex))
 				return (
 					<Seed key={ index }
 						column
