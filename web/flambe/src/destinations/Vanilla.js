@@ -1,10 +1,11 @@
 import R from 'ramda'
 import React from 'react'
-import seeds, { Seed } from 'react-seeds'
+import { Seed } from 'react-seeds'
 import rgba from 'react-sow/rgba'
 import repeatString from 'lodash/repeat'
 
 import { renderTreeUsing } from './render'
+import multilinedText from './multilinedText'
 import divider from './divider'
 import JSONComponent from './JSONComponent'
 import * as Message from './Message'
@@ -17,24 +18,29 @@ export const isPassword = (tags, mentions, title) => (
 	].some(Boolean)
 )
 
-export const field = (tags, mentions, title) => (
-	<Seed Component='label' column>
+export const field = (tags, mentions, title, children, Element, resolveContent) => (
+	<Seed Component='label' column
+		alignSelf='center'
+	>
 		<span children={ title } style={{ display: 'block' }} />
-		<input type={ isPassword(tags, title) ? 'password' : 'text' } />
+		<input
+			type={ isPassword(tags, title) ? 'password' : 'text' }
+			value={ R.unless(R.isNil, resolveContent)(tags.value) }
+		/>
 	</Seed>
 )
 
 export const button = (tags, mentions, title) => (
 	<Seed Component='button'
-		shrink={ 0 }
-		margin={{ bottom: '0.5rem' }}
+		shrink={ 0 } alignSelf='center'
+		margin={{ base: 'auto', bottom: '0.5rem' }}
 		maxWidth='20em'
 		children={ title }
 	/>
 )
 export const cta = button
 
-export const choice = (tags, mentions, title, children, Element, renderContent) => (
+export const choice = (tags, mentions, title, children, Element, resolveContent) => (
 	<Seed Component='label' column>
 		<span children={ title } style={{ display: 'block' }} /> 
 		<Seed Component='select'
@@ -78,19 +84,6 @@ const wrapInInline = R.curry((tags, element) => {
 	return element
 })
 
-const rejectEmptyStrings = R.filter(R.test(/\S/))
-
-const multilinedText = (content, Component = 'p', wrapText) => R.pipe(
-	R.concat([]),
-	R.map(R.pipe(
-		R.split('\n\n'),
-		rejectEmptyStrings,
-		R.map((text) => (
-			<Component children={ wrapText(text) } />
-		))
-	))
-)(content)
-
 export const text = (tags, references, text, children, Element, resolveContent) => {
 	const [Component, fontSize, textAlign] = (
 		R.has('primary', tags) ? (
@@ -109,7 +102,8 @@ export const text = (tags, references, text, children, Element, resolveContent) 
 		(
 			<Seed
 				maxWidth='30rem'
-				margin={ 0 }
+				alignSelf='center'
+				margin='auto'
 				text={{ align: textAlign }}
 				font={{ size: fontSize }}
 				children={
@@ -199,20 +193,20 @@ export const code = (tags, references, text, children, Element, resolveContent) 
 
 const hexColorRegex = /^[a-fA-F09]{3,6}$/
 
-export const swatch = (tags, mentions, content, children, Element, renderContent) => (
+export const swatch = (tags, mentions, content, children, Element, resolveContent) => (
 	<Seed
 		grow={ 1 }
 		minWidth={
 			R.cond([
-				[ R.has('width'), R.pipe(R.prop('width'), renderContent) ],
-				[ R.has('size'), R.pipe(R.prop('size'), renderContent) ],
+				[ R.has('width'), R.pipe(R.prop('width'), resolveContent) ],
+				[ R.has('size'), R.pipe(R.prop('size'), resolveContent) ],
 				[ R.T, R.always(32) ]
 			])(tags)
 		}
 		minHeight={
 			R.cond([
-				[ R.has('height'), R.pipe(R.prop('height'), renderContent) ],
-				[ R.has('size'), R.pipe(R.prop('size'), renderContent) ],
+				[ R.has('height'), R.pipe(R.prop('height'), resolveContent) ],
+				[ R.has('size'), R.pipe(R.prop('size'), resolveContent) ],
 				[ R.T, R.always(32) ]
 			])(tags)
 		}
@@ -232,17 +226,24 @@ export const hidden = (tags, mentions, content) => (
 	<noscript />
 )
 
-export const list = (tags, mentions, content, children, Element) => {
+export const list = (tags, mentions, content, children, Element, resolveContent) => {
 	const Component = R.propEq('ordered', true, tags) ? 'ol' : 'ul'
 	return (
-		<Seed Component={ Component } margin={ 0 } padding={ 0 }>
-		{
-			children.map((element, index) => (
-				<li key={ index }>
-					<Element { ...element } />
-				</li>
-			))
-		}
+		<Seed>
+			{ content ? (
+				text(tags, mentions, content, children, Element, resolveContent)
+			) : null }
+			<Seed Component={ Component }
+				
+			>
+			{
+				children.map((element, index) => (
+					<li key={ index }>
+						<Element { ...element } />
+					</li>
+				))
+			}
+			</Seed>
 		</Seed>
 	)
 }
@@ -290,7 +291,7 @@ export const columns = (tags, mentions, content, children, renderElement, resolv
 
 export const nav = columns
 
-export const record = (tags, mentions, text, children, Element, renderContent) => {
+export const record = (tags, mentions, text, children, Element, resolveContent) => {
 	if (mentions.length > 0) {
 		return (
 			<JSONComponent isDeserialized={ true } json={ mentions[0] } />
@@ -303,9 +304,11 @@ export const record = (tags, mentions, text, children, Element, renderContent) =
 	}
 }
 
-export const gist = (tags, mentions, text, children, Element, renderContent) => (
-	<script src={ (mentions[0] || text) + '.js' } />
-)
+// import Frame from 'react-frame-component'
+
+// export const gist = (tags, references, text, children, Element, resolveContent) => (
+// 	<Frame head={ <script src={ resolveContent({ references, text }) + '.js' } /> } />
+// )
 
 export const extendTagConds = (conds) => Message.useWithFallback(R.cond([
 	[ isHiddenForTags, R.curry(hidden) ],
@@ -318,15 +321,13 @@ export const extendTagConds = (conds) => Message.useWithFallback(R.cond([
 	[ R.has('image'), R.curry(image) ],
 	[ R.has('video'), R.curry(video) ],
 	[ R.has('code'), R.curry(code) ],
-	[ R.has('text'), R.curry(text) ],
 	[ R.has('swatch'), R.curry(swatch) ],
 	[ R.has('fill'), R.curry(swatch) ],
 	[ R.has('columns'), R.curry(columns) ],
 	[ R.has('nav'), R.curry(nav) ],
-	[ R.has('list'), R.curry(list) ],
 	[ R.has('record'), R.curry(record) ],
-	[ R.has('gist'), R.curry(gist) ],
-	[ R.T, R.curry(text) ]
+	//[ R.has('gist'), R.curry(gist) ],
+	[ R.T, R.curry(list) ]
 ]))
 
 const elementRendererForTags = extendTagConds([])

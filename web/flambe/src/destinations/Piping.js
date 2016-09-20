@@ -13,9 +13,10 @@ const tone2 = rgba.whiteValue(140, 1.0)
 
 const button = (tags, mentions, text) => (
 	<Seed children={ text }
+		alignSelf='center'
 		padding={{ top: 6, bottom: 6, left: 8, right: 8 }}
 		margin={{ bottom: '0.5em' }}
-		font={{ size: R.has('small', tags) ? 12 : 16 }}
+		font={{ size: R.has('large', tags) ? 20 : R.has('small', tags) ? 12 : 16 }}
 		background={{ color: tone1 }}
 		cornerRadius={ 2 }
 	/>
@@ -23,7 +24,7 @@ const button = (tags, mentions, text) => (
 
 const field = (tags, mentions, text) => (
 	<Seed column
-		grow={ 1 } minWidth='12em'
+		grow={ 1 } alignSelf='center' minWidth='12em'
 		margin={{ bottom: '1em' }}
 	>
 		<Seed children={ text } />
@@ -52,12 +53,10 @@ const text = (tags, references, text, children, Element, resolveContent) => {
 		)
 	)
 
-	console.log('resolveContent({ references, text })', resolveContent({ references, text }), references)
-
 	return (
 		<Seed Component={ Component }
 			maxWidth='30rem'
-			margin={ 0 }
+			alignSelf='center'
 			text={{ align: textAlign }}
 			font={{ size: fontSize }}
 			children={ resolveContent({ references, text }) }

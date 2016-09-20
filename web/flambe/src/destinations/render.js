@@ -41,7 +41,7 @@ export const renderElement = ({ ingredients, ingredientVariationIndexes = {}, el
 
 export const DefaultSection = ({ children }) => (
 	<Seed Component='section'
-		column alignItems='center'
+		column
 		margin={{ bottom: '2rem' }}
 		children={ children }
 	/>

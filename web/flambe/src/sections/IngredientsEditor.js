@@ -10,13 +10,15 @@ import * as stylers from '../stylers'
 
 const types = [
 	{ value: 'text', title: 'Text' },
-	{ value: 'markdown', title: 'Markdown' },
+	//{ value: 'markdown', title: 'Markdown' },
 	{ value: 'json', title: 'JSON' },
-	{ value: 'csv', title: 'CSV' },
-	{ value: 'gist', title: 'Gist' },
-	{ value: 'icing', title: 'Icing' },
+	//{ value: 'csv', title: 'CSV' },
+	//{ value: 'gist', title: 'Gist' },
+	//{ value: 'icing', title: 'Icing' },
 	{ value: 'error', title: 'Error' }
 ]
+
+const itemWidth = 270
 
 const gutter = 5
 
@@ -32,7 +34,7 @@ const IngredientButton = (props) => (
 )
 
 const RemoveButton = (props) => (
-	<Button children='−' minWidth={ 32 } huge { ...props } styler={ stylers.ingredientButton } />
+	<Button children='×' minWidth={ 32 } huge { ...props } styler={ stylers.ingredientButton } />
 )
 
 const AddButton = (props) => (
@@ -41,8 +43,8 @@ const AddButton = (props) => (
 
 const ReferenceActions = ({ onAddNew }) => (
 	<Seed row
-		shrink={ 1 }
-		width={ 200 }
+		shrink={ 0 }
+		basis={ 100 }
 		margin={{ left: gutter, right: gutter * 2 }}
 	>
 		<AddButton onClick={ onAddNew } />
@@ -71,7 +73,8 @@ function List({
 	onChangeAtIndex,
 	onRemoveAtIndex,
 	onAddVariationAtIndex,
-	onSelectVariation
+	onSelectVariation,
+	onAddNew
 }) {
 	return (
 		<Seed row>
@@ -81,6 +84,8 @@ function List({
 				return (
 					<Seed key={ index }
 						column
+						basis={ itemWidth }
+						minWidth={ itemWidth }
 						margin={{ left: gutter, right: gutter }}
 					>
 						<Seed row>
@@ -137,6 +142,9 @@ function List({
 				)
 			})
 		}
+			<ReferenceActions
+				onAddNew={ onAddNew }
+			/>
 		</Seed>
 	)
 }
@@ -156,8 +164,6 @@ export default function References({
 				onRemoveAtIndex={ onRemoveAtIndex }
 				onAddVariationAtIndex={ onAddVariationAtIndex }
 				onSelectVariation={ onSelectVariation }
-			/>
-			<ReferenceActions
 				onAddNew={ onAddNew }
 			/>
 		</Seed>

@@ -147,9 +147,7 @@ export default React.createClass({
 			ingredients: R.map(validateContent, ingredients),
 			destinationID,
 			scenarios,
-			activeScenarioIndex,
-			dragging: false,
-			mouseX: null
+			activeScenarioIndex
 		}
 	},
 
@@ -231,28 +229,20 @@ export default React.createClass({
 
 	onClickDrag({ type, currentTarget, clientX }) {
 		if (type == 'mouseup') {
-			this.setState({
-				dragging: false
-			})
+			this.dragging = false
 		}
-		else if (this.state.dragging || type == 'mousedown') {
-			this.setState(({ mouseX }) => {
-				if (type == 'mousemove') {
-					currentTarget.scrollLeft += (mouseX - clientX)
-				}
+		else if (this.dragging || type == 'mousedown') {
+			if (type == 'mousemove') {
+				currentTarget.scrollLeft += (this.mouseX - clientX)
+			}
 
-				if (type == 'mouseup') {
-					return {
-						dragging: false
-					}
-				}
-				else {
-					return {
-						dragging: true,
-						mouseX: clientX
-					}
-				}
-			})
+			if (type == 'mouseup') {
+				this.dragging = false
+			}
+			else {
+				this.dragging = true
+				this.mouseX = clientX
+			}
 		}
 	},
 

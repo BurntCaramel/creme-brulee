@@ -109,11 +109,12 @@ body {
 <div class="flambe-app-content">
 Just add hashtags #primary
 
-Create rich layouts just by typing #image #unsplash: dessert
+Prototype web layouts just by typing #image #unsplash: dessert
 
 Create fields #field
 And Buttons #button #primary
-Big and Small #button #small
+Large and… #button #large
+Small #button #small
 
 Features #link: @links.features
 
@@ -158,11 +159,12 @@ Features #link: @links.features
 <div class="flambe-app-content">
 Just add hashtags #primary
 
-Create rich layouts just by typing #image #unsplash: dessert
+Prototype web layouts just by typing #image #unsplash: dessert
 
 Create fields #field
 And Buttons #button #primary
-Big and Small #button #small
+Large and… #button #large
+Small #button #small
 
 Features #link: @links.features
 
@@ -177,11 +179,12 @@ Features #link: @links.features
 <div class="flambe-app-content">
 Just add hashtags #primary
 
-Create rich layouts just by typing #image #unsplash: dessert
+Prototype web layouts just by typing #image #unsplash: dessert
 
 Create fields #field
 And Buttons #button #primary
-Big and Small #button #small
+Large and… #button #large
+Small #button #small
 
 Features #link: @links.features
 
@@ -200,8 +203,21 @@ First name #field
 Last name #field
 Subscribe #button
 
-Hi, Welcome to my fancy service #email
+@welcomeMessage #email
 </div>
+<script type='flambe' class="flambe-app-ingredients">
+[
+	{
+		"id": "welcomeMessage",
+		"type": "text",
+		"variations": [
+			{
+				"rawContent": "Welcome to the best baking newsletter in the world.\n\nWe send tips on creating amazing dessert every week."
+			}
+		]
+	}
+]
+</script>
 </div>
 </article>
 

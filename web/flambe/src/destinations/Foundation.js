@@ -28,6 +28,7 @@ const buttonTagsToClass = R.converge(
 export const button = (tags, mentions, title) => (
 	<Seed Component='button'
 		className={ buttonTagsToClass(tags) }
+		alignSelf='center'
 		margin={{ bottom: '0.5rem' }}
 		maxWidth='20em'
 		children={ title }

@@ -2,6 +2,8 @@ import R from 'ramda'
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
 
+import multilinedText from './multilinedText'
+
 const metaFontSize = 14
 
 function MetaPair({ title, content, resolveContent }) {
@@ -27,8 +29,15 @@ function MetaPair({ title, content, resolveContent }) {
 	)
 }
 
+function EmailParagraph({ children }) {
+	return (
+		<p style={{ marginBottom: '1.3em' }} children={ children } />
+	)
+}
+
 export const email = (tags, references, text, children, Element, resolveContent) => (
 	<Seed width='90%'
+		margin='auto'
 		padding={{ top: '0.5em', base: '1em' }}
 		text={{ align: 'left' }}
 		boxShadow='0 2px 8px #bbb'
@@ -42,19 +51,26 @@ export const email = (tags, references, text, children, Element, resolveContent)
 			content={ tags.to || { text: 'user@example.com' } }
 		/>
 		<Seed margin={{ top: '1em' }}>
-			{ resolveContent({ text, references }) }
+		{
+			multilinedText(
+				resolveContent({ text, references }),
+				EmailParagraph
+			)
+		}
 		</Seed>
 	</Seed>
 )
 
 export const commandline = (tags, references, text, children, Element, resolveContent) => (
 	<Seed width='90%'
+		margin='auto'
 		padding='1em'
 		text={{ align: 'left', color: 'white' }}
+		font={{ family: 'monospace' }}
 		background={{ color: '#1f1f1f' }}
 		boxShadow='0 2px 8px #bbb'
 	>
-		<Seed>
+		<Seed margin='auto'>
 			{ resolveContent({ text, references }) }
 		</Seed>
 	</Seed>

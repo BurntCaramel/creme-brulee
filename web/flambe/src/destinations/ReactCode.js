@@ -6,7 +6,10 @@ import * as Vanilla from './Vanilla'
 import { renderTreeUsing } from './render'
 
 const Code = ({ children, indent = 0 }) => (
-	<Seed Component='pre' grow={ 1 } width='100%' text={{ align: 'left' }}>
+	<Seed Component='pre'
+		grow={ 1 } width='100%'
+		text={{ align: 'left', whitespace: 'pre-wrap' }}
+	>
 	{ R.repeat('  ', indent) }
 	{ children }
 	</Seed>

@@ -1,3 +1,4 @@
+import R from 'ramda'
 import seeds from 'react-seeds'
 import rgba from 'react-sow/rgba'
 
@@ -49,7 +50,9 @@ export const ingredientContentField = ({ error }) => ({
 	border: { width: 1, style: 'solid', color: colors.ingredient.field.border }
 })
 
-export const ingredientIDField = ingredientContentField({})
+export const ingredientIDField = R.evolve({
+	font: R.merge({ weight: 'bold' })
+}, ingredientContentField({}))
 
 export const ingredientButton = ({ selected }) => {
 	const buttonColors = colors.ingredient.button[selected ? 'selected' : 'normal']
