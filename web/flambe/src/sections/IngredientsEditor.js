@@ -38,7 +38,12 @@ const RemoveButton = (props) => (
 )
 
 const AddButton = (props) => (
-	<Button children='+' grow={ 1 } huge minHeight={ 32 } { ...props } styler={ stylers.masterButton } />
+	<Button children='Add ingredient…'
+		grow={ 1 }
+		basis={ itemWidth } minWidth={ itemWidth } height={ 32 }
+		{ ...props }
+		styler={ stylers.masterButton }
+	/>
 )
 
 const ReferenceActions = ({ onAddNew }) => (

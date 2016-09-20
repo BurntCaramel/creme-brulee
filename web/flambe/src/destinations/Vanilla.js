@@ -84,7 +84,7 @@ const wrapInInline = R.curry((tags, element) => {
 	return element
 })
 
-export const text = (tags, references, text, children, Element, resolveContent) => {
+export const text = (tags, references, content, children, Element, resolveContent) => {
 	const [Component, fontSize, textAlign] = (
 		R.has('primary', tags) ? (
 			['h1', '2em', 'center']
@@ -108,7 +108,7 @@ export const text = (tags, references, text, children, Element, resolveContent) 
 				font={{ size: fontSize }}
 				children={
 					multilinedText(
-						resolveContent({ references, text }),
+						resolveContent({ references, text: content }),
 						Component,
 						wrapInInline(tags)
 					)
@@ -230,9 +230,7 @@ export const list = (tags, mentions, content, children, Element, resolveContent)
 	const Component = R.propEq('ordered', true, tags) ? 'ol' : 'ul'
 	return (
 		<Seed>
-			{ content ? (
-				text(tags, mentions, content, children, Element, resolveContent)
-			) : null }
+			{ text(tags, mentions, content, children, Element, resolveContent) }
 			<Seed Component={ Component }
 				
 			>

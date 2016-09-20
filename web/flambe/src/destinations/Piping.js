@@ -36,8 +36,9 @@ const field = (tags, mentions, text) => (
 	</Seed>
 )
 
-const textStyler = ({ link }) => seeds({
-	text: { decoration: R.isNil(link) ? 'none' : 'underline' }
+const textStyler = ({ link, small = false }) => seeds({
+	text: { decoration: R.isNil(link) ? 'none' : 'underline' },
+	font: { size: small ? 12 : null }
 })
 
 const text = (tags, references, text, children, Element, resolveContent) => {

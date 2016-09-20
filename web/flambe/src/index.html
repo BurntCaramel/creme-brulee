@@ -170,6 +170,36 @@ Features #link: @links.features
 
 @legal #small
 </div>
+<script type='flambe' class="flambe-app-ingredients">
+[
+	{
+		"id": "links",
+		"type": "json",
+		"variations": [
+			{
+				"rawContent": "{\"features\": \"https://icing.space/features\"}"
+			}
+		]
+	},
+	{
+		"id": "legal",
+		"type": "text",
+		"variations": [
+			{
+				"rawContent": "Copyright Company Inc. 2016"
+			}
+		]
+	}
+]
+</script>
+<script type='flambe' class="flambe-app-scenarios">
+[
+	{
+		"links": 0,
+		"legal": 0
+	}
+]
+</script>
 </div>
 </article>
 
@@ -212,7 +242,7 @@ Subscribe #button
 		"type": "text",
 		"variations": [
 			{
-				"rawContent": "Welcome to the best baking newsletter in the world.\n\nWe send tips on creating amazing dessert every week."
+				"rawContent": "Welcome to the best baking newsletter in the world!\n\nWe send tips on creating amazing desserts every week."
 			}
 		]
 	}
