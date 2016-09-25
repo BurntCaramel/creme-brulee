@@ -266,7 +266,7 @@ export default React.createClass({
 		})
 	},
 
-	onClickDrag({ type, currentTarget, clientX }) {
+	onClickDrag({ type, currentTarget, target, clientX }) {
 		if (type == 'mouseup') {
 			this.dragging = false
 		}
@@ -279,8 +279,11 @@ export default React.createClass({
 				this.dragging = false
 			}
 			else {
-				this.dragging = true
-				this.mouseX = clientX
+				// Only allow clicking on background
+				if (target.tagName == 'DIV') {
+					this.dragging = true
+					this.mouseX = clientX
+				}
 			}
 		}
 	},
