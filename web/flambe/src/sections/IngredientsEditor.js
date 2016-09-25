@@ -10,6 +10,7 @@ import * as stylers from '../stylers'
 
 const types = [
 	{ value: 'text', title: 'Text' },
+	{ value: 'image', title: 'Image' },
 	//{ value: 'markdown', title: 'Markdown' },
 	{ value: 'json', title: 'JSON' },
 	//{ value: 'csv', title: 'CSV' },

@@ -12,7 +12,7 @@ const buttonTagsToClass = R.converge(
 		R.always('btn'),
 		R.cond([
 			[ R.has('primary'), R.always('btn-primary') ],
-			[ R.has('link'), R.always('btn-link') ],
+			//[ R.has('link'), R.always('btn-link') ],
 			[ R.T, R.always('btn-default') ]
 		]),
 		R.cond([
@@ -24,15 +24,27 @@ const buttonTagsToClass = R.converge(
 	]
 )
 
-export const button = (tags, mentions, title) => (
-	<Seed Component='button'
-		className={ buttonTagsToClass(tags) }
-		alignSelf='center'
-		margin={{ bottom: '0.5rem' }}
-		maxWidth='20em'
-		children={ title }
-	/>
-)
+export const button = (tags, mentions, title, children, Element, resolveContent) => {
+	let Component = 'button'
+	let url;
+	if (R.has('link', tags)) {
+		Component = 'a'
+		url = resolveContent(tags.link)
+	}
+
+	return (
+		<Component
+			href={ url }
+			className={ buttonTagsToClass(tags) }
+			style={ seeds({
+				alignSelf: 'center',
+				margin: { bottom: '0.5rem' },
+				maxWidth: '20em'
+			}) }
+			children={ title }
+		/>
+	)
+}
 export const cta = button
 
 const panelTagsToClass = R.converge(

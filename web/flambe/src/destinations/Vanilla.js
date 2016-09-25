@@ -8,8 +8,13 @@ import { renderTreeUsing } from './render'
 import multilinedText from './multilinedText'
 import divider from './divider'
 import JSONComponent from './JSONComponent'
-import * as Message from './Message'
+import CollectedImage from './components/CollectedImage'
 import UnsplashImage from './components/UnsplashImage'
+
+const whenPresent = R.unless(R.isNil)
+
+import * as Message from './Message'
+import * as LayoutCalculator from './LayoutCalculator'
 
 export const isPassword = (tags, mentions, title) => (
 	[
@@ -134,7 +139,20 @@ const placeholderImageContent = (tags, text, resolveContent) => (
 const richImageContent = (tags, text, resolveContent) => {
 	if (R.has('unsplash', tags)) {
 		return (
-			<UnsplashImage category={ resolveContent(tags['unsplash']) } text={ text } />
+			<UnsplashImage
+				category={ resolveContent(tags['unsplash']) }
+				text={ text }
+			/>
+		)
+	}
+	else if (R.has('collected', tags)) {
+		return (
+			<CollectedImage
+				sha256={ resolveContent(tags['collected']) }
+				width={ whenPresent(resolveContent, tags['width']) }
+				height={ whenPresent(resolveContent, tags['height']) }
+				text={ text }
+			/>
 		)
 	}
 	else {
@@ -230,7 +248,7 @@ export const list = (tags, mentions, content, children, Element, resolveContent)
 	const Component = R.propEq('ordered', true, tags) ? 'ol' : 'ul'
 	return (
 		<Seed>
-			{ text(tags, mentions, content, children, Element, resolveContent) }
+			{ text(tags, mentions, content || '', children, Element, resolveContent) }
 			<Seed Component={ Component }
 				
 			>
@@ -248,44 +266,60 @@ export const list = (tags, mentions, content, children, Element, resolveContent)
 
 const columnsComponentForTags = R.cond([
 	[ R.has('nav'), R.always('nav') ],
+	[ R.has('figure'), R.always('figure') ],
 	[ R.T, R.always('div') ]
 ])
 
-export const columns = (tags, mentions, content, children, renderElement, resolveContent) => (
-	<Seed Component={ columnsComponentForTags(tags) }
-		row wrap reverse={ R.has('reverse', tags) } justifyContent='center'
-		width='100%'
-	>
-	{ // Render content, interleaving an optional divider
-		R.pipe(
-			R.converge(R.concat, [
-				R.pipe(
-					R.init,
-					R.chain(R.pipe(
-						renderElement,
-						R.of,
-						R.append(divider(
-							R.defaultTo(8, R.unless(
-								R.isNil,
-								resolveContent,
-								tags['divider']
+export const columns = (tags, mentions, content, children, Element, resolveContent) => {
+	const columnWidth = R.ifElse(
+		R.gt(R.__, 0), // Greater than 0
+		(number) => `${ 100.0 / number }%`,
+		R.always(null)
+	)(parseInt(resolveContent(tags.columns), 10))
+
+	const renderColumn = (props) => (
+		<div style={{ flexBasis: columnWidth }}>
+		{ Element(props) }
+		</div>
+	)
+
+	return (
+		<Seed Component={ columnsComponentForTags(tags) }
+			row wrap reverse={ R.has('reverse', tags) } justifyContent='center'
+			width='100%'
+		>
+		{ // Render content, interleaving an optional divider
+			R.pipe(
+				R.converge(R.concat, [
+					R.pipe(
+						R.init,
+						R.map(renderColumn),
+						/*R.chain(R.pipe(
+							renderColumn,
+							R.of,
+							R.append(divider(
+								R.defaultTo(8, R.unless(
+									R.isNil,
+									resolveContent,
+									tags['divider']
+								))
 							))
-						))
-					))
-				),
-				R.pipe(
-					R.last,
-					R.ifElse(
-						R.isNil,
-						R.always([]),
-						renderElement
+						))*/
+					),
+					R.pipe(
+						R.last,
+						R.ifElse(
+							R.isNil,
+							R.always([]),
+							renderColumn
+						)
 					)
-				)
-			])
-		)(children)
-	}
-	</Seed>
-)
+				])
+			)(children)
+		}
+		</Seed>
+	)
+}
 
 export const nav = columns
 
@@ -308,7 +342,8 @@ export const record = (tags, mentions, text, children, Element, resolveContent) 
 // 	<Frame head={ <script src={ resolveContent({ references, text }) + '.js' } /> } />
 // )
 
-export const extendTagConds = (conds) => Message.useWithFallback(R.cond([
+export const extendTagConds = (conds) => LayoutCalculator.useWithFallback(
+	Message.useWithFallback(R.cond([
 	[ isHiddenForTags, R.curry(hidden) ],
 	...conds,
 	[ R.has('field'), R.curry(field) ],
@@ -326,7 +361,7 @@ export const extendTagConds = (conds) => Message.useWithFallback(R.cond([
 	[ R.has('record'), R.curry(record) ],
 	//[ R.has('gist'), R.curry(gist) ],
 	[ R.T, R.curry(list) ]
-]))
+])))
 
 const elementRendererForTags = extendTagConds([])
 
