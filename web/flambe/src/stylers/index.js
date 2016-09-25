@@ -13,11 +13,13 @@ export const mainColumn = seeds({
 	//padding: { top: '1rem' }
 })
 
-export const previewColumn = seeds({
+export const previewColumn = ({ destinationDevice }) => ({
 	zIndex: 1,
-	basis: '49%',
+	grow: 1,
+	shrink: 0,
+	basis: 'calc(100vw - 320px)',
 	minWidth: 320,
-	maxWidth: 414,
+	maxWidth: (destinationDevice === 'phone') && 414,
 	margin: { right: 5 },
 	boxShadow: `0 0 10px ${ rgba.whiteValue(0, 0.333) }`
 })
@@ -64,6 +66,7 @@ export const ingredientButton = ({ selected }) => {
 }
 
 export const masterButton = ({ selected }) => ({
-	text: { color: colors.light },
+	padding: { left: '0.5em', right: '0.5em' },
+	text: { color: selected ? colors.lightKeyB : colors.light },
 	background: { color: colors.dark }
 })

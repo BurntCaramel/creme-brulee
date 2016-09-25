@@ -12,7 +12,7 @@ const types = [
 	{ value: 'text', title: 'Text' },
 	{ value: 'image', title: 'Image' },
 	//{ value: 'markdown', title: 'Markdown' },
-	{ value: 'json', title: 'JSON' },
+	{ value: 'json', title: 'Record' },
 	//{ value: 'csv', title: 'CSV' },
 	//{ value: 'gist', title: 'Gist' },
 	//{ value: 'icing', title: 'Icing' },

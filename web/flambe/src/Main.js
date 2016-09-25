@@ -33,8 +33,12 @@ const iframeStyler = seeds({
 })
 
 function DestinationChoice({
-	destinationID, destinations,
-	onChange
+	destinationID,
+	destinationDevice,
+	destinations,
+	onChange,
+	onPhoneDestination,
+	onFullDestination
 }) {
 	const items = R.pipe(
 		R.toPairs,
@@ -51,17 +55,31 @@ function DestinationChoice({
 	)(destinations)
 
 	return (
-		<Choice
-			value={ destinationID }
-			items={ items }
-			width='100%'
-			minHeight={ 32 }
-			grow={ 1 }
-			border='none'
-			//maxWidth='20em'
-			onChange={ onChange }
-			styler={ stylers.masterButton }
-		/>
+		<Seed row width='100%'>
+			<Choice
+				value={ destinationID }
+				items={ items }
+				width='100%'
+				minHeight={ 32 }
+				grow={ 1 }
+				border='none'
+				//maxWidth='20em'
+				onChange={ onChange }
+				styler={ stylers.masterButton }
+			/>
+			<Button
+				onClick={ onPhoneDestination }
+				children='Phone'
+				selected={ destinationDevice == 'phone' }
+				styler={ stylers.masterButton }
+			/>
+			<Button
+				onClick={ onFullDestination }
+				children='Full'
+				selected={ destinationDevice == 'full' }
+				styler={ stylers.masterButton }
+			/>
+		</Seed>
 	)
 }
 
@@ -70,15 +88,17 @@ function PreviewSection({
 	ingredients,
 	ingredientVariationIndexes,
 	destinationID,
+	destinationDevice,
 	destinations,
-	onChangeDestination
+	onChangeDestination,
+	onPhoneDestination,
+	onFullDestination
 }) {
 	const { head: renderHead, Preview } = destinations[destinationID]
 
 	return (
 		<Seed column alignItems='center'
-			grow={ 1 } shrink={ 0 }
-			{ ...stylers.previewColumn }
+			{ ...stylers.previewColumn({ destinationDevice }) }
 		>
 			<Seed key={ destinationID }
 				column
@@ -114,8 +134,12 @@ function PreviewSection({
 			}
 			</Seed>
 			<DestinationChoice
-				destinationID={ destinationID } destinations={ destinations }
+				destinationID={ destinationID }
+				destinationDevice={ destinationDevice }
+				destinations={ destinations }
 				onChange={ onChangeDestination }
+				onPhoneDestination={ onPhoneDestination }
+				onFullDestination={ onFullDestination }
 			/>
 			{ false &&
 				<PreviewTabs />
@@ -128,7 +152,8 @@ export default React.createClass({
 	getDefaultProps() {
 		return {
 			showTree: false,
-			initialDestinationID: 'foundation'
+			initialDestinationID: 'foundation',
+			initialDestinationDevice: 'phone'
 		}
 	},
 
@@ -137,6 +162,7 @@ export default React.createClass({
 			initialContent: content,
 			initialIngredients: ingredients,
 			initialDestinationID: destinationID,
+			initialDestinationDevice: destinationDevice,
 			initialScenarios: scenarios,
 			initialActiveScenarioIndex: activeScenarioIndex = 0
 		} = this.props
@@ -146,6 +172,7 @@ export default React.createClass({
 			contentTree: !!content ? parseInput(content) : null,
 			ingredients: R.map(validateContent, ingredients),
 			destinationID,
+			destinationDevice,
 			scenarios,
 			activeScenarioIndex
 		}
@@ -227,6 +254,18 @@ export default React.createClass({
 		})
 	},
 
+	onPhoneDestination() {
+		this.setState({
+			destinationDevice: 'phone'
+		})
+	},
+
+	onFullDestination() {
+		this.setState({
+			destinationDevice: 'full'
+		})
+	},
+
 	onClickDrag({ type, currentTarget, clientX }) {
 		if (type == 'mouseup') {
 			this.dragging = false
@@ -253,6 +292,7 @@ export default React.createClass({
 			contentTree,
 			ingredients,
 			destinationID,
+			destinationDevice,
 			scenarios,
 			activeScenarioIndex
 		} = this.state
@@ -268,7 +308,7 @@ export default React.createClass({
 				grow={ 0 } shrink={ 0 }
 			>
 				<Seed row
-					grow={ 1 } shrink={ 1 }
+					grow={ 1 } shrink={ 2 }
 					minWidth={ 320 }
 					overflow='scroll'
 					onMouseDown={ this.onClickDrag }
@@ -313,8 +353,11 @@ export default React.createClass({
 					ingredients={ ingredients }
 					ingredientVariationIndexes={ scenario }
 					destinationID={ destinationID }
+					destinationDevice={ destinationDevice }
 					destinations={ destinations }
 					onChangeDestination={ this.onChangeDestination }
+					onPhoneDestination={ this.onPhoneDestination }
+					onFullDestination={ this.onFullDestination }
 				/>
 			</Seed>
 		)

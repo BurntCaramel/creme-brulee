@@ -5,6 +5,8 @@ import * as bootstrap from './Bootstrap'
 import * as foundation from './Foundation'
 //import * as slides from './Slides'
 
+import * as acceleratedMobilePages from './AcceleratedMobilePages'
+
 // Code
 import * as reactCode from './ReactCode'
 import * as records from './Records'

@@ -35,12 +35,12 @@ export const button = (tags, mentions, title, children, Element, resolveContent)
 	return (
 		<Component
 			href={ url }
-			className={ buttonTagsToClass(tags) }
-			style={ seeds({
+			{ ...seeds({
 				alignSelf: 'center',
 				margin: { bottom: '0.5rem' },
 				maxWidth: '20em'
 			}) }
+			className={ buttonTagsToClass(tags) }
 			children={ title }
 		/>
 	)
