@@ -17,23 +17,38 @@ import * as Message from './Message'
 import * as LayoutCalculator from './LayoutCalculator'
 
 export const isPassword = (tags, mentions, title) => (
-	[
-		R.has('password', tags),
-		R.test(/\bpassword\b/i, title)
-	].some(Boolean)
+	R.has('password', tags) || R.test(/\bpassword\b/i, title)
 )
 
-export const field = (tags, mentions, title, children, Element, resolveContent) => (
-	<Seed Component='label' column
-		alignSelf='center'
-	>
-		<span children={ title } style={{ display: 'block' }} />
-		<input
-			type={ isPassword(tags, title) ? 'password' : 'text' }
-			value={ R.unless(R.isNil, resolveContent)(tags.value) }
-		/>
-	</Seed>
-)
+export const field = (tags, mentions, title, children, Element, resolveContent) => {
+	let value = ''
+	let onChange
+	if (R.has('value', tags)) {
+		value = resolveContent(tags.value)
+		/*value = R.unless(
+			R.is(String),
+			R.always(null),
+			resolveContent(tags.value)
+		)*/
+		onChange = (event) => {
+			const newValue = event.target.value
+			resolveContent(tags.value, { alter: R.always(newValue) })
+		} 
+	}
+
+	return (
+		<Seed Component='label' column
+			alignSelf='center'
+		>
+			<span key='label' children={ title } style={{ display: 'block' }} />
+			<input key='input'
+				type={ isPassword(tags, title) ? 'password' : 'text' }
+				value={ value }
+				onChange={ onChange }
+			/>
+		</Seed>
+	)
+}
 
 export const button = (tags, mentions, title) => (
 	<Seed Component='button'

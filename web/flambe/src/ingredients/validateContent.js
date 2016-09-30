@@ -12,6 +12,27 @@ const transformRawContentCatching = (transform) => R.converge(R.merge, [
 	)
 ])
 
+export const transformerForType = R.curry(function transformerForType(type, content) {
+	if (type == 'json') {
+		return R.pipe(
+			JSON.parse,
+			R.objOf('content')
+		)(content)
+	}
+	else {
+		return { content }
+	}
+})
+
+export const stringRepresenterForType = R.curry(function stringRepresenterForType(type, content) {
+	if (type == 'json') {
+		return JSON.stringify(content, null, 2)
+	}
+	else {
+		return content
+	}
+})
+
 export default R.converge(R.call, [
 	R.unary(R.merge),
 	R.cond([

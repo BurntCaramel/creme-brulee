@@ -1,6 +1,7 @@
 import R from 'ramda'
 import React from 'react'
 import seeds, { Seed } from 'react-seeds'
+import { observer } from 'mobx-react'
 
 import Button from '../ui/Button'
 import Field from '../ui/Field'
@@ -73,6 +74,84 @@ const VariationTabs = ({ selectedIndex, count, onSelect, onAdd }) => (
 	/>
 )
 
+const Item = observer(function Item({
+	index,
+	ingredient,
+	ingredientIDToVariationIndex,
+	onChangeAtIndex,
+	onRemoveAtIndex,
+	onAddVariationAtIndex,
+	onSelectVariation,
+	onAddNew
+}) {
+	const { id, type, variations } = ingredient
+	const selectedVariation = R.defaultTo(0, R.path([id], ingredientIDToVariationIndex))
+	return (
+		<Seed
+			column
+			basis={ itemWidth }
+			minWidth={ itemWidth }
+			margin={{ left: gutter, right: gutter }}
+		>
+			<Seed row>
+				<Field
+					value={ id }
+					grow={ 1 }
+					onChange={ (newID) => onChangeAtIndex(index,
+						//R.merge(R.__, { id: newID })
+						(ingredient) => { ingredient.id = newID }
+					) }
+					{ ...stylers.ingredientIDField }
+				/>
+				<Choice
+					styler={ stylers.ingredientButton }
+					value={ type } items={ types }
+					onChange={ (newType) => onChangeAtIndex(index, 
+						//R.merge(R.__, { type: newType })
+						(ingredient) => { ingredient.type = newType }
+					) }
+				/>
+				<RemoveButton onClick={
+					() => {
+						onRemoveAtIndex(index)
+					}
+				} />
+			</Seed>
+			<VariationTabs
+				selectedIndex={ selectedVariation }
+				count={ variations.length }
+				onSelect={
+					(variationIndex) => {
+						onSelectVariation({ ingredientIndex: index, variationIndex })
+					}
+				}
+				onAdd={
+					() => {
+						onAddVariationAtIndex(index)
+					}
+				}
+			/>
+			<Field
+				value={ variations[selectedVariation].rawContent }
+				onChange={
+					(newRawContent) => {
+						/*onChangeAtIndex(index, R.evolve({
+							variations: R.adjust(
+								R.merge(R.__, { rawContent: newRawContent }),
+								selectedVariation
+							)
+						}))*/
+						onChangeAtIndex(index, (ingredient) => {
+							ingredient.variations[selectedVariation].rawContent = newRawContent
+						})
+					}
+				}
+				{ ...stylers.ingredientContentField({ error: variations[selectedVariation].result.error }) }
+			/>
+		</Seed>
+	)
+})
+
 function List({
 	ingredients,
 	ingredientIDToVariationIndex,
@@ -85,68 +164,20 @@ function List({
 	return (
 		<Seed row>
 		{
-			ingredients.map(({ id, type, variations }, index) => {
-				const selectedVariation = R.defaultTo(0, R.path([id], ingredientIDToVariationIndex))
-				return (
-					<Seed key={ index }
-						column
-						basis={ itemWidth }
-						minWidth={ itemWidth }
-						margin={{ left: gutter, right: gutter }}
-					>
-						<Seed row>
-							<Field
-								value={ id }
-								grow={ 1 }
-								onChange={ (newID) => onChangeAtIndex(index,
-									R.merge(R.__, { id: newID })
-								) }
-								{ ...stylers.ingredientIDField }
-							/>
-							<Choice
-								styler={ stylers.ingredientButton }
-								value={ type } items={ types }
-								onChange={ (newType) => onChangeAtIndex(index, 
-									R.merge(R.__, { type: newType })
-								) }
-							/>
-							<RemoveButton onClick={
-								() => {
-									onRemoveAtIndex(index)
-								}
-							} />
-						</Seed>
-						<VariationTabs
-							selectedIndex={ selectedVariation }
-							count={ variations.length }
-							onSelect={
-								(variationIndex) => {
-									onSelectVariation({ ingredientIndex: index, variationIndex })
-								}
-							}
-							onAdd={
-								() => {
-									onAddVariationAtIndex(index)
-								}
-							}
-						/>
-						<Field
-							value={ variations[selectedVariation].rawContent }
-							onChange={
-								(newRawContent) => {
-									onChangeAtIndex(index, R.evolve({
-										variations: R.adjust(
-											R.merge(R.__, { rawContent: newRawContent }),
-											selectedVariation
-										)
-									}))
-								}
-							}
-							{ ...stylers.ingredientContentField({ error: variations[selectedVariation].error }) }
-						/>
-					</Seed>
-				)
-			})
+			ingredients.map((ingredient, index) => (
+				<Item key={ index }
+					{ ...{
+						index,
+						ingredient,
+						ingredientIDToVariationIndex,
+						onChangeAtIndex,
+						onRemoveAtIndex,
+						onAddVariationAtIndex,
+						onSelectVariation,
+						onAddNew
+					} }
+				/>
+			))
 		}
 			<ReferenceActions
 				onAddNew={ onAddNew }
@@ -154,7 +185,6 @@ function List({
 		</Seed>
 	)
 }
-
 
 export default function References({
 	ingredients,

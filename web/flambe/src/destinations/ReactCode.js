@@ -78,7 +78,7 @@ function Section({ children }) {
 
 function Master({ children, ingredients }) {
 	const ingredientIDs = R.pipe(
-		R.pluck('id'),
+		R.keys,
 		R.join(', ')
 	)(ingredients)
 

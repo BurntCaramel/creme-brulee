@@ -2,21 +2,55 @@ import R from 'ramda'
 import React from 'react'
 import { Seed } from 'react-seeds'
 
-import resolveReferencesUsing from './resolveReferences'
+const resolveContentIn = R.curry(function resolveItemIn(source, path) {
+	path = R.insertAll(1, ['result', 'content'], path)
+	return R.path(path, source)
+})
 
-const renderContentUsing = (resolveReferences) => ({ references, text }) => {
-	if (references != null && references.length > 0) {
-		return resolveReferences(references)
-	}
-	else {
-		return text
+const variationForItemIn = R.curry(function adjustItemIn(source, path) {
+	const id = R.head(path)
+	return R.path([id, 'variationReference'], source)
+})
+
+const resolveContentUsing = (ingredients) => {
+	const resolveIngredientReference = resolveContentIn(ingredients)
+	const variationForPath = variationForItemIn(ingredients)
+	return (value, { single = false, set, alter } = {}) => {
+		if (R.isNil(value)) {
+			return
+		}
+		else if (value.references != null && value.references.length > 0) {
+			if (set) {
+				R.forEach(
+					(item) => item.set(set),
+					result
+				)
+			}
+			else if (alter) {
+				const path = value.references[0]
+				const variation = variationForPath(path)
+				const innerPath = R.tail(path)
+				variation.adjustPath(innerPath, alter)
+			}
+			else {
+				const resolved = R.map(resolveIngredientReference, value.references)
+				if (resolved == null) {
+					return
+				}
+				return single ? resolved[0] : resolved
+			}
+		}
+		else if (value.text != null) {
+			return value.text
+		}
+		else {
+			return value
+		}
 	}
 }
 
-export const renderElement = ({ ingredients, ingredientVariationIndexes = {}, elementRendererForTags }) => {
-	console.log('ingredientVariationIndexes', ingredientVariationIndexes)
-	const resolveReferences = resolveReferencesUsing(ingredientVariationIndexes)(ingredients)
-	const renderContent = renderContentUsing(resolveReferences)
+export const renderElement = ({ ingredients, elementRendererForTags }) => {
+	const resolveContent = resolveContentUsing(ingredients)
 
 	const Element = R.converge(
 		R.call, [
@@ -25,14 +59,10 @@ export const renderElement = ({ ingredients, ingredientVariationIndexes = {}, el
 				elementRendererForTags
 			),
 			R.prop('references'),
-			/*R.pipe(
-				R.prop('references'),
-				(path) => resolveReferences({ references: [path] })
-			),*/
 			R.prop('text'),
 			R.prop('children'),
 			(ignore) => Element, // Have to put in closure as it is being assigned
-			R.always(renderContent)
+			R.always(resolveContent)
 		]
 	)
 
@@ -60,11 +90,10 @@ export const renderTreeUsing = ({
 	Master = DefaultMaster
 }) => ({
 	ingredients,
-	ingredientVariationIndexes,
 	contentTree
 }) => {
 	// FIXME: use valueForIngredient instead that encapsulates ingredientVariationIndexes 
-	const Element = renderElement({ ingredients, ingredientVariationIndexes, elementRendererForTags }) 
+	const Element = renderElement({ ingredients, elementRendererForTags }) 
 
 	return (
 		<Master ingredients={ ingredients }>

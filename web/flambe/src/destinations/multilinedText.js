@@ -7,6 +7,7 @@ export default function multilinedText(content, Component = 'p', wrapText = R.id
 	return R.pipe(
 		R.concat([]),
 		R.map(R.pipe(
+			R.defaultTo(''),
 			R.split('\n\n'),
 			rejectEmptyStrings,
 			R.map((text) => (

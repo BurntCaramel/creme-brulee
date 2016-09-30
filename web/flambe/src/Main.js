@@ -2,11 +2,12 @@ import R from 'ramda'
 import React from 'react'
 import { findDOMNode } from 'react-dom'
 import seeds, { Seed } from 'react-seeds'
-import Frame from 'react-frame-component'
+import { extendObservable, observable, action } from 'mobx'
+import { observer } from 'mobx-react'
 
 import { parseInput } from './parser'
 import destinations from './destinations'
-import validateContent from './ingredients/validateContent'
+import validateContent, { transformerForType, stringRepresenterForType } from './ingredients/validateContent'
 
 import * as colors from './colors'
 import * as stylers from './stylers'
@@ -14,141 +15,146 @@ import Button from './ui/Button'
 import Field from './ui/Field'
 import Choice from './ui/Choice'
 import IngredientsEditor from './sections/IngredientsEditor'
-import PreviewTabs from './sections/components/PreviewTabs'
-
-const catchRenderErrors = false
+import PreviewSection from './sections/preview'
 
 const suggestReferenceFromTree = R.uncurryN(2, (ingredients) => R.pipe(
 	R.chain(R.pluck('references')),
 	R.unnest,
-	R.map(R.head),
-	R.difference(R.__, R.pluck('id', ingredients)),
+	R.map(R.head), // Just the requested ingredient ID
+	R.difference(R.__, R.pluck('id', ingredients)), // Only IDs that are yet to be used
 	R.head // First pick
 ))
 
-const iframeStyler = seeds({
-	//grow: 1,
-	height: 600,
-	border: 'none'
-})
-
-function DestinationChoice({
-	destinationID,
-	destinationDevice,
-	destinations,
-	onChange,
-	onPhoneDestination,
-	onFullDestination
-}) {
-	const items = R.pipe(
-		R.toPairs,
-		R.map(R.converge(R.merge, [
-			R.pipe(
-				R.prop(0),
-				R.objOf('value')
-			),
-			R.pipe(
-				R.prop(1),
-				R.pick(['title'])
-			)
-		]))
-	)(destinations)
-
-	return (
-		<Seed row width='100%'>
-			<Choice
-				value={ destinationID }
-				items={ items }
-				width='100%'
-				minHeight={ 32 }
-				grow={ 1 }
-				border='none'
-				//maxWidth='20em'
-				onChange={ onChange }
-				styler={ stylers.masterButton }
-			/>
-			<Button
-				onClick={ onPhoneDestination }
-				children='Phone'
-				selected={ destinationDevice == 'phone' }
-				styler={ stylers.masterButton }
-			/>
-			<Button
-				onClick={ onFullDestination }
-				children='Full'
-				selected={ destinationDevice == 'full' }
-				styler={ stylers.masterButton }
-			/>
-		</Seed>
-	)
+function createObservableIngredientVariation(ingredient, { rawContent }) {
+	return observable({
+		rawContent,
+		get result() {
+			const transform = transformerForType(ingredient.type)
+			return R.tryCatch(
+				transform,
+				R.objOf('error')
+			)(this.rawContent)
+		},
+		adjustRawContent: action(function(adjuster) {
+			this.rawContent = adjuster(this.rawContent)
+		}),
+		adjustContent: action(function(adjuster) {
+			const result = this.result
+			if (result.content) {
+				adjuster(result.content)
+				this.rawContent = stringRepresenterForType(ingredient.type, result.content)
+			}
+		}),
+		editPath: action(function(path, editor) {
+			this.adjustContent((content) => {
+				const [
+					parent,
+					key
+				] = (path.length == 1) ? [
+					content,
+					path[0]
+				] : [
+					R.path(initialPath, content),
+					R.last(path)
+				]
+				
+				if (parent) {
+					editor(parent, key)
+				}
+				else {
+					// Warn user about incorrect key path?
+				}
+			})
+		}),
+		adjustPath: action(function(path, adjuster) {
+			this.editPath(path, (parent, key) => {
+				parent[key] = adjuster(parent[key]) 
+			})
+		})
+	})
 }
 
-function PreviewSection({
-	contentTree,
-	ingredients,
-	ingredientVariationIndexes,
-	destinationID,
-	destinationDevice,
-	destinations,
-	onChangeDestination,
-	onPhoneDestination,
-	onFullDestination
-}) {
-	const { head: renderHead, Preview } = destinations[destinationID]
-
-	return (
-		<Seed column alignItems='center'
-			{ ...stylers.previewColumn({ destinationDevice }) }
-		>
-			<Seed key={ destinationID }
-				column
-				grow={ 1 } width='100%'
-			>
-			{
-				!!contentTree ? (
-					catchRenderErrors ? (
-						R.tryCatch(
-						(contentTree) => (
-							<Preview
-								ingredients={ ingredients }
-								ingredientVariationIndexes={ ingredientVariationIndexes }
-								contentTree={ contentTree }
-							/>
-						),
-						(error, contentTree) => console.error('Invalid tree', error, contentTree)
-					)(contentTree)
-					) : (
-						<Frame
-							head={ renderHead() }
-							children={
-								<Preview
-									ingredients={ ingredients }
-									ingredientVariationIndexes={ ingredientVariationIndexes }
-									contentTree={ contentTree }
-								/>
-							}
-							{ ...iframeStyler }
-						/>
-					)	
-				) : null
-			}
-			</Seed>
-			<DestinationChoice
-				destinationID={ destinationID }
-				destinationDevice={ destinationDevice }
-				destinations={ destinations }
-				onChange={ onChangeDestination }
-				onPhoneDestination={ onPhoneDestination }
-				onFullDestination={ onFullDestination }
-			/>
-			{ false &&
-				<PreviewTabs />
-			}
-		</Seed>
-	)
+function createObservableIngredient(ingredient) {
+	return extendObservable(ingredient, {
+		variations: ingredient.variations.map(
+			R.curry(createObservableIngredientVariation)(ingredient)
+		)
+	})
 }
 
-export default React.createClass({
+function createObservableState(target, {
+	content, allIngredients, scenarios, activeScenarioIndex
+}) {
+	return extendObservable(target, {
+		content,
+		setContent: action(function(newContent) {
+			this.content = newContent
+		}),
+		get contentTree() {
+			return parseInput(this.content)
+		},
+		allIngredients: allIngredients.map(createObservableIngredient),
+		scenarios,
+		activeScenarioIndex,
+		get activeScenario() {
+			return this.scenarios[this.activeScenarioIndex]
+		},
+		get activeIngredients() {
+			const activeScenario = this.activeScenario
+			return this.allIngredients.reduce((object, { id, type, variations }) => {
+				const activeVariation = variations[R.propOr(0, id, activeScenario)]
+				object[id] = {
+					type,
+					rawContent: activeVariation.rawContent,
+					result: activeVariation.result,
+					variationReference: activeVariation
+				}
+				return object
+			}, {})
+		},
+		activeVariationForIngredientAtIndex(index) {
+			const ingredient = this.allIngredients[index]
+			if (ingredient && ingredient.variations.length > 0) {
+				const activeScenario = this.activeScenario
+				return ingredient.variations[R.propOr(0, ingredient.id, activeScenario)]
+			}
+		},
+		addIngredient: action(function() {
+			target.allIngredients.append(createObservableIngredient({
+				id: R.when(
+					R.isNil,
+					R.always('untitled'),
+					suggestReferenceFromTree(target.allIngredients, target.contentTree)
+				),
+				type: 'text',
+				variations: [
+					{
+						rawContent: ''
+					}
+				]
+			}))
+		}),
+		// Use target to allow prebinding
+		onChangeIngredientAtIndex: action(function(index, adjuster) {
+			adjuster(target.allIngredients[index])
+			/*const variation = target.activeVariationForIngredientAtIndex(index)
+			if (variation) {
+				variation.adjustRawContent(adjuster)	
+			}*/
+			//this.activeVariationForIngredientAtIndex(index).adjustContent(adjuster)
+		}),
+		onRemoveIngredientAtIndex: action(function(index) {
+			target.allIngredients.splice(index, 1)
+		}),
+		onAddVariationAtIndex: action(function(index) {
+			target.allIngredients[index].variations.append({
+				rawContent: ''
+			})
+		})
+	})
+}
+
+export default observer(React.createClass({
 	getDefaultProps() {
 		return {
 			showTree: false,
@@ -170,7 +176,7 @@ export default React.createClass({
 		return {
 			content,
 			contentTree: !!content ? parseInput(content) : null,
-			ingredients: R.map(validateContent, ingredients),
+			ingredients: observable(R.map(validateContent, ingredients)),
 			destinationID,
 			destinationDevice,
 			scenarios,
@@ -178,11 +184,27 @@ export default React.createClass({
 		}
 	},
 
+	componentWillMount() {
+		const {
+			initialContent: content,
+			initialIngredients: allIngredients,
+			initialDestinationID: destinationID,
+			initialDestinationDevice: destinationDevice,
+			initialScenarios: scenarios,
+			initialActiveScenarioIndex: activeScenarioIndex = 0
+		} = this.props
+
+		createObservableState(this, {
+			content, allIngredients, scenarios, activeScenarioIndex
+		})
+	},
+
 	onSourceChange(input) {
-		this.setState({
+		this.setContent(input)
+		/*this.setState({
 			content: input,
 			contentTree: parseInput(input)
-		})
+		})*/
 	},
 
 	onAddNewIngredient(event) {
@@ -291,20 +313,29 @@ export default React.createClass({
   render() {
 		const { showTree } = this.props
 		const {
-			content,
-			contentTree,
-			ingredients,
+			//content,
+			//contentTree,
+			//ingredients,
 			destinationID,
 			destinationDevice,
+			//scenarios,
+			//activeScenarioIndex
+		} = this.state
+
+		const {
+			content,
+			contentTree,
+			allIngredients,
+			activeIngredients,
 			scenarios,
 			activeScenarioIndex
-		} = this.state
+		} = this
 
 		const scenario = scenarios[activeScenarioIndex]
 
 		console.dir(scenario)
 		console.dir(contentTree)
-		console.dir(ingredients)
+		console.dir(activeIngredients)
 
     return (
 			<Seed row justifyContent='center'
@@ -330,7 +361,7 @@ export default React.createClass({
 					</Seed>
 					<Seed column>
 						<IngredientsEditor
-							ingredients={ ingredients }
+							ingredients={ allIngredients }
 							ingredientIDToVariationIndex={ scenario }
 							onAddNew={ this.onAddNewIngredient }
 							onChangeAtIndex={ this.onChangeIngredientAtIndex }
@@ -353,8 +384,7 @@ export default React.createClass({
 				}
 				<PreviewSection
 					contentTree={ contentTree }
-					ingredients={ ingredients }
-					ingredientVariationIndexes={ scenario }
+					ingredients={ activeIngredients }
 					destinationID={ destinationID }
 					destinationDevice={ destinationDevice }
 					destinations={ destinations }
@@ -365,4 +395,4 @@ export default React.createClass({
 			</Seed>
 		)
   }
-})
+}))
