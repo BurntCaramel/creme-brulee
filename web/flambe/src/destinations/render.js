@@ -29,6 +29,7 @@ const resolveContentUsing = (ingredients) => {
 			else if (alter) {
 				const path = value.references[0]
 				const variation = variationForPath(path)
+				console.log('altering variation', variation)
 				const innerPath = R.tail(path)
 				variation.adjustPath(innerPath, alter)
 			}

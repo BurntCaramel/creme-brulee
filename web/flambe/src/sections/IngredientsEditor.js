@@ -21,7 +21,6 @@ const types = [
 ]
 
 const itemWidth = 270
-
 const gutter = 5
 
 const ReferenceHeading = (props) => (
@@ -74,14 +73,35 @@ const VariationTabs = ({ selectedIndex, count, onSelect, onAdd }) => (
 	/>
 )
 
+const Brick = observer(function Brick({
+	info,
+	ingredientIndex,
+	brickIndex,
+	onChangeAtIndex
+}) {
+	return (
+		<Field
+			value={ info.rawContent }
+			onChange={
+				(newRawContent) => {
+					onChangeAtIndex(ingredientIndex, (ingredient) => {
+						console.dir(ingredient.variations.toJS())
+						ingredient.variations[brickIndex].rawContent = newRawContent
+					})
+				}
+			}
+			{ ...stylers.ingredientContentField({ error: info.result.error }) }
+		/>
+	) 
+})
+
 const Item = observer(function Item({
-	index,
+	index: ingredientIndex,
 	ingredient,
 	ingredientIDToVariationIndex,
 	onChangeAtIndex,
 	onRemoveAtIndex,
 	onAddVariationAtIndex,
-	onSelectVariation,
 	onAddNew
 }) {
 	const { id, type, variations } = ingredient
@@ -97,7 +117,7 @@ const Item = observer(function Item({
 				<Field
 					value={ id }
 					grow={ 1 }
-					onChange={ (newID) => onChangeAtIndex(index,
+					onChange={ (newID) => onChangeAtIndex(ingredientIndex,
 						//R.merge(R.__, { id: newID })
 						(ingredient) => { ingredient.id = newID }
 					) }
@@ -106,47 +126,35 @@ const Item = observer(function Item({
 				<Choice
 					styler={ stylers.ingredientButton }
 					value={ type } items={ types }
-					onChange={ (newType) => onChangeAtIndex(index, 
+					onChange={ (newType) => onChangeAtIndex(ingredientIndex, 
 						//R.merge(R.__, { type: newType })
 						(ingredient) => { ingredient.type = newType }
 					) }
 				/>
 				<RemoveButton onClick={
 					() => {
-						onRemoveAtIndex(index)
+						onRemoveAtIndex(ingredientIndex)
 					}
 				} />
 			</Seed>
-			<VariationTabs
-				selectedIndex={ selectedVariation }
-				count={ variations.length }
-				onSelect={
-					(variationIndex) => {
-						onSelectVariation({ ingredientIndex: index, variationIndex })
-					}
-				}
-				onAdd={
+			{
+				variations.map((info, index) => (
+					<Brick
+						info={ info }
+						ingredientIndex={ ingredientIndex }
+						brickIndex={ index }
+						onChangeAtIndex={ onChangeAtIndex }
+					/>
+				))
+			}
+			<Button
+				children='+'
+				onClick={
 					() => {
-						onAddVariationAtIndex(index)
+						onAddVariationAtIndex(ingredientIndex)
 					}
 				}
-			/>
-			<Field
-				value={ variations[selectedVariation].rawContent }
-				onChange={
-					(newRawContent) => {
-						/*onChangeAtIndex(index, R.evolve({
-							variations: R.adjust(
-								R.merge(R.__, { rawContent: newRawContent }),
-								selectedVariation
-							)
-						}))*/
-						onChangeAtIndex(index, (ingredient) => {
-							ingredient.variations[selectedVariation].rawContent = newRawContent
-						})
-					}
-				}
-				{ ...stylers.ingredientContentField({ error: variations[selectedVariation].result.error }) }
+				styler={ stylers.ingredientButton }
 			/>
 		</Seed>
 	)
@@ -173,7 +181,6 @@ function List({
 						onChangeAtIndex,
 						onRemoveAtIndex,
 						onAddVariationAtIndex,
-						onSelectVariation,
 						onAddNew
 					} }
 				/>
@@ -189,7 +196,7 @@ function List({
 export default function References({
 	ingredients,
 	ingredientIDToVariationIndex,
-	onAddNew, onChangeAtIndex, onRemoveAtIndex, onAddVariationAtIndex, onSelectVariation
+	onAddNew, onChangeAtIndex, onRemoveAtIndex, onAddVariationAtIndex
 }) {
 	return (
 		<Seed row>
@@ -199,7 +206,6 @@ export default function References({
 				onChangeAtIndex={ onChangeAtIndex }
 				onRemoveAtIndex={ onRemoveAtIndex }
 				onAddVariationAtIndex={ onAddVariationAtIndex }
-				onSelectVariation={ onSelectVariation }
 				onAddNew={ onAddNew }
 			/>
 		</Seed>

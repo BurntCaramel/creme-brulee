@@ -39,5 +39,11 @@ export default React.createClass({
 				onChange={ this.onChange }
 			/>
 		)
+	},
+
+	componentDidUpdate() {
+		if (this.el) {
+			sizeTextAreaToFit(this.el)
+		}
 	}
 })

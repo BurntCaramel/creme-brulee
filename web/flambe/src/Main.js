@@ -78,7 +78,32 @@ function createObservableIngredient(ingredient) {
 	return extendObservable(ingredient, {
 		variations: ingredient.variations.map(
 			R.curry(createObservableIngredientVariation)(ingredient)
-		)
+		),
+		addVariation: action(function(variation) { 
+			this.variations.push(
+				createObservableIngredientVariation(this, variation)
+			)
+		}),
+		get flattenedContent() {
+			let flattened = {
+				type: this.type,
+				variationReference: R.last(this.variations)
+			}
+
+			if (this.type == 'json') {
+				flattened.result = this.variations.reduce((combined, { result }) => {
+					if (result.content != null) {
+						Object.assign(combined, result.content)
+					}
+					return result
+				}, {})
+			}
+			else {
+				flattened.result = R.last(this.variations).result
+			}
+
+			return flattened
+		}
 	})
 }
 
@@ -101,14 +126,16 @@ function createObservableState(target, {
 		},
 		get activeIngredients() {
 			const activeScenario = this.activeScenario
-			return this.allIngredients.reduce((object, { id, type, variations }) => {
+			return this.allIngredients.reduce((object, { id, type, variations, flattenedContent }) => {
+				object[id] = flattenedContent
+				/*
 				const activeVariation = variations[R.propOr(0, id, activeScenario)]
 				object[id] = {
 					type,
 					rawContent: activeVariation.rawContent,
 					result: activeVariation.result,
 					variationReference: activeVariation
-				}
+				}*/
 				return object
 			}, {})
 		},
@@ -121,9 +148,8 @@ function createObservableState(target, {
 		},
 		addIngredient: action(function() {
 			target.allIngredients.append(createObservableIngredient({
-				id: R.when(
-					R.isNil,
-					R.always('untitled'),
+				id: R.defaultTo(
+					'untitled',
 					suggestReferenceFromTree(target.allIngredients, target.contentTree)
 				),
 				type: 'text',
@@ -137,19 +163,16 @@ function createObservableState(target, {
 		// Use target to allow prebinding
 		onChangeIngredientAtIndex: action(function(index, adjuster) {
 			adjuster(target.allIngredients[index])
-			/*const variation = target.activeVariationForIngredientAtIndex(index)
-			if (variation) {
-				variation.adjustRawContent(adjuster)	
-			}*/
-			//this.activeVariationForIngredientAtIndex(index).adjustContent(adjuster)
 		}),
 		onRemoveIngredientAtIndex: action(function(index) {
 			target.allIngredients.splice(index, 1)
 		}),
 		onAddVariationAtIndex: action(function(index) {
-			target.allIngredients[index].variations.append({
+			const ingredient = target.allIngredients[index]
+			ingredient.addVariation({
 				rawContent: ''
 			})
+			console.log('variation count', ingredient.variations.length)
 		})
 	})
 }
@@ -201,73 +224,6 @@ export default observer(React.createClass({
 
 	onSourceChange(input) {
 		this.setContent(input)
-		/*this.setState({
-			content: input,
-			contentTree: parseInput(input)
-		})*/
-	},
-
-	onAddNewIngredient(event) {
-		this.setState(({ ingredients, contentTree }) => ({
-			ingredients: ingredients.concat({
-				id: R.when(
-					R.isNil,
-					R.always('untitled'),
-					suggestReferenceFromTree(ingredients, contentTree)
-				),
-				type: 'text',
-				variations: [
-					{
-						rawContent: ''
-					}
-				]
-			})
-		}))
-	},
-
-	onChangeIngredientAtIndex(index, updater) {
-		this.setState(R.evolve({
-			ingredients: R.adjust(
-				R.pipe(
-					updater,
-					validateContent
-				),
-				index
-			)
-		}))
-	},
-
-	onRemoveIngredientAtIndex(index) {
-		this.setState(R.evolve({
-			ingredients: R.remove(index, 1)
-		}))
-	},
-
-	onAddVariationAtIndex(index) {
-		this.setState(R.evolve({
-			ingredients: R.pipe(
-				R.adjust(
-					R.evolve({
-						variations: R.append({
-							rawContent: ''
-						})
-					}),
-					index
-				),
-				R.map(validateContent)
-			)
-		}))
-	},
-
-	onSelectVariation({ ingredientIndex, variationIndex }) {
-		this.setState(({ ingredients, scenarios, activeScenarioIndex }) => ({
-			scenarios: R.adjust(
-				R.merge(R.__, {
-					[ingredients[ingredientIndex].id]: variationIndex
-				}),
-				activeScenarioIndex
-			)(scenarios)
-		}))
 	},
 
 	onChangeDestination(newDestinationID) {
@@ -367,7 +323,6 @@ export default observer(React.createClass({
 							onChangeAtIndex={ this.onChangeIngredientAtIndex }
 							onRemoveAtIndex={ this.onRemoveIngredientAtIndex }
 							onAddVariationAtIndex={ this.onAddVariationAtIndex }
-							onSelectVariation={ this.onSelectVariation }
 						/>
 					</Seed>
 				</Seed>
