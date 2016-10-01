@@ -21,7 +21,7 @@
     "react-dom": "^15.2.1",
     "react-frame-component": "^0.6.2",
     "react-icons": "^2.2.1",
-    "react-seeds": "^0.4.0-b1",
+    "react-seeds": "^0.4.0-b5",
     "react-sow": "^0.3.0-b4",
     "spectacle": "^1.1.2"
   },
