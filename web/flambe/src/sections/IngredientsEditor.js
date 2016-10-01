@@ -80,18 +80,32 @@ const Brick = observer(function Brick({
 	onChangeAtIndex
 }) {
 	return (
-		<Field
-			value={ info.rawContent }
-			onChange={
-				(newRawContent) => {
-					onChangeAtIndex(ingredientIndex, (ingredient) => {
-						console.dir(ingredient.variations.toJS())
-						ingredient.variations[brickIndex].rawContent = newRawContent
-					})
+		<Seed row>
+			<Button
+				width='1.35rem'
+				children={ info.enabled ? '✓' : '·' }
+				styler={ stylers.ingredientButton }
+				onClick={
+					() => {
+						onChangeAtIndex(ingredientIndex, (ingredient) => {
+							ingredient.variations[brickIndex].toggleEnabled()
+						})
+					}
 				}
-			}
-			{ ...stylers.ingredientContentField({ error: info.result.error }) }
-		/>
+			/>
+			<Field grow={ 1 }
+				value={ info.rawContent }
+				onChange={
+					(newRawContent) => {
+						onChangeAtIndex(ingredientIndex, (ingredient) => {
+							console.dir(ingredient.variations.toJS())
+							ingredient.variations[brickIndex].rawContent = newRawContent
+						})
+					}
+				}
+				{ ...stylers.ingredientContentField({ error: info.result.error }) }
+			/>
+		</Seed>
 	) 
 })
 

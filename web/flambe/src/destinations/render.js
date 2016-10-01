@@ -3,7 +3,7 @@ import React from 'react'
 import { Seed } from 'react-seeds'
 
 const resolveContentIn = R.curry(function resolveItemIn(source, path) {
-	path = R.insertAll(1, ['result', 'content'], path)
+	path = R.insertAll(1, ['content'], path)
 	return R.path(path, source)
 })
 

@@ -2,12 +2,9 @@ import R from 'ramda'
 import React from 'react'
 import { findDOMNode } from 'react-dom'
 import seeds, { Seed } from 'react-seeds'
-import { extendObservable, observable, action } from 'mobx'
 import { observer } from 'mobx-react'
 
-import { parseInput } from './parser'
 import destinations from './destinations'
-import validateContent, { transformerForType, stringRepresenterForType } from './ingredients/validateContent'
 
 import * as colors from './colors'
 import * as stylers from './stylers'
@@ -17,165 +14,7 @@ import Choice from './ui/Choice'
 import IngredientsEditor from './sections/IngredientsEditor'
 import PreviewSection from './sections/preview'
 
-const suggestReferenceFromTree = R.uncurryN(2, (ingredients) => R.pipe(
-	R.chain(R.pluck('references')),
-	R.unnest,
-	R.map(R.head), // Just the requested ingredient ID
-	R.difference(R.__, R.pluck('id', ingredients)), // Only IDs that are yet to be used
-	R.head // First pick
-))
-
-function createObservableIngredientVariation(ingredient, { rawContent }) {
-	return observable({
-		rawContent,
-		get result() {
-			const transform = transformerForType(ingredient.type)
-			return R.tryCatch(
-				transform,
-				R.objOf('error')
-			)(this.rawContent)
-		},
-		adjustRawContent: action(function(adjuster) {
-			this.rawContent = adjuster(this.rawContent)
-		}),
-		adjustContent: action(function(adjuster) {
-			const result = this.result
-			if (result.content) {
-				adjuster(result.content)
-				this.rawContent = stringRepresenterForType(ingredient.type, result.content)
-			}
-		}),
-		editPath: action(function(path, editor) {
-			this.adjustContent((content) => {
-				const [
-					parent,
-					key
-				] = (path.length == 1) ? [
-					content,
-					path[0]
-				] : [
-					R.path(initialPath, content),
-					R.last(path)
-				]
-				
-				if (parent) {
-					editor(parent, key)
-				}
-				else {
-					// Warn user about incorrect key path?
-				}
-			})
-		}),
-		adjustPath: action(function(path, adjuster) {
-			this.editPath(path, (parent, key) => {
-				parent[key] = adjuster(parent[key]) 
-			})
-		})
-	})
-}
-
-function createObservableIngredient(ingredient) {
-	return extendObservable(ingredient, {
-		variations: ingredient.variations.map(
-			R.curry(createObservableIngredientVariation)(ingredient)
-		),
-		addVariation: action(function(variation) { 
-			this.variations.push(
-				createObservableIngredientVariation(this, variation)
-			)
-		}),
-		get flattenedContent() {
-			let flattened = {
-				type: this.type,
-				variationReference: R.last(this.variations)
-			}
-
-			if (this.type == 'json') {
-				flattened.result = this.variations.reduce((combined, { result }) => {
-					if (result.content != null) {
-						Object.assign(combined, result.content)
-					}
-					return result
-				}, {})
-			}
-			else {
-				flattened.result = R.last(this.variations).result
-			}
-
-			return flattened
-		}
-	})
-}
-
-function createObservableState(target, {
-	content, allIngredients, scenarios, activeScenarioIndex
-}) {
-	return extendObservable(target, {
-		content,
-		setContent: action(function(newContent) {
-			this.content = newContent
-		}),
-		get contentTree() {
-			return parseInput(this.content)
-		},
-		allIngredients: allIngredients.map(createObservableIngredient),
-		scenarios,
-		activeScenarioIndex,
-		get activeScenario() {
-			return this.scenarios[this.activeScenarioIndex]
-		},
-		get activeIngredients() {
-			const activeScenario = this.activeScenario
-			return this.allIngredients.reduce((object, { id, type, variations, flattenedContent }) => {
-				object[id] = flattenedContent
-				/*
-				const activeVariation = variations[R.propOr(0, id, activeScenario)]
-				object[id] = {
-					type,
-					rawContent: activeVariation.rawContent,
-					result: activeVariation.result,
-					variationReference: activeVariation
-				}*/
-				return object
-			}, {})
-		},
-		activeVariationForIngredientAtIndex(index) {
-			const ingredient = this.allIngredients[index]
-			if (ingredient && ingredient.variations.length > 0) {
-				const activeScenario = this.activeScenario
-				return ingredient.variations[R.propOr(0, ingredient.id, activeScenario)]
-			}
-		},
-		addIngredient: action(function() {
-			target.allIngredients.append(createObservableIngredient({
-				id: R.defaultTo(
-					'untitled',
-					suggestReferenceFromTree(target.allIngredients, target.contentTree)
-				),
-				type: 'text',
-				variations: [
-					{
-						rawContent: ''
-					}
-				]
-			}))
-		}),
-		// Use target to allow prebinding
-		onChangeIngredientAtIndex: action(function(index, adjuster) {
-			adjuster(target.allIngredients[index])
-		}),
-		onRemoveIngredientAtIndex: action(function(index) {
-			target.allIngredients.splice(index, 1)
-		}),
-		onAddVariationAtIndex: action(function(index) {
-			const ingredient = target.allIngredients[index]
-			ingredient.addVariation({
-				rawContent: ''
-			})
-			console.log('variation count', ingredient.variations.length)
-		})
-	})
-}
+import createObservableState from './state'
 
 export default observer(React.createClass({
 	getDefaultProps() {
@@ -188,22 +27,13 @@ export default observer(React.createClass({
 
 	getInitialState() {
 		const {
-			initialContent: content,
-			initialIngredients: ingredients,
 			initialDestinationID: destinationID,
-			initialDestinationDevice: destinationDevice,
-			initialScenarios: scenarios,
-			initialActiveScenarioIndex: activeScenarioIndex = 0
+			initialDestinationDevice: destinationDevice
 		} = this.props
 
 		return {
-			content,
-			contentTree: !!content ? parseInput(content) : null,
-			ingredients: observable(R.map(validateContent, ingredients)),
 			destinationID,
-			destinationDevice,
-			scenarios,
-			activeScenarioIndex
+			destinationDevice
 		}
 	},
 
@@ -269,13 +99,8 @@ export default observer(React.createClass({
   render() {
 		const { showTree } = this.props
 		const {
-			//content,
-			//contentTree,
-			//ingredients,
 			destinationID,
-			destinationDevice,
-			//scenarios,
-			//activeScenarioIndex
+			destinationDevice
 		} = this.state
 
 		const {
