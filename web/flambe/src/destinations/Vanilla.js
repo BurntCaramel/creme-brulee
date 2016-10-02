@@ -14,6 +14,8 @@ import UnsplashImage from './components/UnsplashImage'
 const whenPresent = R.unless(R.isNil)
 
 import * as Message from './Message'
+import * as Swatch from './Swatch'
+import * as Distribution from './Distribution'
 import * as LayoutCalculator from './LayoutCalculator'
 
 export const isPassword = (tags, mentions, title) => (
@@ -82,7 +84,7 @@ export const choice = (tags, mentions, title, children, Element, resolveContent)
 	</Seed>
 )
 
-const wrapTextForTags = (tags, element, resolveContent) => {
+const wrapForTags = (tags, resolveContent, element) => {
 	if (R.has('link', tags)) {
 		const url = resolveContent(tags.link)
 		return (
@@ -112,16 +114,19 @@ export const text = (tags, references, content, children, Element, resolveConten
 			['h2', '1.5em', 'center']
 		) : R.has('tertiary', tags) ? (
 			['h3', '1.25em', 'left']
+		) : R.has('quote', tags) ? (
+			['blockquote', '1em', 'left']
 		) : (
 			['p', '1em', 'left']
 		)
 	)
 
-	return wrapTextForTags(
+	return wrapForTags(
 		tags,
+		resolveContent,
 		(
 			<Seed
-				maxWidth='30rem'
+				maxWidth='40rem'
 				alignSelf='center'
 				margin='auto'
 				text={{ align: textAlign }}
@@ -134,8 +139,7 @@ export const text = (tags, references, content, children, Element, resolveConten
 					)
 				}
 			/>
-		),
-		resolveContent
+		)
 	)
 }
 
@@ -181,16 +185,18 @@ export const imageMaker = (imageContent) => (tags, mentions, text, children, Ele
 			grow={ 1 } width='100%'
 			text={{ align: 'center' }}
 			children={(
-				R.has('nocaption', tags) ? (
-					imageContent(tags, text, resolveContent)
-				) : ([
-					imageContent(tags, null, resolveContent),
-					<Seed key='caption' Component='figcaption'
-						text={{ lineHeight: '1.3' }}
-						font={{ style: 'italic' }}
-						children={ text }
-					/>
-				])
+				wrapForTags(tags, resolveContent,
+					R.has('nocaption', tags) ? (
+						imageContent(tags, text, resolveContent)
+					) : ([
+						imageContent(tags, null, resolveContent),
+						<Seed key='caption' Component='figcaption'
+							text={{ lineHeight: '1.3' }}
+							font={{ style: 'italic' }}
+							children={ text }
+						/>
+					])
+				)
 			)}
 		/>
 	)
@@ -209,10 +215,6 @@ export const video = (tags, mentions, content) => (
 	/>
 )
 
-export const quote = (tags, mentions, text) => (
-	<Seed Component='blockquote' children={ text } />
-)
-
 export const code = (tags, references, text, children, Element, resolveContent) => (
 	<Seed Component='pre'
 		maxWidth='100%'
@@ -222,35 +224,6 @@ export const code = (tags, references, text, children, Element, resolveContent) 
 			children={ resolveContent({ references, text }) }
 		/>
 	</Seed>
-)
-
-const hexColorRegex = /^[a-fA-F09]{3,6}$/
-
-export const swatch = (tags, mentions, content, children, Element, resolveContent) => (
-	<Seed
-		grow={ 1 }
-		minWidth={
-			R.cond([
-				[ R.has('width'), R.pipe(R.prop('width'), resolveContent) ],
-				[ R.has('size'), R.pipe(R.prop('size'), resolveContent) ],
-				[ R.T, R.always(32) ]
-			])(tags)
-		}
-		minHeight={
-			R.cond([
-				[ R.has('height'), R.pipe(R.prop('height'), resolveContent) ],
-				[ R.has('size'), R.pipe(R.prop('size'), resolveContent) ],
-				[ R.T, R.always(32) ]
-			])(tags)
-		}
-		background={{
-			color: R.when(
-				R.isEmpty,
-				R.always(R.find(R.test(hexColorRegex), tags)),
-				content
-			)
-		}}
-	/>
 )
 
 const isHiddenForTags = R.propSatisfies(Boolean, 'hidden')
@@ -357,26 +330,27 @@ export const record = (tags, mentions, text, children, Element, resolveContent) 
 // 	<Frame head={ <script src={ resolveContent({ references, text }) + '.js' } /> } />
 // )
 
-export const extendTagConds = (conds) => LayoutCalculator.useWithFallback(
-	Message.useWithFallback(R.cond([
+export const extendTagConds = (conds) => R.pipe(
+	Message.useWithFallback,
+	Swatch.useWithFallback,
+	Distribution.useWithFallback,
+	LayoutCalculator.useWithFallback,
+)(R.cond([
 	[ isHiddenForTags, R.curry(hidden) ],
 	...conds,
 	[ R.has('field'), R.curry(field) ],
 	[ R.has('button'), R.curry(button) ],
 	[ R.has('cta'), R.curry(cta) ],
 	[ R.has('choice'), R.curry(choice) ],
-	[ R.has('quote'), R.curry(quote) ],
 	[ R.has('image'), R.curry(image) ],
 	[ R.has('video'), R.curry(video) ],
 	[ R.has('code'), R.curry(code) ],
-	[ R.has('swatch'), R.curry(swatch) ],
-	[ R.has('fill'), R.curry(swatch) ],
 	[ R.has('columns'), R.curry(columns) ],
 	[ R.has('nav'), R.curry(nav) ],
 	[ R.has('record'), R.curry(record) ],
 	//[ R.has('gist'), R.curry(gist) ],
 	[ R.T, R.curry(list) ]
-])))
+]))
 
 const elementRendererForTags = extendTagConds([])
 

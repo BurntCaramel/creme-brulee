@@ -17,7 +17,7 @@ const types = [
 	//{ value: 'csv', title: 'CSV' },
 	//{ value: 'gist', title: 'Gist' },
 	//{ value: 'icing', title: 'Icing' },
-	{ value: 'error', title: 'Error' }
+	//{ value: 'error', title: 'Error' }
 ]
 
 const itemWidth = 270
@@ -83,7 +83,7 @@ const Brick = observer(function Brick({
 		<Seed row>
 			<Button
 				width='1.35rem'
-				children={ info.enabled ? '✓' : '·' }
+				children={ info.result.error ? '!' : info.enabled ? '✓' : '·' }
 				styler={ stylers.ingredientButton }
 				onClick={
 					() => {

@@ -56,7 +56,8 @@ export const renderElement = ({ ingredients, elementRendererForTags }) => {
 	const Element = R.converge(
 		R.call, [
 			R.pipe(
-				R.prop('tags'),
+				R.props(['defaultTags', 'tags']),
+				R.apply(R.mergeWith(R.merge)),
 				elementRendererForTags
 			),
 			R.prop('references'),
@@ -65,6 +66,15 @@ export const renderElement = ({ ingredients, elementRendererForTags }) => {
 			(ignore) => Element, // Have to put in closure as it is being assigned
 			R.always(resolveContent)
 		]
+	)
+
+	Element.renderArray = (options, array) => (
+		array.map((element, index) => (
+			<Element key={ index }
+				{ ...options }
+				{ ...element }
+			/>
+		))
 	)
 
 	return Element
