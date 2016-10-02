@@ -124,7 +124,7 @@ const Item = observer(function Item({
 		<Seed
 			column
 			basis={ itemWidth }
-			minWidth={ itemWidth }
+			width={ itemWidth }
 			margin={{ left: gutter, right: gutter }}
 		>
 			<Seed row>
