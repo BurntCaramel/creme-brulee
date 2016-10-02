@@ -2,7 +2,7 @@ import R from 'ramda'
 import React from 'react'
 import { Seed } from 'react-seeds'
 
-const hexColorRegex = /^[a-fA-F09]{3,6}$/
+const hexColorRegex = /^[a-fA-F0-9]{3,6}$/
 const defaultSwatchSize = 32
 
 const parseColorValue = (alpha = 1) => R.ifElse(
