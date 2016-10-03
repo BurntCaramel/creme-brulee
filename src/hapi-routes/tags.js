@@ -19,6 +19,7 @@ module.exports = [
 		method: 'GET',
 		path: `/${v}/@{organization}/sha256:{sha256}/tags`,
 		config: {
+			auth: 'organizationToken',
 			validate: {
 				params: Joi.compile({
 					organization: validations.organizationName,

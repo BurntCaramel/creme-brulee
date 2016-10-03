@@ -55,7 +55,7 @@ module.exports = [
 		method: 'PUT',
 		path: cupPath,
 		config: {
-			auth: 'token',
+			auth: 'auth0token',
 			payload: {
 				parse: false,
 				defaultContentType: 'application/octet-stream'

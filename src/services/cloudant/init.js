@@ -8,8 +8,6 @@ const cloudant = Cloudant({
 	password: process.env.CLOUDANT_PASSWORD
 })
 
-const tags = cloudant.db.use('tags')
-
 const fromNodeMethodsOf = R.mapObjIndexed(
 	(method, name, target) => R.when(
 		R.hasIn('bind'), // Only functions
@@ -22,12 +20,8 @@ const fromNodeMethodsOf = R.mapObjIndexed(
 
 const databases = {
 	items: cloudant.db.use('items'),
-	organizations: cloudant.db.use('organizations'),
-	tags: fromNodeMethodsOf(tags)
-	/*tags: {
-		get: fromNode(tags.get.bind(tags)),
-		insert: fromNode(tags.insert.bind(tags))
-	}*/
+	organizations: fromNodeMethodsOf(cloudant.db.use('organizations')),
+	tags: fromNodeMethodsOf(cloudant.db.use('tags'))
 	//users: cloudant.db.use('users')
 }
 

@@ -1,5 +1,5 @@
 const R = require('ramda')
-const { resolve, reject, runNode } = require('creed')
+const { resolve, reject } = require('creed')
 const Boom = require('boom')
 
 const { databases } = require('./init')

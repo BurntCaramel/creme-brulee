@@ -1,5 +1,4 @@
 const R = require('ramda')
-const escape = require('lodash/escape')
 const { createElement } = require('react')
 const { renderToStaticMarkup } = require('react-dom/server')
 

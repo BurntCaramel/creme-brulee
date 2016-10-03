@@ -1,12 +1,12 @@
 const R = require('ramda')
-const escapeRegExp = require('lodash/escapeRegExp')
+const L = require('lodash/fp')
 
 const passesRegularExpression = require('./text.passesRegularExpression')
 
 const startsWith = R.pipe(
 	R.over(
 		R.lensProp('value'),
-		(text) => (`^${ escapeRegExp(text) }`)
+		(text) => (`^${ L.escapeRegExp(text) }`)
 	),
 	passesRegularExpression
 )

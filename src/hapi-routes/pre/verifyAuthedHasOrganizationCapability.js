@@ -13,7 +13,7 @@ const verifyAuthedHasOrganizationCapability = (capability) => (request, reply) =
 		}))
 		.then(R.unless(
 			R.pathEq(['userCapabilities', userID, capability], true),
-			() => { throw Boom.unauthorized('You don’t have permission to invite people to this organization') }
+			() => { throw Boom.unauthorized(`You don’t have permission to ${capability} in this organization`) }
 		))
 	)
 }

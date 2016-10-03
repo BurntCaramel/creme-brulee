@@ -1,8 +1,8 @@
 const R = require('ramda')
-const escape = require('lodash/escape')
+const L = require('lodash/fp')
 
 module.exports = (options) => (input) => (
 	R.merge(options, {	
-		innerHTML: escape(input)
+		innerHTML: L.escape(input)
 	}) 
 )

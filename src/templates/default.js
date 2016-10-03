@@ -1,10 +1,10 @@
 const R = require('ramda')
-const escape = require('lodash/escape')
+const L = require('lodash/fp')
 
 const renderStyles = require('./renderStyles')
 
 const renderMeta = (name, content) => (
-	`<meta name="${ name }" content="${ escape(content) }">`
+	`<meta name="${ name }" content="${ L.escape(content) }">`
 )
 
 const renderMetas = R.pipe(
@@ -46,7 +46,7 @@ module.exports = ({
 <html>
 <head>
 <meta charset="utf-8">
-<title>${ escape(title) }</title>
+<title>${ L.escape(title) }</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${
 	renderMetas({

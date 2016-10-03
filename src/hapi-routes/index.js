@@ -9,6 +9,7 @@ module.exports = R.unnest([
 
 	require('./web/slides'),
 	require('./web/flambe'),
+	require('./web/account'),
 
 	// API
 

@@ -1,5 +1,4 @@
 const R = require('ramda')
-const escape = require('lodash/escape')
 
 const renderMarkdownToHTML = require('../../utils/renderMarkdown')
 const fetchValidJSON = require('../../utils/fetch').fetchValidJSON

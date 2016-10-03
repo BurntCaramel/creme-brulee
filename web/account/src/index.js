@@ -14,6 +14,7 @@ function renderApp(props) {
 	render(
 		<App
 			lock={ lock }
+			onLogOut={ logOut }
 			{ ...props }
 		/>,
 		document.querySelector('#app')
@@ -39,6 +40,11 @@ function useToken(idToken) {
 	})
 }
 
+function logOut() {
+	localStorage.removeItem('idToken')
+	renderApp({ signedIn: false })
+}
+
 const authResult = lock.parseHash(window.location.hash)
 if (authResult && authResult.id_token) {
 	useToken(authResult.id_token)
@@ -47,8 +53,7 @@ else {
 	const idToken = localStorage.getItem('idToken')
 	const expired = isTokenExpired(idToken)
 	if (expired) {
-		localStorage.removeItem('idToken')
-		renderApp({ signedIn: false })
+		logOut()
 	}
 	else {
 		useToken(idToken)

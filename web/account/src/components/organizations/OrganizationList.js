@@ -20,12 +20,48 @@ import { findItemsWithTags }from '../../actions/items'
 	)
 }*/
 
+const itemStyle = {
+	display: 'inline-block',
+	fontSize: 24,
+	letterSpacing: 2,
+	marginBottom: '0.333em',
+	padding: '0.166em 0.333em',
+	backgroundColor: '#f8f8f8',
+	borderRadius: 4,
+	textDecoration: 'none'
+}
+
+const placeholderStyle = {
+	...itemStyle,
+	width: '7.9em'
+}
+
 function Item({ organizationName, sha256 }) {
 	return (
-		<a href={ `/1/preview:auto/@${ organizationName }/${ sha256 }` } title={ sha256 } style={{ fontSize: 24, letterSpacing: 2 }}>
+		<a href={ `/1/preview:auto/@${ organizationName }/${ sha256 }` } title={ sha256 }
+			style={ itemStyle }
+		>
 		{ sha256.substring(0, 7).toLowerCase().split('').map((hex) => emojid.base16ToEmoji[hex]).join('') }
 		</a>
 	)
+}
+
+function makeItemPlaceholders(count) {
+	const items = new Array(count)
+
+	const item = (
+		<li>
+			<span style={ placeholderStyle }>
+				&nbsp;
+			</span>
+		</li>
+	)
+
+	for (let index = 0; index < count; index++) {
+		items[index] = item
+	}
+
+	return items
 }
 
 const TagItems = React.createClass({
@@ -44,16 +80,20 @@ const TagItems = React.createClass({
 	},
 
 	render() {
-		const { organizationName } = this.props
+		const { organizationName, count } = this.props
 		const { items } = this.state
-		return ( items != null &&
+		return (
 			<ul style={{ listStyle: 'none' }}>
 			{
-				items.map(({ sha256 }) => (
-					<li>
-						<Item organizationName={ organizationName } sha256={ sha256 } />
-					</li>
-				))
+				(items != null) ? (
+					items.map(({ sha256 }) => (
+						<li>
+							<Item organizationName={ organizationName } sha256={ sha256 } />
+						</li>
+					))
+				) : (
+					makeItemPlaceholders(count)
+				)
 			}
 			</ul>
 		)
@@ -80,7 +120,7 @@ const OrganizationTag = React.createClass({
 				{ tag } · { count }
 				</h3>
 			{ showItems &&
-				<TagItems token={ token } organizationName={ organizationName } tag={ tag } />
+				<TagItems token={ token } organizationName={ organizationName } tag={ tag } count={ count } />
 			}
 			</li>
 		)
@@ -149,7 +189,7 @@ const Organization = React.createClass({
 
 		return (
 			<div>
-				<h2 onClick={ this.onToggleTags }>{ name }</h2>
+				<h2 onClick={ this.onToggleTags }>@{ name }</h2>
 				{ showTags &&
 					//<PromiseComponent Component={ OrganizationTags } createPromise={ this.loadTags } propName='tags' />
 					<OrganizationTags token={ token } organizationName={ name } />

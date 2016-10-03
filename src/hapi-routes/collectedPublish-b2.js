@@ -8,7 +8,7 @@ module.exports = [
 		method: 'PUT',
 		path: itemPath,
 		config: {
-			auth: 'token',
+			auth: 'auth0token',
 			payload: {
 				parse: false,
 				defaultContentType: 'application/octet-stream'
@@ -32,7 +32,7 @@ module.exports = [
 		method: 'DELETE',
 		path: itemPath,
 		config: {
-			auth: 'token'
+			auth: 'auth0token'
 		},
 		handler(request, reply) {
 			reply(

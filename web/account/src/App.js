@@ -4,6 +4,7 @@ import React from 'react'
 import { resolve } from 'creed'
 
 import SignIn from './components/SignIn'
+import LogOut from './components/LogOut'
 import Profile from './components/Profile'
 import OrganizationList from './components/organizations/OrganizationList'
 
@@ -66,7 +67,8 @@ const App = React.createClass({
 			lock,
 			signedIn,
 			userProfile,
-			userProfileError
+			userProfileError,
+			onLogOut
 		} = this.props
 
 		const {
@@ -76,18 +78,22 @@ const App = React.createClass({
     return (
 			<div className="App">
 			{
-				(signedIn) ? (
+				(userProfileError) ? (
+					<p>{ userProfileError.message }</p>
+				) : (signedIn) ? (
 					<div>
-						{ (userProfile) ? (
+						<h1>Account</h1>
+						{ /*(userProfile) ? (
 							<Profile profile={ userProfile } />
 						) : (
 							<div>Loading profile…</div>
-						) }
+						)*/ }
 						{ (organizations) ? (
 							<OrganizationList organizations={ organizations } token={ token } /> 
 						) : (
 							<div>Loading organizations…</div>
 						) }
+						<LogOut onLogOut={ onLogOut } />
 					</div>
 				) : (
 					<SignIn lock={ lock } />
