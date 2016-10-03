@@ -105,20 +105,25 @@ function createObservableIngredient(ingredient) {
 	})
 }
 
-export default function createObservableState(target, {
-	content, allIngredients, scenarios, activeScenarioIndex
+export default function createObservableState({
+	content,
+	allIngredients,
+	scenarios,
+	activeScenarioIndex,
+	destinationID,
+	destinationDevice
 }) {
+	const target = this
 	return extendObservable(target, {
 		content,
-		setContent: action(function(newContent) {
-			this.content = newContent
-		}),
 		get contentTree() {
 			return parseInput(this.content)
 		},
 		allIngredients: allIngredients.map(createObservableIngredient),
 		scenarios,
 		activeScenarioIndex,
+		destinationID,
+		destinationDevice,
 		get activeScenario() {
 			return this.scenarios[this.activeScenarioIndex]
 		},

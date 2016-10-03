@@ -2,6 +2,7 @@ import R from 'ramda'
 import React from 'react'
 import { findDOMNode } from 'react-dom'
 import seeds, { Seed } from 'react-seeds'
+import { action } from 'mobx'
 import { observer } from 'mobx-react'
 
 import destinations from './destinations'
@@ -25,18 +26,6 @@ export default observer(React.createClass({
 		}
 	},
 
-	getInitialState() {
-		const {
-			initialDestinationID: destinationID,
-			initialDestinationDevice: destinationDevice
-		} = this.props
-
-		return {
-			destinationID,
-			destinationDevice
-		}
-	},
-
 	componentWillMount() {
 		const {
 			initialContent: content,
@@ -47,30 +36,26 @@ export default observer(React.createClass({
 			initialActiveScenarioIndex: activeScenarioIndex = 0
 		} = this.props
 
-		createObservableState(this, {
-			content, allIngredients, scenarios, activeScenarioIndex
+		createObservableState.call(this, {
+			content,
+			allIngredients,
+			scenarios,
+			activeScenarioIndex,
+			destinationID,
+			destinationDevice
 		})
-	},
-
-	onSourceChange(input) {
-		this.setContent(input)
-	},
-
-	onChangeDestination(newDestinationID) {
-		this.setState({
-			destinationID: newDestinationID
+		
+		this.onSourceChange = action((input) => {
+			this.content = input
 		})
-	},
-
-	onPhoneDestination() {
-		this.setState({
-			destinationDevice: 'phone'
+		this.onChangeDestination = action((newDestinationID) => {
+			this.destinationID = newDestinationID
 		})
-	},
-
-	onFullDestination() {
-		this.setState({
-			destinationDevice: 'full'
+		this.onPhoneDestination = action(() => {
+			this.destinationDevice = 'phone'
+		})
+		this.onFullDestination = action(() => {
+			this.destinationDevice = 'full'
 		})
 	},
 
@@ -99,17 +84,14 @@ export default observer(React.createClass({
   render() {
 		const { showTree } = this.props
 		const {
-			destinationID,
-			destinationDevice
-		} = this.state
-
-		const {
 			content,
 			contentTree,
 			allIngredients,
 			activeIngredients,
 			scenarios,
-			activeScenarioIndex
+			activeScenarioIndex,
+			destinationID,
+			destinationDevice
 		} = this
 
 		const scenario = scenarios[activeScenarioIndex]
