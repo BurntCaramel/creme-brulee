@@ -15,7 +15,7 @@ const variationForItemIn = R.curry(function adjustItemIn(source, path) {
 const resolveContentUsing = (ingredients) => {
 	const resolveIngredientReference = resolveContentIn(ingredients)
 	const variationForPath = variationForItemIn(ingredients)
-	return (value, { single = false, set, alter } = {}) => {
+	return (value, { single = true, set, alter } = {}) => {
 		if (R.isNil(value)) {
 			return
 		}
@@ -50,8 +50,21 @@ const resolveContentUsing = (ingredients) => {
 	}
 }
 
+function elementFromText(text) {
+	return {
+		text,
+		references: [],
+		tags: {},
+		children: []
+	}
+}
+
 export const renderElement = ({ ingredients, elementRendererForTags }) => {
 	const resolveContent = resolveContentUsing(ingredients)
+
+	const extra = {
+		elementFromText
+	}
 
 	const Element = R.converge(
 		R.call, [
@@ -63,8 +76,9 @@ export const renderElement = ({ ingredients, elementRendererForTags }) => {
 			R.prop('references'),
 			R.prop('text'),
 			R.prop('children'),
-			(ignore) => Element, // Have to put in closure as it is being assigned
-			R.always(resolveContent)
+			(ignore) => Element, // Have to put in closure as it is currently being assigned
+			R.always(resolveContent),
+			R.always(extra)
 		]
 	)
 

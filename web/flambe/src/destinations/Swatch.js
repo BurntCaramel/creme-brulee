@@ -52,7 +52,7 @@ export const srgbItem = (value, alpha, minWidth, minHeight) => (
 	/>
 )
 
-export const swatch = (tags, references, text, children, Element, resolveContent) => {
+export const swatch = (tags, references, text, children, Element, resolveContent, { elementFromText }) => {
 	const alpha = parseAlpha(resolveContent(tags.alpha))
 	const minWidth = R.cond([
 		[ R.has('width'), R.pipe(R.prop('width'), resolveContent) ],
@@ -65,6 +65,12 @@ export const swatch = (tags, references, text, children, Element, resolveContent
 		[ R.T, R.always(defaultSwatchSize) ]
 	])(tags)
 
+	const content = resolveContent({ references, text})
+	console.log('#swatch content', content)
+	if (Array.isArray(content)) {
+		children = content.map(elementFromText)
+	}
+
 	if (children.length > 0) {
 		return (
 			<Seed row wrap alignItems='center'>
@@ -74,8 +80,11 @@ export const swatch = (tags, references, text, children, Element, resolveContent
 			</Seed>
 		)
 	}
+	else if (R.is(String, content)) {
+		return srgbItem(content, alpha, minWidth, minHeight)
+	}
 	else {
-		return srgbItem(resolveContent({ references, text }), alpha, minWidth, minHeight)
+		return <noscript />
 	}
 }
 
